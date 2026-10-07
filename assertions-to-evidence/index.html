@@ -1,0 +1,309 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+.home{color:var(--blue);font-size:13px;font-weight:600;text-decoration:none;margin-left:auto}
+.home:hover{text-decoration:underline}
+</style>
+<title>Assertions to Evidence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Patrick+Hand&display=swap">
+<style>
+/* Layout: small "what an audit is" figure → large clickable chain (assertions → objectives → tests → evidence) → detail panel for the selected box.
+   Same marker palette and type as the Audit Map. */
+:root{
+  --bg:#f4f6f9; --panel:#ffffff; --ink:#1b1e27; --muted:#626a79; --rule:#dce1e8; --soft:#eef1f5;
+  --blue:#1f45c4; --blue-t:#e7edfc; --green:#23803a; --green-t:#e4f2e7;
+  --orange:#cf5f0e; --orange-t:#fcefe2; --red:#c42b2b; --red-t:#fbe8e8; --violet:#5b44c2; --violet-t:#efecfb;
+  --f-sans:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-hand:'Patrick Hand','Comic Neue','Segoe Print','Bradley Hand',cursive;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12151c; --panel:#1a1e27; --ink:#e7e9ee; --muted:#9ca3b2; --rule:#2c3340; --soft:#232834;
+  --blue:#8ea9ff; --blue-t:#1c2546; --green:#6cc77f; --green-t:#15301d;
+  --orange:#f3a05c; --orange-t:#3a2614; --red:#ff8080; --red-t:#3c1b1d; --violet:#b6a4ff; --violet-t:#262046; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12151c; --panel:#1a1e27; --ink:#e7e9ee; --muted:#9ca3b2; --rule:#2c3340; --soft:#232834;
+  --blue:#8ea9ff; --blue-t:#1c2546; --green:#6cc77f; --green-t:#15301d;
+  --orange:#f3a05c; --orange-t:#3a2614; --red:#ff8080; --red-t:#3c1b1d; --violet:#b6a4ff; --violet-t:#262046; color-scheme:dark}
+
+body{background:var(--bg);color:var(--ink);font-family:var(--f-sans);font-size:15px;line-height:1.5}
+.wrap{max-width:1280px;margin:0 auto;padding:20px 16px 48px;display:grid;gap:14px}
+header{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px}
+h1{font-size:26px;line-height:1.15;margin:0;font-weight:700;letter-spacing:-.01em}
+h2.sec{font-size:17px;margin:10px 0 0;font-weight:600}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.lede{margin:0;color:var(--muted);max-width:70ch}
+figure{margin:0;background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:10px;overflow-x:auto}
+figure svg{display:block;width:100%;height:auto}
+.swipe{display:none;margin:0 0 -8px;font-size:13px;color:var(--muted)}
+@media (max-width:760px){.swipe{display:block}}
+#fig-audit svg{min-width:720px}
+#fig-chain svg{min-width:900px}
+figcaption{font-size:13px;color:var(--muted);padding:6px 6px 0}
+
+svg text{font-family:var(--f-sans);fill:var(--ink)}
+.t-title{font-size:16px;font-weight:700}
+.t-sub{font-size:13.5px;fill:var(--muted)}
+.t-head{font-size:13px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;fill:var(--muted)}
+.hand{font-family:var(--f-hand)!important;font-size:16px}
+.hand.b{font-size:18px}
+.c-blue{fill:var(--blue)!important}.c-red{fill:var(--red)!important}.c-orange{fill:var(--orange)!important}.c-violet{fill:var(--violet)!important}.c-green{fill:var(--green)!important}.c-muted{fill:var(--muted)!important}
+.k-ink{stroke:var(--ink)}.k-muted{stroke:var(--muted)}.k-red{stroke:var(--red)}
+.f-ink{fill:var(--ink)}.f-muted{fill:var(--muted)}
+.box{fill:var(--panel);stroke:var(--ink);stroke-width:1.8}
+.flow{fill:none;stroke:var(--ink);stroke-width:2}
+
+/* chain nodes */
+.node{cursor:pointer}
+.node rect{fill:var(--panel);stroke:var(--rule);stroke-width:1.5;transition:fill .2s,stroke .2s,opacity .2s}
+.node text{font-size:14px;pointer-events:none;transition:opacity .2s}
+.node:focus{outline:none}
+.node:focus-visible rect{stroke:var(--blue);stroke-width:2.5}
+.node.col0 text{font-weight:600}
+.node.col2 text{font-weight:600}
+.edge{fill:none;stroke:var(--rule);stroke-width:1.2;transition:stroke .2s,opacity .2s}
+.chain.active .node:not(.hl) rect,.chain.active .node:not(.hl) text{opacity:.32}
+.chain.active .edge{opacity:.25}
+.chain.active .edge.hl{opacity:1;stroke-width:2}
+.node.hl.col0 rect{fill:var(--blue-t);stroke:var(--blue)}
+.node.hl.t rect{fill:var(--red-t);stroke:var(--red)}
+.node.hl.b rect{fill:var(--orange-t);stroke:var(--orange)}
+.node.hl.col2 rect{fill:var(--violet-t);stroke:var(--violet)}
+.node.hl.col3 rect{fill:var(--green-t);stroke:var(--green)}
+.node.sel rect{stroke-width:3}
+.edge.hl.e0{stroke:var(--blue)}.edge.hl.e1{stroke:var(--violet)}.edge.hl.e2{stroke:var(--green)}
+@media (prefers-reduced-motion: reduce){.node rect,.node text,.edge{transition:none}}
+
+.detail{background:var(--panel);border:1px solid var(--rule);border-radius:10px;padding:14px 16px;display:grid;gap:10px;grid-template-columns:minmax(0,1.2fr) minmax(0,2fr)}
+.detail h3{margin:0;font-size:18px}
+.detail .src{display:block;font-size:12.5px;color:var(--muted);margin-top:4px}
+.detail .kind{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.detail p{margin:4px 0 0}
+.links{display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:10px}
+.links div{background:var(--soft);border-radius:8px;padding:8px 10px;min-width:0}
+.links small{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700;margin-bottom:2px}
+.hint{font-size:13px;color:var(--muted)}
+button.reset{font:inherit;font-size:13px;color:var(--ink);background:var(--soft);border:1px solid var(--rule);border-radius:7px;padding:4px 10px;cursor:pointer;justify-self:start}
+@media (max-width:760px){.detail{grid-template-columns:1fr}h1{font-size:22px}}
+.plain{display:block;font-style:italic;color:var(--blue);font-size:14px;margin-top:4px}
+.credit{font-size:12.5px;color:var(--muted);border-top:1px solid var(--rule);padding-top:12px;margin-top:8px}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <h1>Assertions to Evidence</h1>
+    <span class="eyebrow">Chapters 1, 6, 7, 13</span>
+      <a class="home" href="../">← All diagrams</a>
+  </header>
+
+  <h2 class="sec">What an audit is</h2>
+  <p class="swipe">Swipe sideways to see the whole diagram →</p>
+  <figure id="fig-audit">
+<svg viewBox="0 0 1100 280" role="img" aria-label="A competent, independent auditor gathers evidence about information (the financial statements) and compares it to a framework (GAAP, or COSO for internal control). The degree of correspondence between the two determines the opinion in the audit report.">
+  <defs>
+    <marker id="a-ink" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="f-ink"/></marker>
+  </defs>
+  <rect x="30" y="100" width="150" height="64" rx="10" class="box"/>
+  <text x="105" y="138" text-anchor="middle" class="t-title">Auditor</text>
+  <text x="34" y="196" class="hand c-blue">• competent</text>
+  <text x="34" y="218" class="hand c-blue">• independent</text>
+  <text x="50" y="238" class="hand c-muted" style="font-size:15px">in fact &amp; in appearance</text>
+
+  <rect x="270" y="100" width="160" height="64" rx="10" class="box"/>
+  <text x="350" y="138" text-anchor="middle" class="t-title">Evidence</text>
+  <text x="350" y="82" text-anchor="middle" class="hand b c-red">8 types</text>
+
+  <rect x="540" y="28" width="200" height="70" rx="10" class="box"/>
+  <text x="640" y="60" text-anchor="middle" class="t-title">Information</text>
+  <text x="640" y="82" text-anchor="middle" class="hand c-blue">(the F/S)</text>
+  <rect x="540" y="176" width="200" height="70" rx="10" class="box"/>
+  <text x="640" y="208" text-anchor="middle" class="t-title">Framework</text>
+  <text x="640" y="230" text-anchor="middle" class="hand c-muted">(GAAP · COSO)</text>
+  <line x1="640" y1="102" x2="640" y2="172" class="flow" marker-start="url(#a-ink)" marker-end="url(#a-ink)"/>
+  <text x="652" y="132" class="hand">degree of</text>
+  <text x="652" y="151" class="hand">correspondence</text>
+
+  <rect x="880" y="100" width="180" height="64" rx="10" class="box"/>
+  <text x="970" y="138" text-anchor="middle" class="t-title">Opinion</text>
+  <text x="970" y="196" text-anchor="middle" class="hand c-muted">→ the audit report</text>
+
+  <line x1="182" y1="132" x2="266" y2="132" class="flow" marker-end="url(#a-ink)"/>
+  <path d="M432 120 C 480 90, 500 66, 536 64" class="flow" marker-end="url(#a-ink)"/>
+  <path d="M432 144 C 480 174, 500 208, 536 210" class="flow" marker-end="url(#a-ink)"/>
+  <path d="M742 64 C 800 66, 830 100, 876 122" class="flow" marker-end="url(#a-ink)"/>
+  <path d="M742 210 C 800 208, 830 170, 876 142" class="flow" marker-end="url(#a-ink)"/>
+</svg>
+  </figure>
+
+  <h2 class="sec">From assertion to evidence</h2>
+  <p class="lede">Management makes assertions. The auditor turns each one into objectives, designs procedures (tests) to meet them, and gathers evidence. Click any box to follow its connections.</p>
+  <p class="swipe">Swipe sideways to see the whole diagram →</p>
+  <figure id="fig-chain">
+<svg id="chain" class="chain" viewBox="0 0 1200 720" role="img" aria-label="Clickable chain. Five management assertions map to seven transaction-related and nine balance-related audit objectives. Transaction-related objectives are tested with tests of controls and substantive tests of transactions; balance-related objectives with substantive analytical procedures and tests of details of balances. Each test uses certain of the eight types of evidence.">
+  <defs>
+    <marker id="c-muted" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="f-muted"/></marker>
+  </defs>
+  <g id="headers">
+    <text x="125" y="40" text-anchor="middle" class="t-head">Management asserts</text>
+    <text x="445" y="40" text-anchor="middle" class="t-head">Auditor's objectives</text>
+    <text x="760" y="40" text-anchor="middle" class="t-head">Design a procedure</text>
+    <text x="1065" y="40" text-anchor="middle" class="t-head">Gather evidence</text>
+    <g class="k-muted" stroke-width="1.6">
+      <line x1="232" y1="36" x2="300" y2="36" marker-end="url(#c-muted)"/>
+      <line x1="574" y1="36" x2="638" y2="36" marker-end="url(#c-muted)"/>
+      <line x1="874" y1="36" x2="944" y2="36" marker-end="url(#c-muted)"/>
+    </g>
+    <text x="330" y="80" class="hand b c-red">Transaction-related (7)</text>
+    <text x="330" y="352" class="hand b c-orange">Balance-related (9)</text>
+  </g>
+  <g id="edges"></g>
+  <g id="nodes"></g>
+  <text x="600" y="704" text-anchor="middle" class="hand b">→ sufficient &amp; appropriate evidence → opinion</text>
+</svg>
+    <figcaption>Assertions follow PCAOB AS 1105. Accuracy, posting &amp; summarization, timing, cutoff, detail tie-in, and realizable value support valuation or allocation; classification supports presentation and disclosure.</figcaption>
+  </figure>
+
+  <section class="detail" aria-live="polite">
+    <div>
+      <div class="kind" id="d-kind"></div>
+      <h3 id="d-name"></h3>
+      <p id="d-def"></p>
+      <p style="margin-top:10px"><button class="reset" id="d-reset">Clear selection</button></p>
+    </div>
+    <div class="links" id="d-links"></div>
+  </section>
+  <footer class="credit">© 2026 Paul Richardson, PhD, CPA. All rights reserved.<br>Chapter numbers refer to Arens, Elder, Beasley &amp; Hogan, <i>Auditing and Assurance Services</i> (18th ed., Pearson, 2024). Definitions from that text and PCAOB auditing standards. “In plain terms” notes are study aids; know the formal definitions for exams.</footer>
+</div>
+
+<script>
+(function(){
+  const A = [
+    {id:'a1', name:'Existence or occurrence', src:'PCAOB AS 1105.11', def:'Assets or liabilities of the company exist at a given date, and recorded transactions have occurred during a given period.', plain:'it\'s real and it happened.'},
+    {id:'a2', name:'Completeness', src:'PCAOB AS 1105.11', def:'All transactions and accounts that should be presented in the financial statements are so included.', plain:'nothing is missing.'},
+    {id:'a3', name:'Valuation or allocation', src:'PCAOB AS 1105.11', def:'Asset, liability, equity, revenue, and expense components have been included in the financial statements at appropriate amounts.', plain:'the amounts are right, in the right period and account.'},
+    {id:'a4', name:'Rights and obligations', src:'PCAOB AS 1105.11', def:'The company holds or controls rights to the assets, and liabilities are obligations of the company at a given date.', plain:'the company owns it or owes it.'},
+    {id:'a5', name:'Presentation and disclosure', src:'PCAOB AS 1105.11', def:'The components of the financial statements are properly classified, described, and disclosed.', plain:'shown and explained clearly.'}
+  ];
+  const T = [
+    {id:'t1', name:'Occurrence', a:'a1', src:'Arens et al., Ch. 6', def:'Recorded or disclosed transactions exist.', plain:'did it really happen? Guards against overstatement. Vouch backward from the journal to the documents.'},
+    {id:'t2', name:'Completeness', a:'a2', src:'Arens et al., Ch. 6', def:'Existing transactions are recorded and disclosures are included.', plain:'did everything that happened get recorded? Guards against understatement. Trace forward from the documents to the journal.'},
+    {id:'t3', name:'Accuracy', a:'a3', src:'Arens et al., Ch. 6', def:'Recorded transactions are stated at the correct amounts and disclosures are appropriately measured and described.', plain:'right dollar amount?'},
+    {id:'t4', name:'Posting & summarization', a:'a3', src:'Arens et al., Ch. 6', def:'Recorded transactions are properly included in the data files and are correctly summarized.', plain:'carried correctly into the subledgers and totals?'},
+    {id:'t5', name:'Classification', a:'a5', src:'Arens et al., Ch. 6', def:'Transactions included in the client\'s journals are properly classified.', plain:'right account?'},
+    {id:'t6', name:'Timing', a:'a3', src:'Arens et al., Ch. 6', def:'Transactions are recorded on the correct dates.', plain:'right date?'},
+    {id:'t7', name:'Presentation', a:'a5', src:'Arens et al., Ch. 6', def:'Transactions are appropriately aggregated or disaggregated and described, and disclosures are relevant and understandable.', plain:'grouped and described so a reader understands it?'}
+  ];
+  const B = [
+    {id:'b1', name:'Existence', a:'a1', src:'Arens et al., Ch. 6', def:'Amounts included exist.', plain:'is it really there? Guards against overstatement.'},
+    {id:'b2', name:'Completeness', a:'a2', src:'Arens et al., Ch. 6', def:'Existing amounts and related disclosures are included.', plain:'is everything included? Guards against understatement.'},
+    {id:'b3', name:'Accuracy', a:'a3', src:'Arens et al., Ch. 6', def:'Amounts included are stated at the correct amounts, and disclosures are appropriately measured and described.', plain:'right amount?'},
+    {id:'b4', name:'Cutoff', a:'a3', src:'Arens et al., Ch. 6', def:'Transactions near the balance sheet date are recorded in the proper period.', plain:'right period?'},
+    {id:'b5', name:'Detail tie-in', a:'a3', src:'Arens et al., Ch. 6', def:'Details in the account balance agree with related data file amounts, foot to the total in the account balance, and agree with the total in the general ledger.', plain:'do the details add up to the general ledger?'},
+    {id:'b6', name:'Realizable value', a:'a3', src:'Arens et al., Ch. 6', def:'Assets are included at the amounts estimated to be realized.', plain:'will we actually collect it? (e.g., AR net of allowance)'},
+    {id:'b7', name:'Classification', a:'a5', src:'Arens et al., Ch. 6', def:'Amounts included in the client\'s listing are properly classified.', plain:'right account?'},
+    {id:'b8', name:'Rights & obligations', a:'a4', src:'Arens et al., Ch. 6', def:'In addition to existing, most assets must be owned before it is acceptable to include them in the financial statements. Similarly, liabilities must belong to the entity.', plain:'does the company own it or owe it?'},
+    {id:'b9', name:'Presentation', a:'a5', src:'Arens et al., Ch. 6', def:'Amounts are appropriately aggregated or disaggregated and described, and disclosures are relevant and understandable.', plain:'shown and disclosed clearly?'}
+  ];
+  const P = [
+    {id:'p1', name:'Tests of controls (ToC)', short:'ToC', obj:'T', src:'Arens et al., glossary', def:'Audit procedures to test the effectiveness of controls in support of a reduced assessed control risk.', plain:'do the client\'s controls actually work? If they do, control risk can be assessed lower and less substantive testing is needed.', ev:['e7','e3','e8','e5']},
+    {id:'p2', name:'Substantive tests of transactions (STOT)', short:'STOT', obj:'T', src:'Arens et al., glossary', def:'Audit procedures testing for monetary misstatements to determine whether the seven transaction-related audit objectives have been satisfied for each class of transactions.', plain:'test the recorded transactions (the journal entries) for dollar errors.', ev:['e3','e7','e5','e4']},
+    {id:'p3', name:'Substantive analytical procedures (SAP)', short:'SAP', obj:'B', src:'Arens et al., glossary', def:'An analytical procedure in which the auditor develops an expectation of recorded amounts or ratios to provide evidence supporting an account balance.', plain:'predict what a number should be (year over year, ratios, trends), then compare it with what the client recorded.', ev:['e7','e6']},
+    {id:'p4', name:'Tests of details of balances (TDB)', short:'TDB', obj:'B', src:'Arens et al., glossary', def:'Audit procedures testing for monetary misstatements to determine whether the nine balance-related audit objectives have been satisfied for each significant account balance.', plain:'test the ending balance itself, e.g., confirm accounts receivable with customers.', ev:['e1','e2','e3','e4','e5','e7']}
+  ];
+  const E = [
+    {id:'e1', name:'Physical examination', src:'Arens et al., Ch. 7', def:'The inspection or count by the auditor of a tangible asset.', plain:'count or look at the asset.'},
+    {id:'e2', name:'Confirmation', src:'Arens et al., Ch. 7', def:'The receipt of a direct written response from a third party verifying the accuracy of information that was requested by the auditor.', plain:'get a written answer from an outside party.'},
+    {id:'e3', name:'Inspection', src:'Arens et al., Ch. 7', def:'The auditor\'s examination of documents and records, whether internal or external to the client, to substantiate the information that is, or should be, included in the financial statements.', plain:'look at the client\'s documents.'},
+    {id:'e4', name:'Recalculation', src:'Arens et al., Ch. 7', def:'Rechecking a sample of calculations made by the client.', plain:'redo the math.'},
+    {id:'e5', name:'Reperformance', src:'Arens et al., Ch. 7', def:'The auditor\'s independent tests of client accounting procedures or controls that were originally done as part of the entity\'s accounting and internal control system.', plain:'redo a client procedure or control yourself. (Recalculation rechecks the math; reperformance checks other procedures.)'},
+    {id:'e6', name:'Analytical procedures', src:'Arens et al., Ch. 7', def:'Evaluations of financial information through analysis of plausible relationships among both financial and nonfinancial data.', plain:'compare numbers and relationships to spot anything odd.'},
+    {id:'e7', name:'Inquiries of the client', src:'Arens et al., Ch. 7', def:'The obtaining of written or oral information from the client in response to questions from the auditor.', plain:'ask the client. Not conclusive on its own, because it doesn\'t come from an independent source, so back it up with other evidence.'},
+    {id:'e8', name:'Observation', src:'Arens et al., Ch. 7', def:'Looking at a process or procedure being performed by others.', plain:'watch someone do the process. It only shows that moment in time, so it\'s rarely enough by itself.'}
+  ];
+
+  // geometry
+  const N = {};
+  A.forEach((n,i) => Object.assign(N[n.id] = n, {col:0, x:20, y:120 + i*110, w:210, h:58, kind:'Management assertion'}));
+  T.forEach((n,i) => Object.assign(N[n.id] = n, {col:1, grp:'t', x:330, y:92 + i*34, w:230, h:28, kind:'Transaction-related audit objective'}));
+  B.forEach((n,i) => Object.assign(N[n.id] = n, {col:1, grp:'b', x:330, y:362 + i*34, w:230, h:28, kind:'Balance-related audit objective'}));
+  const PY = [150, 262, 440, 552];
+  P.forEach((n,i) => Object.assign(N[n.id] = n, {col:2, x:650, y:PY[i], w:220, h:58, kind:'Type of test'}));
+  E.forEach((n,i) => Object.assign(N[n.id] = n, {col:3, x:960, y:96 + i*68, w:210, h:44, kind:'Type of evidence'}));
+
+  const edges = [];
+  [...T, ...B].forEach(o => edges.push([o.a, o.id, 0]));
+  P.forEach(p => (p.obj === 'T' ? T : B).forEach(o => edges.push([o.id, p.id, 1])));
+  P.forEach(p => p.ev.forEach(e => edges.push([p.id, e, 2])));
+
+  const NS = 'http://www.w3.org/2000/svg';
+  const gE = document.getElementById('edges'), gN = document.getElementById('nodes'), svg = document.getElementById('chain');
+  const el = (t, a) => { const e = document.createElementNS(NS, t); for (const k in a) e.setAttribute(k, a[k]); return e; };
+  edges.forEach(([s, t, k]) => {
+    const a = N[s], b = N[t];
+    const x1 = a.x + a.w, y1 = a.y + a.h/2, x2 = b.x, y2 = b.y + b.h/2, mx = (x1 + x2) / 2;
+    const p = el('path', {d:`M${x1} ${y1} C ${mx} ${y1}, ${mx} ${y2}, ${x2} ${y2}`, class:'edge e'+k});
+    p.dataset.s = s; p.dataset.t = t; gE.appendChild(p);
+  });
+  Object.values(N).forEach(n => {
+    const g = el('g', {class:'node col'+n.col + (n.grp ? ' '+n.grp : ''), tabindex:'0', role:'button', 'aria-label':n.kind+': '+n.name});
+    g.dataset.id = n.id;
+    g.appendChild(el('rect', {x:n.x, y:n.y, width:n.w, height:n.h, rx:8}));
+    const t = el('text', {x:n.x + 12, y:n.y + n.h/2 + 5});
+    t.textContent = n.col === 2 ? n.name.replace(/ \(.*\)/, '') : n.name;
+    if (n.col === 2) { const s = el('tspan', {dx:'6', class:'c-violet'}); s.textContent = n.short; t.appendChild(s); }
+    g.appendChild(t);
+    g.addEventListener('click', () => select(n.id));
+    g.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(n.id); } });
+    gN.appendChild(g);
+  });
+  // tidy test labels: name on one line is long; shorten display
+  gN.querySelectorAll('.col2 text').forEach(t => {
+    const id = t.parentNode.dataset.id, n = N[id];
+    t.textContent = '';
+    const s1 = el('tspan', {x:n.x + 12, dy:'-4'}); s1.textContent = {p1:'Tests of controls', p2:'Substantive tests', p3:'Substantive analytical', p4:'Tests of details'}[id];
+    const s2 = el('tspan', {x:n.x + 12, dy:'18', class:'c-violet'}); s2.textContent = {p1:'ToC', p2:'of transactions · STOT', p3:'procedures · SAP', p4:'of balances · TDB'}[id];
+    t.appendChild(s1); t.appendChild(s2);
+  });
+
+  function reach(id){
+    const out = new Set([id]), eh = new Set();
+    // rightward
+    let frontier = [id];
+    while (frontier.length){ const nx = []; frontier.forEach(f => edges.forEach((e,i) => { if (e[0] === f){ eh.add(i); if(!out.has(e[1])){ out.add(e[1]); nx.push(e[1]); } } })); frontier = nx; }
+    frontier = [id];
+    while (frontier.length){ const nx = []; frontier.forEach(f => edges.forEach((e,i) => { if (e[1] === f){ eh.add(i); if(!out.has(e[0])){ out.add(e[0]); nx.push(e[0]); } } })); frontier = nx; }
+    return {nodes: out, edges: eh};
+  }
+  const $ = id => document.getElementById(id);
+  function select(id){
+    if (!id){ svg.classList.remove('active'); gN.querySelectorAll('.node').forEach(g => g.classList.remove('hl','sel')); gE.querySelectorAll('.edge').forEach(p => p.classList.remove('hl'));
+      $('d-kind').textContent = 'Nothing selected'; $('d-name').textContent = 'Click any box'; $('d-def').textContent = 'Pick an assertion, objective, test, or type of evidence to see what it connects to.'; $('d-links').innerHTML = ''; return; }
+    const r = reach(id);
+    svg.classList.add('active');
+    gN.querySelectorAll('.node').forEach(g => { g.classList.toggle('hl', r.nodes.has(g.dataset.id)); g.classList.toggle('sel', g.dataset.id === id); });
+    [...gE.children].forEach((p,i) => p.classList.toggle('hl', r.edges.has(i)));
+    const n = N[id];
+    $('d-kind').textContent = n.kind; $('d-name').textContent = n.name; $('d-def').innerHTML = ''; $('d-def').textContent = n.def; if (n.plain){ const sp=document.createElement('span'); sp.className='plain'; sp.textContent='In plain terms: '+n.plain; $('d-def').appendChild(sp); } if (n.src){ const sr=document.createElement('span'); sr.className='src'; sr.textContent='Source: '+n.src+' (exact wording)'; $('d-def').appendChild(sr); }
+    const groups = [['Assertions', A], ['Transaction-related objectives', T], ['Balance-related objectives', B], ['Tests', P], ['Evidence', E]];
+    $('d-links').innerHTML = groups.map(([label, list]) => {
+      const hits = list.filter(x => x.id !== id && r.nodes.has(x.id)).map(x => x.short || x.name);
+      return hits.length ? '<div><small>' + label + '</small>' + hits.join(', ') + '</div>' : '';
+    }).join('');
+  }
+  $('d-reset').addEventListener('click', () => select(null));
+  select('a2');
+})();
+</script>
+
+</body>
+</html>
