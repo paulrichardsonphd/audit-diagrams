@@ -54,6 +54,10 @@ svg text{font-family:var(--f-sans);fill:var(--ink)}
 .q rect{fill:var(--soft);stroke:var(--muted);stroke-width:1.5}
 .q text{font-size:14.5px;font-weight:600}
 .leaf{cursor:pointer}
+.q.pick{cursor:pointer}
+.q.pick:focus{outline:none}
+.q.pick:focus-visible rect{stroke-dasharray:4 3}
+.tree.active .q.sel rect{stroke-width:3.2}
 .leaf rect{stroke-width:2;transition:opacity .2s}
 .leaf text{font-size:15px;font-weight:700;pointer-events:none}
 .leaf .sub{font-size:12.5px;font-weight:400;fill:var(--muted)}
@@ -90,7 +94,7 @@ figcaption{font-size:13.5px;color:var(--muted);padding:6px 6px 0}
     <span class="eyebrow">Chapters 3, 12</span>
       <a class="home" href="../">← All diagrams</a>
   </header>
-  <p class="lede">Start at the left with a completed audit. Click any opinion to light up the path that leads to it.</p>
+  <p class="lede">Start at the left with a completed audit. Click any opinion to light up the path that leads to it, or click <b>GAAP issue</b> or <b>Scope issue</b> to compare the two possible outcomes.</p>
 
   <h2 class="sec">Opinion on the financial statements</h2>
   <p class="swipe">Swipe sideways to see the whole diagram →</p>
@@ -126,10 +130,10 @@ figcaption{font-size:13.5px;color:var(--muted);padding:6px 6px 0}
   <g class="q" data-k="u eom cam qg adv qs dis"><rect x="20" y="200" width="162" height="80" rx="10"/>
     <text x="101" y="234" text-anchor="middle">Completed audit</text>
     <text x="101" y="256" text-anchor="middle" class="t-sub" style="font-weight:400">year under audit</text></g>
-  <g class="q" data-k="qg adv"><rect x="310" y="180" width="190" height="64" rx="10"/>
+  <g class="q pick" data-k="qg adv" data-group="gaap" tabindex="0" role="button" aria-label="GAAP issue: show both possible opinions"><rect x="310" y="180" width="190" height="64" rx="10"/>
     <text x="405" y="207" text-anchor="middle">GAAP issue</text>
     <text x="405" y="227" text-anchor="middle" class="t-sub" style="font-weight:400">accounting: the #'s</text></g>
-  <g class="q" data-k="qs dis"><rect x="310" y="352" width="190" height="64" rx="10"/>
+  <g class="q pick" data-k="qs dis" data-group="scope" tabindex="0" role="button" aria-label="Scope issue: show both possible opinions"><rect x="310" y="352" width="190" height="64" rx="10"/>
     <text x="405" y="379" text-anchor="middle">Scope issue</text>
     <text x="405" y="399" text-anchor="middle" class="t-sub" style="font-weight:400">"doing" the audit</text></g>
 
@@ -200,6 +204,8 @@ figcaption{font-size:13.5px;color:var(--muted);padding:6px 6px 0}
     u:  {kind:'F/S opinion', name:'Unqualified (unmodified)', path:'Completed audit → unmodified report (no material misstatement)', def:'The auditor is in a position to express an unqualified opinion on the financial statements when the auditor conducted an audit in accordance with the standards of the Public Company Accounting Oversight Board ("PCAOB") and concludes that the financial statements, taken as a whole, are presented fairly, in all material respects, in conformity with the applicable financial reporting framework.', plain:'the F/S are fairly stated in all material respects. That does not mean error-free: immaterial misstatements can remain and the opinion is still unqualified. The AICPA calls this an unmodified opinion.', src:'PCAOB AS 3101'},
     eom:{kind:'F/S opinion', name:'Unqualified with an added paragraph', path:'Completed audit → unmodified report → add a paragraph', def:'The auditor may emphasize a matter regarding the financial statements in the auditor\'s report ("emphasis paragraph").', plain:'the opinion is still unqualified. The auditor adds a paragraph that draws readers\' attention to something important, usually a matter the F/S already disclose.\nRequired (explanatory paragraphs), for example:\n• Going concern: substantial doubt about the company\'s ability to continue as a going concern for a reasonable period (up to one year past the balance sheet date).\n• Consistency: the company changed an accounting method, so the years aren\'t directly comparable.\n• Restatement: prior-year F/S were corrected for a material error.\nOptional (emphasis paragraphs), for example:\n• A major related-party transaction.\n• A major event after year end.\n• A major lawsuit or an unusually important risk.\nThe AICPA calls the optional kind an emphasis-of-matter paragraph. Critical audit matters are a separate required section (see that box).', src:'PCAOB AS 3101'},
     cam:{kind:'F/S report section', name:'Critical audit matters (CAMs)', path:'Completed audit → unmodified report → CAM section', def:'A critical audit matter is any matter arising from the audit of the financial statements that was communicated or required to be communicated to the audit committee and that: (1) relates to accounts or disclosures that are material to the financial statements; and (2) involved especially challenging, subjective, or complex auditor judgment.', plain:'the auditor describes the hardest judgment calls in the audit (for example, a goodwill impairment test or a complex revenue estimate), why they were hard, and how the auditor addressed them. If there are none, the report says so.\n• Required in most public-company audits. Exempt: emerging growth companies, brokers and dealers, registered investment companies, and employee benefit plans.\n• CAMs do not modify the opinion. The report states that the communication does not alter in any way the opinion on the F/S.', src:'PCAOB AS 3101'},
+    gaap:{kind:'Decision point', name:'GAAP issue: qualified or adverse?', path:'Completed audit → modified report (material issue) → GAAP issue', def:'The F/S depart from GAAP (the numbers or disclosures are wrong), and management won\'t fix it. The question is how big the problem is.', plain:'\n• Material, but contained to one area → Qualified ("except for").\n• Highly material or pervasive, so the F/S as a whole are misleading → Adverse.\nIf the misstatement is immaterial, or the client corrects it, the opinion stays unqualified.'},
+    scope:{kind:'Decision point', name:'Scope issue: qualified or disclaimer?', path:'Completed audit → modified report (material issue) → scope issue', def:'The auditor could not get enough appropriate evidence, because of the circumstances or because the client restricted the work. The question is how much of the audit it affects.', plain:'\n• Material, but contained to one part → Qualified ("except for").\n• Highly material or pervasive, so the auditor can\'t form an opinion → Disclaimer.\nWhen the client itself significantly restricts the audit, the auditor should ordinarily disclaim (AS 3105).'},
     qg: {kind:'F/S opinion', name:'Qualified (GAAP departure)', path:'Completed audit → modified report (material issue) → GAAP issue → material', def:'A qualified opinion states that, except for the effects of the matter to which the qualification relates, the financial statements present fairly, in all material respects, financial position, results of operations, and cash flows in conformity with generally accepted accounting principles.', plain:'"except for" one material GAAP departure, the F/S are fairly stated. The problem is contained to one area.', src:'PCAOB AS 3105'},
     adv:{kind:'F/S opinion', name:'Adverse', path:'Completed audit → modified report (material issue) → GAAP issue → highly material or pervasive', def:'An adverse opinion states that the financial statements do not present fairly the financial position or the results of operations or cash flows in conformity with generally accepted accounting principles.', plain:'the GAAP departure is so material or pervasive that the F/S as a whole are not fairly stated.', src:'PCAOB AS 3105'},
     qs: {kind:'F/S opinion', name:'Qualified (scope limitation)', path:'Completed audit → modified report (material issue) → scope issue → material, but contained', def:'A qualified opinion states that, except for the effects of the matter to which the qualification relates, the financial statements present fairly, in all material respects, financial position, results of operations, and cash flows in conformity with generally accepted accounting principles.', plain:'the auditor could do everything except one part (a contained scope limitation), so "except for" that part, the F/S are fairly stated.', src:'PCAOB AS 3105'},
@@ -208,12 +214,15 @@ figcaption{font-size:13.5px;color:var(--muted);padding:6px 6px 0}
     ica:{kind:'ICFR opinion', name:'Adverse', path:'Opinion on ICFR → material weakness → not effective', def:'If there are deficiencies that, individually or in combination, result in one or more material weaknesses, the auditor must express an adverse opinion on the company\'s internal control over financial reporting, unless there is a restriction on the scope of the engagement.', plain:'at least one material weakness means adverse. Under AS 2201.02, if one or more material weaknesses exist, internal control cannot be considered effective, so there is no "except for" opinion on controls.', src:'PCAOB AS 2201.90'},
     icd:{kind:'ICFR opinion', name:'Disclaimer', path:'Opinion on ICFR → cannot audit', def:'The auditor can express an opinion on the company\'s internal control over financial reporting only if the auditor has been able to apply the procedures necessary in the circumstances. If there are restrictions on the scope of the engagement, the auditor should withdraw from the engagement or disclaim an opinion.', plain:'the auditor couldn\'t do the work needed, so there is no opinion on controls. Disclaim or withdraw; no qualified opinion.', src:'PCAOB AS 2201.C3'}
   };
+  const GROUP = {gaap:['qg','adv'], scope:['qs','dis']};
   function wire(svgId, pre, start){
     const svg = document.getElementById(svgId);
     const select = k => {
+      const keys = GROUP[k] || [k];
       svg.classList.add('active');
-      svg.querySelectorAll('[data-k]').forEach(e => e.classList.toggle('hl', e.dataset.k.split(' ').includes(k)));
-      svg.querySelectorAll('.leaf').forEach(e => e.classList.toggle('hl', e.dataset.leaf === k));
+      svg.querySelectorAll('[data-k]').forEach(e => e.classList.toggle('hl', e.dataset.k.split(' ').some(x => keys.includes(x))));
+      svg.querySelectorAll('.leaf').forEach(e => e.classList.toggle('hl', keys.includes(e.dataset.leaf)));
+      svg.querySelectorAll('.q').forEach(e => e.classList.toggle('sel', e.dataset.group === k));
       const i = INFO[k];
       document.getElementById(pre+'-kind').textContent = i.kind;
       document.getElementById(pre+'-name').textContent = i.name;
@@ -222,9 +231,10 @@ figcaption{font-size:13.5px;color:var(--muted);padding:6px 6px 0}
       if (i.src){ const sr = document.createElement('span'); sr.className = 'src'; sr.textContent = 'Source: ' + i.src + ' (exact wording)'; dd.appendChild(sr); }
       document.getElementById(pre+'-path').textContent = 'Path: ' + i.path;
     };
-    svg.querySelectorAll('.leaf').forEach(l => {
-      l.addEventListener('click', () => select(l.dataset.leaf));
-      l.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(l.dataset.leaf); } });
+    svg.querySelectorAll('.leaf, .q.pick').forEach(l => {
+      const k = l.dataset.leaf || l.dataset.group;
+      l.addEventListener('click', () => select(k));
+      l.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(k); } });
     });
     select(start);
   }
