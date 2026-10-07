@@ -1,0 +1,237 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+.home{color:var(--blue);font-size:13px;font-weight:600;text-decoration:none;margin-left:auto}
+.home:hover{text-decoration:underline}
+</style>
+<title>Audit Opinion Tree</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Patrick+Hand&display=swap">
+<style>
+/* Layout: two clickable decision trees (F/S audit, ICFR audit), each with a detail panel for the chosen path.
+   Same marker palette and type as the Audit Map. */
+:root{
+  --bg:#f4f6f9; --panel:#ffffff; --ink:#1b1e27; --muted:#626a79; --rule:#dce1e8; --soft:#eef1f5;
+  --blue:#1f45c4; --blue-t:#e7edfc; --green:#23803a; --green-t:#e4f2e7;
+  --orange:#cf5f0e; --orange-t:#fcefe2; --red:#c42b2b; --red-t:#fbe8e8; --violet:#5b44c2; --violet-t:#efecfb;
+  --f-sans:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-hand:'Patrick Hand','Comic Neue','Segoe Print','Bradley Hand',cursive;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12151c; --panel:#1a1e27; --ink:#e7e9ee; --muted:#9ca3b2; --rule:#2c3340; --soft:#232834;
+  --blue:#8ea9ff; --blue-t:#1c2546; --green:#6cc77f; --green-t:#15301d;
+  --orange:#f3a05c; --orange-t:#3a2614; --red:#ff8080; --red-t:#3c1b1d; --violet:#b6a4ff; --violet-t:#262046; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12151c; --panel:#1a1e27; --ink:#e7e9ee; --muted:#9ca3b2; --rule:#2c3340; --soft:#232834;
+  --blue:#8ea9ff; --blue-t:#1c2546; --green:#6cc77f; --green-t:#15301d;
+  --orange:#f3a05c; --orange-t:#3a2614; --red:#ff8080; --red-t:#3c1b1d; --violet:#b6a4ff; --violet-t:#262046; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-sans);font-size:15px;line-height:1.5}
+.wrap{max-width:1180px;margin:0 auto;padding:20px 16px 48px;display:grid;gap:14px}
+header{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px}
+h1{font-size:26px;line-height:1.15;margin:0;font-weight:700;letter-spacing:-.01em}
+h2.sec{font-size:17px;margin:10px 0 0;font-weight:600}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.lede{margin:0;color:var(--muted);max-width:70ch}
+figure{margin:0;background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:10px;overflow-x:auto}
+figure svg{display:block;width:100%;height:auto;min-width:820px}
+.swipe{display:none;margin:0 0 -8px;font-size:13px;color:var(--muted)}
+@media (max-width:860px){.swipe{display:block}}
+svg text{font-family:var(--f-sans);fill:var(--ink)}
+.hand{font-family:var(--f-hand)!important;font-size:16px}
+.t-sub{font-size:13px;fill:var(--muted)}
+.c-muted{fill:var(--muted)!important}.c-red{fill:var(--red)!important}.c-green{fill:var(--green)!important}.c-blue{fill:var(--blue)!important}
+
+.edge{fill:none;stroke:var(--rule);stroke-width:2.5;transition:stroke .2s}
+.elabel{font-family:var(--f-hand);font-size:16px;fill:var(--muted);transition:fill .2s}
+.q rect{fill:var(--soft);stroke:var(--muted);stroke-width:1.5}
+.q text{font-size:14.5px;font-weight:600}
+.leaf{cursor:pointer}
+.leaf rect{stroke-width:2;transition:opacity .2s}
+.leaf text{font-size:15px;font-weight:700;pointer-events:none}
+.leaf .sub{font-size:12.5px;font-weight:400;fill:var(--muted)}
+.leaf:focus{outline:none}
+.leaf:focus-visible rect{stroke-dasharray:4 3}
+.k-unmod rect{fill:var(--green-t);stroke:var(--green)}
+.k-eom rect{fill:var(--blue-t);stroke:var(--blue)}
+.k-qual rect{fill:var(--orange-t);stroke:var(--orange)}
+.k-adv rect{fill:var(--red-t);stroke:var(--red)}
+.k-dis rect{fill:var(--violet-t);stroke:var(--violet)}
+.tree.active .leaf:not(.hl) rect,.tree.active .leaf:not(.hl) text{opacity:.38}
+.tree.active .edge.hl{stroke:var(--ink)}
+.tree.active .elabel.hl{fill:var(--ink)}
+.tree.active .q.hl rect{stroke:var(--ink);stroke-width:2.2}
+@media (prefers-reduced-motion: reduce){.edge,.leaf rect,.elabel{transition:none}}
+
+figcaption{font-size:13.5px;color:var(--muted);padding:6px 6px 0}
+.detail{background:var(--panel);border:1px solid var(--rule);border-radius:10px;padding:14px 16px}
+.detail .kind{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.detail h3{margin:2px 0 4px;font-size:18px}
+.detail p{margin:0;max-width:75ch}
+.detail .path{font-size:13px;color:var(--muted);margin-top:6px}
+.detail .plain{display:block;font-style:italic;color:var(--blue);font-size:14px;margin-top:6px;white-space:pre-line}
+.detail .src{display:block;font-size:12.5px;color:var(--muted);margin-top:4px}
+@media (max-width:700px){h1{font-size:22px}}
+.credit{font-size:12.5px;color:var(--muted);border-top:1px solid var(--rule);padding-top:12px;margin-top:8px}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <h1>Audit Opinion Tree</h1>
+    <span class="eyebrow">Chapters 3, 12</span>
+      <a class="home" href="../">← All diagrams</a>
+  </header>
+  <p class="lede">Start at the left with a completed audit. Click any opinion to light up the path that leads to it.</p>
+
+  <h2 class="sec">Opinion on the financial statements</h2>
+  <p class="swipe">Swipe sideways to see the whole diagram →</p>
+  <figure>
+<svg id="fs" class="tree" viewBox="0 0 1100 490" role="img" aria-label="Decision tree for the financial statement opinion. With no material misstatement, the report is unmodified: an unqualified opinion, optionally with an emphasis paragraph or critical audit matters, neither of which modifies it. Immaterial errors can remain. A material issue leads to a modified report: qualified, adverse, or a disclaimer: a GAAP issue that is material leads to qualified, and highly material or pervasive leads to adverse. A scope problem that is contained leads to qualified; if the audit cannot be done, a disclaimer. Losing independence also leads to a disclaimer.">
+  <!-- edges -->
+  <path class="edge" data-k="u eom cam" d="M182 240 C 260 240, 260 72, 330 72 L 690 72"/>
+  <text class="elabel" data-k="u eom cam" x="345" y="62">Unmodified report</text>
+  <text class="elabel" data-k="u eom cam" x="345" y="94" style="font-size:15px">no material misstatement</text>
+  <text class="elabel" data-k="u eom cam" x="345" y="111" style="font-size:15px">(immaterial errors can remain)</text>
+  <path class="edge" data-k="eom" d="M880 72 L 900 72"/>
+  <path class="edge" data-k="cam" d="M880 72 C 890 72, 888 150, 900 150"/>
+  
+  <path class="edge" data-k="qg adv qs dis" d="M182 240 C 230 240, 230 300, 262 300"/>
+  <text class="elabel" data-k="qg adv qs dis" x="150" y="326">Modified report</text>
+  <text class="elabel" data-k="qg adv qs dis" x="150" y="344" style="font-size:15px">material issue</text>
+  <path class="edge" data-k="qg adv" d="M262 300 C 280 300, 280 212, 310 212"/>
+  <path class="edge" data-k="qs dis" d="M262 300 C 280 300, 280 384, 310 384"/>
+  <path class="edge" data-k="qg" d="M500 212 C 580 212, 590 168, 690 168"/>
+  <text class="elabel" data-k="qg" x="560" y="174">material</text>
+  <path class="edge" data-k="adv" d="M500 212 C 580 212, 590 256, 690 256"/>
+  <text class="elabel" data-k="adv" x="520" y="268">highly material</text>
+  <text class="elabel" data-k="adv" x="520" y="285">or pervasive</text>
+  <path class="edge" data-k="qs" d="M500 384 C 580 384, 590 340, 690 340"/>
+  <text class="elabel" data-k="qs" x="520" y="322">material, but contained</text>
+  <text class="elabel" data-k="qs" x="520" y="339">(all but one part)</text>
+  <path class="edge" data-k="dis" d="M500 384 C 580 384, 590 428, 690 428"/>
+  <text class="elabel" data-k="dis" x="520" y="440">highly material</text>
+  <text class="elabel" data-k="dis" x="520" y="457">or pervasive:</text>
+  <text class="elabel" data-k="dis" x="520" y="474">cannot do the audit</text>
+
+  <!-- question nodes -->
+  <g class="q" data-k="u eom cam qg adv qs dis"><rect x="20" y="200" width="162" height="80" rx="10"/>
+    <text x="101" y="234" text-anchor="middle">Completed audit</text>
+    <text x="101" y="256" text-anchor="middle" class="t-sub" style="font-weight:400">year under audit</text></g>
+  <g class="q" data-k="qg adv"><rect x="310" y="180" width="190" height="64" rx="10"/>
+    <text x="405" y="207" text-anchor="middle">GAAP issue</text>
+    <text x="405" y="227" text-anchor="middle" class="t-sub" style="font-weight:400">accounting: the #'s</text></g>
+  <g class="q" data-k="qs dis"><rect x="310" y="352" width="190" height="64" rx="10"/>
+    <text x="405" y="379" text-anchor="middle">Scope issue</text>
+    <text x="405" y="399" text-anchor="middle" class="t-sub" style="font-weight:400">"doing" the audit</text></g>
+
+  <!-- leaves -->
+  <g class="leaf k-unmod" data-leaf="u" tabindex="0" role="button" aria-label="Unqualified opinion"><rect x="690" y="44" width="190" height="56" rx="10"/>
+    <text x="785" y="69" text-anchor="middle">Unqualified</text><text x="785" y="88" text-anchor="middle" class="sub">no material issues</text></g>
+  <g class="leaf k-eom" data-leaf="eom" tabindex="0" role="button" aria-label="Unqualified with an added paragraph"><rect x="900" y="44" width="186" height="56" rx="10"/>
+    <text x="993" y="69" text-anchor="middle">+ Emphasis paragraph</text><text x="993" y="88" text-anchor="middle" class="sub">not a modified opinion</text></g>
+  <g class="leaf k-eom" data-leaf="cam" tabindex="0" role="button" aria-label="Critical audit matters"><rect x="900" y="122" width="186" height="56" rx="10"/>
+    <text x="993" y="147" text-anchor="middle">+ Critical audit matters</text><text x="993" y="166" text-anchor="middle" class="sub">required · not a modification</text></g>
+  <g class="leaf k-qual" data-leaf="qg" tabindex="0" role="button" aria-label="Qualified for a GAAP departure"><rect x="690" y="140" width="190" height="56" rx="10"/>
+    <text x="785" y="165" text-anchor="middle">Qualified</text><text x="785" y="184" text-anchor="middle" class="sub">"except for" · GAAP</text></g>
+  <g class="leaf k-adv" data-leaf="adv" tabindex="0" role="button" aria-label="Adverse opinion"><rect x="690" y="228" width="190" height="56" rx="10"/>
+    <text x="785" y="253" text-anchor="middle">Adverse</text><text x="785" y="272" text-anchor="middle" class="sub">F/S not fairly stated</text></g>
+  <g class="leaf k-qual" data-leaf="qs" tabindex="0" role="button" aria-label="Qualified for a scope limitation"><rect x="690" y="312" width="190" height="56" rx="10"/>
+    <text x="785" y="337" text-anchor="middle">Qualified</text><text x="785" y="356" text-anchor="middle" class="sub">"except for" · scope</text></g>
+  <g class="leaf k-dis" data-leaf="dis" tabindex="0" role="button" aria-label="Disclaimer of opinion"><rect x="690" y="400" width="190" height="56" rx="10"/>
+    <text x="785" y="425" text-anchor="middle">Disclaimer</text><text x="785" y="444" text-anchor="middle" class="sub">no opinion</text></g>
+
+  <text x="900" y="420" class="hand c-red">* not independent</text>
+  <text x="900" y="440" class="hand c-red">→ disclaim</text>
+</svg>
+    <figcaption>Every branch is about <b>material</b> issues. An unqualified opinion means the F/S are fairly stated <i>in all material respects</i>, not that they are error-free.</figcaption>
+  </figure>
+  <section class="detail" aria-live="polite">
+    <div class="kind" id="fs-kind"></div><h3 id="fs-name"></h3><p id="fs-def"></p><p class="path" id="fs-path"></p>
+  </section>
+
+  <h2 class="sec">Opinion on internal control (accelerated filers)</h2>
+  <p class="lede">The auditor's opinion on internal control is required for accelerated and large accelerated filers (SOX 404(b)). Smaller public companies include management's own assessment of internal control, without an auditor's opinion on it.</p>
+  <p class="swipe">Swipe sideways to see the whole diagram →</p>
+  <figure>
+<svg id="ic" class="tree" viewBox="0 0 1100 320" role="img" aria-label="Decision tree for the opinion on internal control over financial reporting, required for accelerated filers. Effective controls, with only control deficiencies or significant deficiencies, lead to unqualified. A material weakness leads to adverse, because internal control cannot be considered effective if one or more material weaknesses exist. If the controls cannot be audited, a disclaimer. There is no qualified opinion on controls.">
+  <path class="edge" data-k="icu" d="M202 150 C 300 150, 300 60, 400 60 L 690 60"/>
+  <text class="elabel" data-k="icu" x="420" y="48">effective: no material weakness</text>
+  <text class="elabel" data-k="icu" x="420" y="84" style="font-size:15px">control or significant deficiency only</text><text class="elabel" data-k="icu" x="420" y="102" style="font-size:15px">→ significant ones to the audit committee</text>
+  <path class="edge" data-k="ica" d="M202 150 L 690 150"/>
+  <text class="elabel" data-k="ica" x="420" y="140">material weakness → not effective</text>
+  <path class="edge" data-k="icd" d="M202 150 C 300 150, 300 240, 400 240 L 690 240"/>
+  <text class="elabel" data-k="icd" x="420" y="230">cannot audit (scope)</text>
+
+  <g class="q" data-k="icu ica icd"><rect x="20" y="104" width="182" height="92" rx="10"/>
+    <text x="111" y="140" text-anchor="middle">Opinion on ICFR</text>
+    <text x="111" y="162" text-anchor="middle" class="t-sub" style="font-weight:400">are controls</text>
+    <text x="111" y="180" text-anchor="middle" class="t-sub" style="font-weight:400">effective?</text></g>
+
+  <g class="leaf k-unmod" data-leaf="icu" tabindex="0" role="button" aria-label="Unqualified opinion on internal control"><rect x="690" y="32" width="190" height="56" rx="10"/>
+    <text x="785" y="57" text-anchor="middle">Unqualified</text><text x="785" y="76" text-anchor="middle" class="sub">no material weakness</text></g>
+  <g class="leaf k-adv" data-leaf="ica" tabindex="0" role="button" aria-label="Adverse opinion on internal control"><rect x="690" y="122" width="190" height="56" rx="10"/>
+    <text x="785" y="147" text-anchor="middle">Adverse</text><text x="785" y="166" text-anchor="middle" class="sub">1 MW = not effective</text></g>
+  <g class="leaf k-dis" data-leaf="icd" tabindex="0" role="button" aria-label="Disclaimer on internal control"><rect x="690" y="212" width="190" height="56" rx="10"/>
+    <text x="785" y="237" text-anchor="middle">Disclaimer</text><text x="785" y="256" text-anchor="middle" class="sub">no opinion</text></g>
+
+  <text x="900" y="140" class="hand c-green" style="font-size:19px">* No qualified</text>
+  <text x="900" y="162" class="hand c-green" style="font-size:19px">for controls</text>
+  <text x="20" y="292" class="hand c-muted">know the definitions: control deficiency · significant deficiency · material weakness</text>
+</svg>
+  </figure>
+  <section class="detail" aria-live="polite">
+    <div class="kind" id="ic-kind"></div><h3 id="ic-name"></h3><p id="ic-def"></p><p class="path" id="ic-path"></p>
+  </section>
+  <footer class="credit">© 2026 Paul Richardson, PhD, CPA. All rights reserved.<br>Chapter numbers refer to Arens, Elder, Beasley &amp; Hogan, <i>Auditing and Assurance Services</i> (18th ed., Pearson, 2024). Definitions from that text and PCAOB auditing standards. “In plain terms” notes are study aids; know the formal definitions for exams.</footer>
+</div>
+
+<script>
+(function(){
+  const INFO = {
+    u:  {kind:'F/S opinion', name:'Unqualified (unmodified)', path:'Completed audit → unmodified report (no material misstatement)', def:'The auditor is in a position to express an unqualified opinion on the financial statements when the auditor conducted an audit in accordance with the standards of the Public Company Accounting Oversight Board ("PCAOB") and concludes that the financial statements, taken as a whole, are presented fairly, in all material respects, in conformity with the applicable financial reporting framework.', plain:'the F/S are fairly stated in all material respects. That does not mean error-free: immaterial misstatements can remain and the opinion is still unqualified. The AICPA calls this an unmodified opinion.', src:'PCAOB AS 3101'},
+    eom:{kind:'F/S opinion', name:'Unqualified with an added paragraph', path:'Completed audit → unmodified report → add a paragraph', def:'The auditor may emphasize a matter regarding the financial statements in the auditor\'s report ("emphasis paragraph").', plain:'the opinion is still unqualified. The auditor adds a paragraph that draws readers\' attention to something important, usually a matter the F/S already disclose.\nRequired (explanatory paragraphs), for example:\n• Going concern: substantial doubt about the company\'s ability to continue as a going concern for a reasonable period (up to one year past the balance sheet date).\n• Consistency: the company changed an accounting method, so the years aren\'t directly comparable.\n• Restatement: prior-year F/S were corrected for a material error.\nOptional (emphasis paragraphs), for example:\n• A major related-party transaction.\n• A major event after year end.\n• A major lawsuit or an unusually important risk.\nThe AICPA calls the optional kind an emphasis-of-matter paragraph. Critical audit matters are a separate required section (see that box).', src:'PCAOB AS 3101'},
+    cam:{kind:'F/S report section', name:'Critical audit matters (CAMs)', path:'Completed audit → unmodified report → CAM section', def:'A critical audit matter is any matter arising from the audit of the financial statements that was communicated or required to be communicated to the audit committee and that: (1) relates to accounts or disclosures that are material to the financial statements; and (2) involved especially challenging, subjective, or complex auditor judgment.', plain:'the auditor describes the hardest judgment calls in the audit (for example, a goodwill impairment test or a complex revenue estimate), why they were hard, and how the auditor addressed them. If there are none, the report says so.\n• Required in most public-company audits. Exempt: emerging growth companies, brokers and dealers, registered investment companies, and employee benefit plans.\n• CAMs do not modify the opinion. The report states that the communication does not alter in any way the opinion on the F/S.', src:'PCAOB AS 3101'},
+    qg: {kind:'F/S opinion', name:'Qualified (GAAP departure)', path:'Completed audit → modified report (material issue) → GAAP issue → material', def:'A qualified opinion states that, except for the effects of the matter to which the qualification relates, the financial statements present fairly, in all material respects, financial position, results of operations, and cash flows in conformity with generally accepted accounting principles.', plain:'"except for" one material GAAP departure, the F/S are fairly stated. The problem is contained to one area.', src:'PCAOB AS 3105'},
+    adv:{kind:'F/S opinion', name:'Adverse', path:'Completed audit → modified report (material issue) → GAAP issue → highly material or pervasive', def:'An adverse opinion states that the financial statements do not present fairly the financial position or the results of operations or cash flows in conformity with generally accepted accounting principles.', plain:'the GAAP departure is so material or pervasive that the F/S as a whole are not fairly stated.', src:'PCAOB AS 3105'},
+    qs: {kind:'F/S opinion', name:'Qualified (scope limitation)', path:'Completed audit → modified report (material issue) → scope issue → material, but contained', def:'A qualified opinion states that, except for the effects of the matter to which the qualification relates, the financial statements present fairly, in all material respects, financial position, results of operations, and cash flows in conformity with generally accepted accounting principles.', plain:'the auditor could do everything except one part (a contained scope limitation), so "except for" that part, the F/S are fairly stated.', src:'PCAOB AS 3105'},
+    dis:{kind:'F/S opinion', name:'Disclaimer', path:'Completed audit → modified report (material issue) → scope issue → highly material or pervasive: cannot do the audit (or not independent)', def:'A disclaimer of opinion states that the auditor does not express an opinion on the financial statements.', plain:'the auditor can\'t express an opinion: the scope limitation is highly material or pervasive, or the auditor is not independent.\n• When the client itself significantly restricts the audit, the auditor should ordinarily disclaim (AS 3105).\n• For a public company, a report from an auditor who isn\'t independent can\'t be used in SEC filings, so in practice the firm withdraws.', src:'PCAOB AS 3105'},
+    icu:{kind:'ICFR opinion', name:'Unqualified', path:'Opinion on ICFR → effective: no material weakness', def:'The auditor\'s opinion on whether the company maintained, in all material respects, effective internal control over financial reporting as of the specified date, based on the control criteria.', plain:'unqualified means yes: no material weaknesses at year end and no restriction on the auditor\'s work. Control deficiencies and significant deficiencies are communicated (significant ones to the audit committee) but don\'t change the opinion. The opinion is as of year end, so a material weakness found earlier can still end in an unqualified opinion if it\'s fixed and the new control is tested.', src:'PCAOB AS 2201.85'},
+    ica:{kind:'ICFR opinion', name:'Adverse', path:'Opinion on ICFR → material weakness → not effective', def:'If there are deficiencies that, individually or in combination, result in one or more material weaknesses, the auditor must express an adverse opinion on the company\'s internal control over financial reporting, unless there is a restriction on the scope of the engagement.', plain:'at least one material weakness means adverse. Under AS 2201.02, if one or more material weaknesses exist, internal control cannot be considered effective, so there is no "except for" opinion on controls.', src:'PCAOB AS 2201.90'},
+    icd:{kind:'ICFR opinion', name:'Disclaimer', path:'Opinion on ICFR → cannot audit', def:'The auditor can express an opinion on the company\'s internal control over financial reporting only if the auditor has been able to apply the procedures necessary in the circumstances. If there are restrictions on the scope of the engagement, the auditor should withdraw from the engagement or disclaim an opinion.', plain:'the auditor couldn\'t do the work needed, so there is no opinion on controls. Disclaim or withdraw; no qualified opinion.', src:'PCAOB AS 2201.C3'}
+  };
+  function wire(svgId, pre, start){
+    const svg = document.getElementById(svgId);
+    const select = k => {
+      svg.classList.add('active');
+      svg.querySelectorAll('[data-k]').forEach(e => e.classList.toggle('hl', e.dataset.k.split(' ').includes(k)));
+      svg.querySelectorAll('.leaf').forEach(e => e.classList.toggle('hl', e.dataset.leaf === k));
+      const i = INFO[k];
+      document.getElementById(pre+'-kind').textContent = i.kind;
+      document.getElementById(pre+'-name').textContent = i.name;
+      const dd = document.getElementById(pre+'-def'); dd.textContent = i.def;
+      if (i.plain){ const sp = document.createElement('span'); sp.className = 'plain'; sp.textContent = 'In plain terms: ' + i.plain; dd.appendChild(sp); }
+      if (i.src){ const sr = document.createElement('span'); sr.className = 'src'; sr.textContent = 'Source: ' + i.src + ' (exact wording)'; dd.appendChild(sr); }
+      document.getElementById(pre+'-path').textContent = 'Path: ' + i.path;
+    };
+    svg.querySelectorAll('.leaf').forEach(l => {
+      l.addEventListener('click', () => select(l.dataset.leaf));
+      l.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(l.dataset.leaf); } });
+    });
+    select(start);
+  }
+  wire('fs', 'fs', 'qg');
+  wire('ic', 'ic', 'ica');
+})();
+</script>
+
+</body>
+</html>
