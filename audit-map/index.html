@@ -1,0 +1,723 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+.home{color:var(--blue);font-size:13px;font-weight:600;text-decoration:none;margin-left:auto}
+.home:hover{text-decoration:underline}
+</style>
+<title>The Audit Map</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Patrick+Hand&display=swap">
+<style>
+/* Layout: control bar → one big layered SVG (structure in clean type, chapter overlays in "marker" hand) → notes cards for the layers that are on.
+   Colors follow Paul's marker colors so students recognize the drawing. */
+:root{
+  --bg:#f4f6f9; --panel:#ffffff; --ink:#1b1e27; --muted:#626a79; --rule:#dce1e8; --soft:#eef1f5;
+  --blue:#1f45c4; --blue-t:#e7edfc; --green:#23803a; --green-t:#e4f2e7;
+  --orange:#cf5f0e; --orange-t:#fcefe2; --red:#c42b2b; --red-t:#fbe8e8; --fraud:#a3226b; --violet:#5b44c2;
+  --f-sans:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-hand:'Patrick Hand','Comic Neue','Segoe Print','Bradley Hand',cursive;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12151c; --panel:#1a1e27; --ink:#e7e9ee; --muted:#9ca3b2; --rule:#2c3340; --soft:#232834;
+  --blue:#8ea9ff; --blue-t:#1c2546; --green:#6cc77f; --green-t:#15301d;
+  --orange:#f3a05c; --orange-t:#3a2614; --red:#ff8080; --red-t:#3c1b1d; --fraud:#ee88c4; --violet:#b6a4ff; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12151c; --panel:#1a1e27; --ink:#e7e9ee; --muted:#9ca3b2; --rule:#2c3340; --soft:#232834;
+  --blue:#8ea9ff; --blue-t:#1c2546; --green:#6cc77f; --green-t:#15301d;
+  --orange:#f3a05c; --orange-t:#3a2614; --red:#ff8080; --red-t:#3c1b1d; --fraud:#ee88c4; --violet:#b6a4ff; color-scheme:dark}
+
+body{background:var(--bg);color:var(--ink);font-family:var(--f-sans);font-size:15px;line-height:1.5}
+.wrap{max-width:1320px;margin:0 auto;padding:20px 16px 48px;display:grid;gap:14px}
+header{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px}
+h1{font-size:26px;line-height:1.15;margin:0;font-weight:700;letter-spacing:-.01em;text-wrap:balance}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+
+.bar{display:grid;gap:10px;background:var(--panel);border:1px solid var(--rule);border-radius:10px;padding:10px 12px}
+.row{display:flex;flex-wrap:wrap;gap:10px 18px;align-items:center}
+.group{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.row .group + .group{border-left:1px solid var(--rule);padding-left:18px}
+.chips{border-top:1px solid var(--rule);padding-top:10px}
+button{font:inherit;font-size:14px;color:var(--ink);background:var(--soft);border:1px solid var(--rule);border-radius:7px;padding:6px 11px;cursor:pointer;line-height:1.2}
+button:hover{border-color:var(--muted)}
+button:focus-visible,input:focus-visible+span{outline:2px solid var(--blue);outline-offset:2px}
+button:disabled{opacity:.4;cursor:default}
+button.primary{background:var(--ink);color:var(--panel);border-color:var(--ink);font-weight:600}
+.counter{font-variant-numeric:tabular-nums;font-size:14px;color:var(--muted);min-width:4.5em;text-align:center}
+.chip{display:inline-flex;gap:6px;align-items:center;background:transparent;font-size:13.5px;padding:5px 10px}
+.chip .tag{font-size:11px;font-weight:700;letter-spacing:.04em;color:var(--muted);text-transform:uppercase}
+.chip[aria-pressed="true"]{background:var(--blue-t);border-color:var(--blue);color:var(--ink)}
+.chip[aria-pressed="true"] .tag{color:var(--blue)}
+.chip::before{content:"";width:9px;height:9px;border-radius:50%;border:1.5px solid var(--muted)}
+.chip[aria-pressed="true"]::before{background:var(--blue);border-color:var(--blue)}
+.toggle{display:inline-flex;border:1px solid var(--rule);border-radius:7px;overflow:hidden}
+.toggle button{border:0;border-radius:0;background:var(--soft)}
+.toggle button[aria-pressed="true"]{background:var(--violet);color:var(--panel);font-weight:600}
+.toggle-label{font-size:13px;color:var(--muted);font-weight:600}
+
+.caption{font-size:17px;min-height:1.6em;padding:2px 4px;text-wrap:pretty}
+.caption b{font-weight:600}
+
+figure{margin:0;background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:10px;overflow-x:auto}
+figure svg{display:block;width:100%;height:auto;min-width:900px}
+figcaption{font-size:13px;color:var(--muted);padding:6px 6px 0}
+
+/* SVG styling (page-level CSS so both themes work) */
+svg text{font-family:var(--f-sans);fill:var(--ink)}
+.t-struct{font-size:17px;font-weight:600}
+.t-sub{font-size:14px;fill:var(--muted)}
+.t-spine{font-size:13px;fill:var(--muted);font-style:italic}
+.hand{font-family:var(--f-hand)!important;font-size:16px}
+.hand.b{font-size:18px}
+.hand.s{font-size:15px}
+.c-blue{fill:var(--blue)!important}.c-green{fill:var(--green)!important}.c-orange{fill:var(--orange)!important}
+.c-red{fill:var(--red)!important}.c-fraud{fill:var(--fraud)!important}.c-muted{fill:var(--muted)!important}.c-ink{fill:var(--ink)!important}.c-violet{fill:var(--violet)!important}
+.k-ink{stroke:var(--ink)}.k-blue{stroke:var(--blue)}.k-green{stroke:var(--green)}.k-orange{stroke:var(--orange)}.k-red{stroke:var(--red)}.k-fraud{stroke:var(--fraud)}.k-muted{stroke:var(--muted)}.k-violet{stroke:var(--violet)}
+.f-ink{fill:var(--ink)}.f-blue{fill:var(--blue)}.f-fraud{fill:var(--fraud)}.f-muted{fill:var(--muted)}.f-red{fill:var(--red)}.f-orange{fill:var(--orange)}.f-violet{fill:var(--violet)}.f-green{fill:var(--green)}
+.f-blue-t{fill:var(--blue-t)}.f-green-t{fill:var(--green-t)}.f-orange-t{fill:var(--orange-t)}.f-red-t{fill:var(--red-t)}.f-panel{fill:var(--panel)}
+.hatch-g{stroke:var(--green);stroke-width:1.4;opacity:.55}
+.hatch-r{stroke:var(--red);stroke-width:1.4;opacity:.55}
+.hole{fill:var(--panel);stroke-width:1.5;stroke-dasharray:3 3;transition:rx .35s ease}
+.arrow{fill:none;stroke-width:2.2}
+.fraud{stroke-dasharray:7 5}
+.spine{stroke:var(--muted);stroke-width:1.6;fill:none}
+.leader{stroke-width:1.3;fill:none}
+.box{fill:var(--panel);stroke:var(--rule);stroke-width:1.5}
+.pill{fill:var(--panel);stroke:var(--violet);stroke-width:1.5}
+.halo{paint-order:stroke;stroke:var(--panel);stroke-width:7px;stroke-linejoin:round}
+.halo tspan{paint-order:stroke;stroke:var(--panel);stroke-width:7px}
+
+/* Ch 11 public / private switch */
+svg:not(.private) .priv{display:none}
+svg.private .pub{display:none}
+.icfr-under,.icfr-hatch{transition:opacity .35s}
+svg.private .icfr-under{opacity:.35}
+svg.private .icfr-hatch{opacity:.4;stroke-dasharray:10 7}
+
+.layer{transition:opacity .35s ease,visibility .35s}
+.layer.off{opacity:0;visibility:hidden}
+.ms-off{display:none}
+svg.blank .lbl{display:none}
+@media (prefers-reduced-motion: reduce){.layer,.hole,.icfr-under,.icfr-hatch{transition:none}}
+
+.notes{display:grid;grid-template-columns:repeat(auto-fit,minmax(290px,1fr));gap:12px}
+.card{background:var(--panel);border:1px solid var(--rule);border-radius:10px;padding:14px 16px;min-width:0}
+.card h2{font-size:15px;margin:0 0 6px;font-weight:600;display:flex;gap:8px;align-items:baseline}
+.card h2 .tag{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700;white-space:nowrap}
+.card p{margin:0 0 8px}
+.card p:last-child{margin-bottom:0}
+.card dl{margin:0;display:grid;gap:6px}
+.card dt{font-weight:600}
+.card dd{margin:0 0 4px;color:var(--muted)}
+.card ol,.card ul{margin:0 0 8px;padding-left:20px}
+.card li{margin-bottom:2px}
+
+.arm-controls{display:grid;gap:8px;margin:8px 0 12px}
+.seg{display:grid;grid-template-columns:110px 1fr;align-items:center;gap:8px}
+.seg legend{display:none}
+.seg fieldset{border:0;margin:0;padding:0;display:flex}
+.seg label.opt{flex:1;position:relative}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg label.opt span{display:block;text-align:center;font-size:13px;padding:5px 4px;border:1px solid var(--rule);background:var(--soft);cursor:pointer}
+.seg label.opt:first-child span{border-radius:6px 0 0 6px}
+.seg label.opt:last-child span{border-radius:0 6px 6px 0}
+.seg input:checked + span{background:var(--ink);color:var(--panel);border-color:var(--ink);font-weight:600}
+.seg .name{font-size:13px;font-weight:600}
+.result{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}
+.result div{background:var(--soft);border-radius:8px;padding:8px 10px}
+.result small{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.result strong{font-size:18px}
+.meter{display:flex;gap:3px;margin-top:4px}
+.meter i{flex:1;height:6px;border-radius:3px;background:var(--rule)}
+.meter i.on{background:var(--red)}
+.hint{font-size:13px;color:var(--muted)}
+
+@media (max-width:700px){
+  .row .group + .group{border-left:0;padding-left:0}
+  h1{font-size:22px}
+  .caption{font-size:15px}
+}
+.plain{display:block;font-style:italic;color:var(--blue);font-size:13.5px;margin-top:3px}
+.card .plain-list{margin:2px 0 0;padding-left:18px;font-style:italic;color:var(--blue);font-size:13.5px}
+.card .plain-list li{margin:0}
+.credit{font-size:12.5px;color:var(--muted);border-top:1px solid var(--rule);padding-top:12px;margin-top:8px}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <h1>The Audit Map</h1>
+    <span class="eyebrow">Chapters 8–11</span>
+      <a class="home" href="../">← All diagrams</a>
+  </header>
+
+  <div class="bar" role="toolbar" aria-label="Diagram controls">
+    <div class="row">
+      <div class="group">
+        <button id="btn-start" class="primary">Start build</button>
+        <button id="btn-prev" aria-label="Previous step">◀ Back</button>
+        <span class="counter" id="counter" aria-live="polite"></span>
+        <button id="btn-next" aria-label="Next step">Next ▶</button>
+      </div>
+      <div class="group">
+        <button id="btn-all">Show everything</button>
+        <button id="btn-blank">Blank template</button>
+      </div>
+      <div class="group" id="entity-group">
+        <span class="toggle-label">Ch 11 client:</span>
+        <span class="toggle" role="group" aria-label="Public or private company">
+          <button id="ent-public" aria-pressed="true">Public</button>
+          <button id="ent-private" aria-pressed="false">Private</button>
+        </span>
+      </div>
+    </div>
+    <div class="group chips" id="chips" aria-label="Layers"></div>
+  </div>
+
+  <div class="caption" id="caption" aria-live="polite"></div>
+
+  <figure>
+<svg id="stack" viewBox="0 0 1400 910" role="img" aria-label="Layered diagram, bottom to top: economic transactions are recorded as journal entries, filtered by internal controls into the unaudited financial statements, then filtered by the audit into the audited financial statements. Errors and fraud are mostly caught by each filter; one slips through to the audited statements, which is audit risk. Chapter layers add more detail.">
+  <defs>
+    <marker id="m-ink" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="f-ink"/></marker>
+    <marker id="m-fraud" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="f-fraud"/></marker>
+    <marker id="m-muted" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="f-muted"/></marker>
+    <marker id="m-blue" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="f-blue"/></marker>
+    <marker id="m-red" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="f-red"/></marker>
+    <marker id="m-orange" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="f-orange"/></marker>
+    <marker id="m-violet" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" class="f-violet"/></marker>
+    <pattern id="hatch-g" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(40)"><line x1="0" y1="0" x2="0" y2="8" class="hatch-g"/></pattern>
+    <pattern id="hatch-r" width="8" height="8" patternUnits="userSpaceOnUse" patternTransform="rotate(-40)"><line x1="0" y1="0" x2="0" y2="8" class="hatch-r"/></pattern>
+  </defs>
+
+  <!-- ================= TIMELINE ROW (absolute coordinates) ================= -->
+
+  <!-- Ch 9 · Timeline -->
+  <g class="layer" data-layer="time">
+    <text class="t-spine" x="158" y="55" text-anchor="end" style="font-style:normal;font-weight:600;letter-spacing:.06em">TIMELINE</text>
+    <line x1="175" y1="50" x2="1385" y2="50" class="k-ink" stroke-width="1.6"/>
+    <g class="k-ink" stroke-width="1.6">
+      <line x1="300" y1="45" x2="300" y2="55"/><line x1="470" y1="45" x2="470" y2="55"/>
+      <line x1="790" y1="45" x2="790" y2="55"/><line x1="1000" y1="45" x2="1000" y2="55"/>
+    </g>
+    <line x1="850" y1="44" x2="850" y2="56" class="k-orange" stroke-width="2.4"/>
+    <path d="M300 45 v-6 h170 v6" fill="none" class="k-green" stroke-width="2"/>
+    <text x="300" y="15" class="hand c-green"><tspan class="b">Planning:</tspan> client acceptance · understanding the entity · risk assessment</text>
+    <path d="M790 42 v-7 h210 v7" fill="none" class="k-red" stroke-width="2"/>
+    <text x="895" y="24" text-anchor="middle" class="hand b c-red">Busy season</text>
+    <text x="300" y="70" class="t-sub" text-anchor="middle">Mar</text>
+    <text x="470" y="70" class="t-sub" text-anchor="middle">May</text>
+    <text x="790" y="70" class="t-sub" text-anchor="middle">12/31 YE</text>
+    <text x="1000" y="70" class="t-sub" text-anchor="middle">Feb</text>
+    <text x="850" y="87" text-anchor="middle" class="hand s c-orange">Jan 8 · unaudited F/S</text>
+    <text x="300" y="33" class="hand s c-blue">→ What are the odds the unaudited F/S will have a material misstatement?</text>
+  </g>
+
+
+
+  <!-- ================= STACK + OVERLAYS (shifted down under the timeline) ================= -->
+  <g transform="translate(0,90)">
+
+  <!-- Economic transactions -->
+  <g class="layer" data-layer="econ">
+    <path class="k-ink" fill="none" stroke-width="1.8" d="M175 738 q21.5 -10 43 0 t43 0 t43 0 t43 0 t43 0 t43 0 t43 0 t43 0 t43 0 t43 0 t43 0 t43 0"/>
+    <path class="k-ink" fill="none" stroke-width="1.8" d="M175 796 q21.5 -10 43 0 t43 0 t43 0 t43 0 t43 0 t43 0 t43 0 t43 0 t43 0 t43 0 t43 0 t43 0"/>
+    <text class="lbl t-struct" x="432" y="773" text-anchor="middle" style="font-size:19px">Economic transactions</text>
+  </g>
+
+  <!-- Journal entries -->
+  <g class="layer" data-layer="je">
+    <ellipse cx="432" cy="580" rx="258" ry="62" class="f-blue-t k-blue" stroke-width="2"/>
+    <text class="lbl t-struct c-blue" x="432" y="614" text-anchor="middle" style="font-size:19px">Journal entries</text>
+    <line class="spine" x1="640" y1="726" x2="640" y2="624" marker-end="url(#m-muted)"/>
+    <text class="lbl t-spine" x="648" y="684">recorded</text>
+  </g>
+
+  <!-- ICFR filter -->
+  <g class="layer" data-layer="icfr">
+    <rect x="175" y="410" width="515" height="56" rx="6" class="f-green-t icfr-under"/>
+    <rect x="175" y="410" width="515" height="56" rx="6" fill="url(#hatch-g)" class="k-green icfr-hatch" stroke-width="2"/>
+    <ellipse class="hole k-green h-icfr" cx="250" cy="438" rx="16" ry="14"/>
+    <ellipse class="hole k-green h-icfr" cx="315" cy="438" rx="16" ry="14"/>
+    <ellipse class="hole k-green h-icfr" cx="575" cy="438" rx="16" ry="14"/>
+    <line class="spine" x1="640" y1="545" x2="640" y2="472" marker-end="url(#m-muted)"/>
+    <text class="lbl t-spine" x="648" y="512">processed</text>
+  </g>
+
+  <!-- Unaudited F/S -->
+  <g class="layer" data-layer="unaud">
+    <rect x="175" y="310" width="515" height="50" rx="6" class="f-orange-t k-orange" stroke-width="2"/>
+    <line class="spine" x1="640" y1="408" x2="640" y2="365" marker-end="url(#m-muted)"/>
+    <text class="lbl t-spine" x="648" y="381">reported</text>
+  </g>
+
+  <!-- Errors & fraud: lower half (JE pool → controls → unaudited F/S) -->
+  <g class="layer" data-layer="msLow">
+    <g data-ms="A">
+      <line class="arrow k-ink" x1="250" y1="566" x2="250" y2="344" marker-end="url(#m-ink)"/>
+      <text class="lbl hand c-ink" x="257" y="514">error</text>
+      <rect x="236" y="326" width="28" height="14" rx="2" class="f-ink"/>
+    </g>
+    <g data-ms="B">
+      <line class="arrow k-fraud fraud" x1="315" y1="566" x2="315" y2="344" marker-end="url(#m-fraud)"/>
+      <text class="lbl hand c-fraud" x="322" y="514">fraud</text>
+      <rect x="301" y="326" width="28" height="14" rx="2" class="f-fraud"/>
+    </g>
+    <g data-ms="C">
+      <line class="arrow k-ink" x1="380" y1="566" x2="380" y2="476" marker-end="url(#m-ink)"/>
+      <path class="k-ink" stroke-width="2.6" d="M372 461l16 16M388 461l-16 16"/>
+      <text class="lbl hand c-ink" x="387" y="514">error</text>
+    </g>
+    <g data-ms="D">
+      <line class="arrow k-fraud fraud" x1="445" y1="566" x2="445" y2="476" marker-end="url(#m-fraud)"/>
+      <path class="k-fraud" stroke-width="2.6" d="M437 461l16 16M453 461l-16 16"/>
+      <text class="lbl hand c-fraud" x="452" y="514">fraud</text>
+    </g>
+    <g data-ms="E">
+      <line class="arrow k-ink" x1="510" y1="566" x2="510" y2="476" marker-end="url(#m-ink)"/>
+      <path class="k-ink" stroke-width="2.6" d="M502 461l16 16M518 461l-16 16"/>
+      <text class="lbl hand c-ink" x="517" y="514">error</text>
+    </g>
+    <g data-ms="F">
+      <line class="arrow k-ink" x1="575" y1="566" x2="575" y2="344" marker-end="url(#m-ink)"/>
+      <text class="lbl hand c-ink" x="582" y="514">error</text>
+      <rect x="561" y="326" width="28" height="14" rx="2" class="f-ink"/>
+    </g>
+    <text class="lbl hand c-orange" x="447" y="339" text-anchor="middle">← material misstatements →</text>
+  </g>
+
+  <!-- Audit filter -->
+  <g class="layer" data-layer="audit">
+    <rect x="175" y="206" width="515" height="56" rx="6" class="f-red-t"/>
+    <rect x="175" y="206" width="515" height="56" rx="6" fill="url(#hatch-r)" class="k-red" stroke-width="2"/>
+    <ellipse class="hole k-red h-audit" cx="440" cy="234" rx="9" ry="14"/>
+    <ellipse class="hole k-red h-audit" cx="575" cy="234" rx="9" ry="14"/>
+    <line class="spine" x1="640" y1="308" x2="640" y2="267" marker-end="url(#m-muted)"/>
+    <text class="lbl t-spine" x="648" y="292">audited</text>
+  </g>
+
+  <!-- Errors & fraud: upper half (unaudited F/S → audit) -->
+  <g class="layer" data-layer="msUp">
+    <g data-ms="A">
+      <line class="arrow k-ink" x1="250" y1="324" x2="250" y2="272" marker-end="url(#m-ink)"/>
+      <path class="k-ink" stroke-width="2.6" d="M242 257l16 16M258 257l-16 16"/>
+    </g>
+    <g data-ms="B">
+      <line class="arrow k-fraud fraud" x1="315" y1="324" x2="315" y2="272" marker-end="url(#m-fraud)"/>
+      <path class="k-fraud" stroke-width="2.6" d="M307 257l16 16M323 257l-16 16"/>
+    </g>
+    <g data-ms="F">
+      <line class="arrow k-ink" x1="575" y1="324" x2="575" y2="148" marker-end="url(#m-ink)"/>
+    </g>
+  </g>
+
+  <!-- Audited F/S -->
+  <g class="layer" data-layer="audited">
+    <rect x="175" y="108" width="515" height="50" rx="6" class="f-blue-t k-blue" stroke-width="2"/>
+    <text class="lbl t-sub" x="362" y="138" text-anchor="middle" style="font-size:13px">free of material misstatement · reasonable assurance</text>
+    <line class="spine" x1="640" y1="204" x2="640" y2="163" marker-end="url(#m-muted)"/>
+    <text class="lbl t-spine" x="648" y="188">opinion</text>
+  </g>
+
+  <g class="layer" data-layer="msTop">
+    <g data-ms="F">
+      <rect x="559" y="119" width="32" height="27" rx="2" fill="none" class="k-ink" stroke-width="1.8" stroke-dasharray="4 3"/>
+      <text class="lbl hand c-ink" x="598" y="138">undetected</text>
+    </g>
+  </g>
+
+  <!-- ============ OVERLAYS ============ -->
+
+  <!-- Ch 8 · Client business risk (right lane, lower) -->
+  <g class="layer" data-layer="biz">
+    <text class="hand b c-ink" x="724" y="414">Client business risk</text>
+    <text class="hand c-muted" x="724" y="432">risk the client fails at:</text>
+    <path class="leader k-ink" stroke-width="1.8" d="M706 412 H714 V640 H706 M714 526 H720"/>
+    <text class="hand c-ink" x="724" y="522">• reliable financial reporting</text>
+    <text class="hand c-muted" x="736" y="540">controls + journal entries:</text>
+    <text class="hand c-muted" x="736" y="557">how well are the F/S made?</text>
+    <text class="hand c-ink" x="724" y="652">* compliance with laws &amp; regs</text>
+    <text class="hand c-muted" x="736" y="669">applicable laws, e.g., FDA,</text>
+    <text class="hand c-muted" x="736" y="686">EPA, OSHA, IRS tax rules</text>
+    <path class="leader k-ink" d="M720 756 L696 758" marker-end="url(#m-ink)"/>
+    <text class="hand c-ink" x="724" y="761">• efficient &amp; effective</text>
+    <text class="hand c-ink" x="736" y="779">operations</text>
+  </g>
+
+  <!-- Ch 8 · Three risk definitions (right lane, upper) -->
+  <g class="layer" data-layer="defs">
+    <path class="leader k-blue" d="M720 116 L696 128" marker-end="url(#m-blue)"/>
+    <text class="hand b c-blue" x="724" y="121">Audit risk</text>
+    <text class="hand c-blue" x="724" y="139">chance the audited F/S still</text>
+    <text class="hand c-blue" x="724" y="156">contain a material misstatement;</text>
+    <text class="hand c-blue" x="724" y="173">every audit has some</text>
+
+    <path class="leader k-red" d="M720 214 L696 226" marker-end="url(#m-red)"/>
+    <text class="hand b c-red" x="724" y="219">Acceptable audit risk</text>
+    <text class="hand c-red" x="724" y="237">how willing we are to accept</text>
+    <text class="hand c-red" x="724" y="254">the F/S may still be misstated</text>
+    <text class="hand c-red" x="724" y="271">after the audit</text>
+
+    <path class="leader k-orange" d="M720 322 L696 330" marker-end="url(#m-orange)"/>
+    <text class="hand b c-orange" x="724" y="327">Risk of material misstatement</text>
+    <text class="hand c-orange" x="724" y="345">odds the unaudited F/S have</text>
+    <text class="hand c-orange" x="724" y="362">material fraud or error</text>
+  </g>
+
+  <!-- Ch 9 · Risk assessment procedures (R2) -->
+  <g class="layer" data-layer="rap">
+    <rect x="950" y="290" width="200" height="318" rx="8" class="box"/>
+    <path class="leader k-red" d="M948 300 C 850 292, 740 286, 698 312" marker-end="url(#m-red)"/>
+    <text class="hand b c-red" x="962" y="315">Risk assessment</text>
+    <text class="hand b c-red" x="962" y="334">procedures</text>
+    <text class="hand c-ink" x="962" y="362">1. Inquiry of client &amp; others</text>
+    <text class="hand c-muted" x="976" y="379">CEO, CFO, acct., sales</text>
+    <text class="hand c-ink" x="962" y="404">2. Analytical procedures</text>
+    <text class="hand c-muted" x="976" y="421">trends, year over year</text>
+    <text class="hand c-ink" x="962" y="446">3. Observation &amp; inspection</text>
+    <text class="hand c-muted" x="976" y="463">watch the process,</text>
+    <text class="hand c-muted" x="976" y="480">inspect the documents</text>
+    <text class="hand c-ink" x="962" y="505">4. Discussion</text>
+    <text class="hand c-muted" x="976" y="522">as an engagement team</text>
+    <text class="hand c-ink" x="962" y="547">5. Other</text>
+    <text class="hand c-muted" x="976" y="564">varies by client &amp; industry</text>
+    <text class="hand c-red" x="962" y="594">→ assess RoMM, plan audit</text>
+  </g>
+
+  <!-- Ch 9 · Audit risk model (left lane tags + R2 formula box) -->
+  <g class="layer" data-layer="arm">
+    <g text-anchor="end">
+      <text x="158" y="129" style="font-size:16px;font-weight:700" class="c-blue">AAR</text>
+      <text x="158" y="147" class="hand c-blue" text-anchor="end">firm decides</text>
+      <text x="158" y="230" style="font-size:16px;font-weight:700" class="c-red">PDR</text>
+      <text x="158" y="248" class="hand c-red" text-anchor="end">auditor controls</text>
+      <text x="158" y="331" style="font-size:16px;font-weight:700" class="c-orange">RoMM</text>
+      <text x="158" y="349" class="hand c-orange" text-anchor="end">= IR × CR</text>
+      <text x="158" y="434" style="font-size:16px;font-weight:700" class="c-green">CR</text>
+      <text x="158" y="452" class="hand c-green" text-anchor="end">how good are controls?</text>
+      <text x="158" y="576" style="font-size:16px;font-weight:700" class="c-blue">IR</text>
+      <text x="158" y="594" class="hand c-blue" text-anchor="end">odds misstatements exist</text>
+    </g>
+    <g stroke-width="1.4" fill="none">
+      <line x1="162" y1="133" x2="172" y2="133" class="k-blue"/>
+      <line x1="162" y1="234" x2="172" y2="234" class="k-red"/>
+      <line x1="162" y1="335" x2="172" y2="335" class="k-orange"/>
+      <line x1="162" y1="438" x2="172" y2="438" class="k-green"/>
+      <path d="M174 556 H166 V800 H174" class="k-blue"/>
+    </g>
+    <rect x="950" y="96" width="200" height="176" rx="8" class="box"/>
+    <text x="962" y="119" style="font-size:14px;font-weight:700">Audit risk model</text>
+    <text x="962" y="146" style="font-size:14px">AAR = IR × CR × PDR</text>
+    <text x="962" y="169" style="font-size:14px;font-weight:600">PDR = AAR ÷ (IR × CR)</text>
+    <text x="962" y="194" class="hand c-muted">PDR ↓  →  evidence ↑</text>
+    <line x1="962" y1="207" x2="1138" y2="207" class="k-muted" stroke-width="1" opacity=".5"/>
+    <text x="962" y="230" style="font-size:13px" class="c-muted">Current settings</text>
+    <text x="962" y="252" style="font-size:14px">PDR <tspan id="svg-pdr" font-weight="700" class="c-red">Low</tspan> · evidence <tspan id="svg-ev" font-weight="700" class="c-red">High</tspan></text>
+  </g>
+
+  <!-- Ch 10 · Fraud: management override + fraud triangle -->
+  <g class="layer" data-layer="ch10">
+    <path class="arrow k-fraud fraud" d="M232 552 C 192 546, 166 530, 166 500 L 166 380 C 166 358, 172 350, 180 346" marker-end="url(#m-fraud)"/>
+    <rect x="182" y="326" width="24" height="14" rx="2" class="f-fraud"/>
+    <line class="arrow k-fraud fraud" x1="194" y1="324" x2="194" y2="272" marker-end="url(#m-fraud)"/>
+    <path class="k-fraud" stroke-width="2.6" d="M186 257l16 16M202 257l-16 16"/>
+    <text class="hand s c-fraud" x="176" y="492">override</text>
+    <rect x="4" y="636" width="152" height="176" rx="8" class="box"/>
+    <text class="hand b c-fraud" x="14" y="658">Ch 10 · Fraud</text>
+    <text class="hand s c-ink" x="14" y="680">fraud triangle:</text>
+    <text class="hand s c-ink" x="14" y="697">• incentive / pressure</text>
+    <text class="hand s c-ink" x="14" y="714">• opportunity</text>
+    <text class="hand s c-ink" x="14" y="731">• rationalization</text>
+    <text class="hand s c-fraud" x="14" y="756">management override:</text>
+    <text class="hand s c-fraud" x="14" y="773">fraud that goes around</text>
+    <text class="hand s c-fraud" x="14" y="790">the controls</text>
+  </g>
+
+  <!-- Ch 11 · Public vs. private (ICFR label, second opinion, R3 box) -->
+  <g class="layer" data-layer="ch11">
+    <text class="hand s c-violet pub" x="690" y="402" text-anchor="end">SOX 404: required</text>
+    <text class="hand s c-violet priv" x="690" y="402" text-anchor="end">controls optional</text>
+    <text class="hand s c-violet pub" x="690" y="100" text-anchor="end">+ opinion on ICFR</text>
+    <rect x="1182" y="96" width="210" height="190" rx="8" class="box"/>
+    <text class="hand b c-violet" x="1194" y="119">Ch 11 · Public vs. private</text>
+    <g class="pub">
+      <text class="hand s c-ink" x="1194" y="143" style="font-weight:700">Public company</text>
+      <text class="hand s c-ink" x="1194" y="161">• ICFR required (SOX 404);</text>
+      <text class="hand s c-muted" x="1206" y="178">management's process</text>
+      <text class="hand s c-ink" x="1194" y="197">• auditor assesses CR, then</text>
+      <text class="hand s c-muted" x="1206" y="214">tests the controls (ToC)</text>
+      <text class="hand s c-ink" x="1194" y="233">• second opinion, on ICFR</text>
+      <text class="hand s c-muted" x="1206" y="250">integrated audit:</text>
+      <text class="hand s c-muted" x="1206" y="267">2 opinions</text>
+    </g>
+    <g class="priv">
+      <text class="hand s c-ink" x="1194" y="143" style="font-weight:700">Private company</text>
+      <text class="hand s c-ink" x="1194" y="161">• controls optional:</text>
+      <text class="hand s c-muted" x="1206" y="178">management's choice</text>
+      <text class="hand s c-ink" x="1194" y="197">• auditor still assesses CR</text>
+      <text class="hand s c-ink" x="1194" y="216">• no controls → CR = max</text>
+      <text class="hand s c-muted" x="1206" y="233">→ more planned evidence</text>
+      <text class="hand s c-ink" x="1194" y="252">• testing controls optional</text>
+      <text class="hand s c-muted" x="1206" y="269">(worth it to lower CR)</text>
+    </g>
+  </g>
+
+
+
+
+  <!-- Band titles drawn last so arrows pass behind them -->
+  <g class="layer" data-layer="audited"><text class="lbl halo t-struct c-blue" x="175" y="100">Audited F/S</text></g>
+  <g class="layer" data-layer="audit"><text class="lbl halo t-struct c-red" x="175" y="199">Audit of the F/S</text></g>
+  <g class="layer" data-layer="unaud"><text class="lbl halo t-struct c-orange" x="175" y="302">Unaudited F/S<tspan class="t-sub" font-weight="400"> · prepared by the client (CFO, CEO)</tspan></text></g>
+  <g class="layer" data-layer="icfr"><text class="lbl halo t-struct c-green" x="175" y="401">Internal controls over financial reporting</text></g>
+
+  </g>
+</svg>
+    <figcaption>Read bottom to top. Each filter has holes, so both controls and the audit give reasonable, not absolute, assurance. Arrow keys step through the build.</figcaption>
+  </figure>
+
+  <section class="notes" aria-label="Notes for the layers shown">
+    <article class="card" data-card="base">
+      <h2>Reading the picture</h2>
+      <p>Transactions are recorded as journal entries, run through the client's internal controls, and come out as the unaudited F/S. The audit is a second filter that produces the audited F/S.</p>
+      <p>Neither filter is perfect. Holes in the controls let misstatements reach the unaudited F/S; holes in the audit let a few reach the audited F/S.</p>
+    </article>
+
+    <article class="card" data-card="ms">
+      <h2>Errors &amp; fraud</h2>
+      <p><b>Error</b> is unintentional (solid arrows). <b>Fraud</b> is intentional (dashed arrows).</p>
+      <p>An ✕ marks a misstatement that was caught. One that reaches the audited F/S undetected is audit risk actually happening.</p>
+    </article>
+
+    <article class="card" data-card="biz">
+      <h2><span class="tag">Ch 8</span>Client business risk</h2>
+      <p>The risk that the client will fail to meet its objectives related to reliable financial reporting, efficient and effective operations, and compliance with laws and regulations.<span class="plain">In plain terms: how risky is the client? That affects acceptance and the whole audit plan.</span></p>
+    </article>
+
+    <article class="card" data-card="defs">
+      <h2><span class="tag">Ch 8</span>Three risks, three layers</h2>
+      <dl>
+        <dt>Risk of material misstatement</dt>
+        <dd>The risk that the financial statements contain a material misstatement due to fraud or error prior to the audit.<span class="plain">In plain terms: the odds that the F/S management hands us, before we audit, contain material fraud or error.</span></dd>
+        <dt>Acceptable audit risk</dt>
+        <dd>How willing the auditor is to accept that the F/S may be materially misstated after the audit is complete.<span class="plain">In plain terms: how much risk the firm will accept of signing off on F/S that are still materially wrong. The firm sets it.</span></dd>
+        <dt>Audit risk</dt>
+        <dd>The risk that the auditor fails to find material fraud or error, so the audited F/S still contain a material misstatement.<span class="plain">In plain terms: the chance we sign off and a material misstatement is still in there. Every audit has some.</span></dd>
+      </dl>
+    </article>
+
+    <article class="card" data-card="time">
+      <h2><span class="tag">Ch 9</span>When it happens</h2>
+      <p>Client acceptance, understanding the entity, and risk assessment happen in planning, months before the 12/31 year end.</p>
+      <p>The question planning answers: what are the odds the unaudited F/S will have a material misstatement? Busy season is when the planned work gets done.</p>
+    </article>
+
+    <article class="card" data-card="rap">
+      <h2><span class="tag">Ch 9</span>Risk assessment</h2>
+      <p><b>Procedures:</b></p>
+      <ol>
+        <li>Inquiries of management and others within the entity</li>
+        <li>Analytical procedures</li>
+        <li>Observation and inspection</li>
+        <li>Discussion among engagement team members</li>
+        <li>Other procedures (vary by client, firm, industry)</li>
+      </ol>
+      <p><b>What it covers:</b> understanding the entity (inherent risk), understanding the control environment (control risk), client acceptance (engagement risk), and setting acceptable audit risk.</p>
+      <p class="hint">Together these assess RoMM, which sets the nature, timing, and extent of further audit procedures.</p>
+    </article>
+
+    <article class="card" data-card="arm">
+      <h2><span class="tag">Ch 9</span>Try the audit risk model</h2>
+      <div class="arm-controls">
+        <div class="seg"><span class="name">Acceptable audit risk</span>
+          <fieldset><legend>Acceptable audit risk</legend>
+            <label class="opt"><input type="radio" name="aar" id="aar-L" value="L" checked><span>Low</span></label>
+            <label class="opt"><input type="radio" name="aar" id="aar-M" value="M"><span>Mod</span></label>
+            <label class="opt"><input type="radio" name="aar" id="aar-H" value="H"><span>High</span></label>
+          </fieldset></div>
+        <div class="seg"><span class="name">Inherent risk</span>
+          <fieldset><legend>Inherent risk</legend>
+            <label class="opt"><input type="radio" name="ir" id="ir-L" value="L"><span>Low</span></label>
+            <label class="opt"><input type="radio" name="ir" id="ir-M" value="M"><span>Mod</span></label>
+            <label class="opt"><input type="radio" name="ir" id="ir-H" value="H" checked><span>High</span></label>
+          </fieldset></div>
+        <div class="seg"><span class="name">Control risk</span>
+          <fieldset><legend>Control risk</legend>
+            <label class="opt"><input type="radio" name="cr" id="cr-L" value="L"><span>Low</span></label>
+            <label class="opt"><input type="radio" name="cr" id="cr-M" value="M" checked><span>Mod</span></label>
+            <label class="opt"><input type="radio" name="cr" id="cr-H" value="H"><span>High</span></label>
+          </fieldset></div>
+      </div>
+      <div class="result">
+        <div><small>Planned detection risk</small><strong id="out-pdr">Low</strong></div>
+        <div><small>Evidence needed</small><strong id="out-ev">High</strong><div class="meter" id="meter"><i></i><i></i><i></i></div></div>
+      </div>
+      <p class="hint">Watch the diagram: higher control risk widens the holes in ICFR, higher inherent risk adds misstatements, and a lower PDR shrinks the holes in the audit. Results match Table 9.3.</p>
+      <dl style="margin-top:10px">
+        <dt>Inherent risk</dt><dd>The auditor's assessment of the susceptibility of an assertion about a class of transactions, account balance, or disclosure to material misstatement, before considering the effectiveness of related internal controls.<span class="plain">In plain terms: how likely something is to be wrong in the first place, before any controls. Covers the journal entries and the transactions behind them.</span></dd>
+        <dt>Control risk</dt><dd>The auditor's assessment of the risk that a material misstatement could occur in an assertion and not be prevented or detected and corrected on a timely basis by the client's internal controls.<span class="plain">In plain terms: the chance the client's controls miss a material misstatement.</span></dd>
+        <dt>Planned detection risk</dt><dd>The risk that audit evidence for an audit objective will fail to detect misstatements exceeding performance materiality.<span class="plain">In plain terms: the chance our own procedures miss it. The only risk the auditor controls; lower PDR means more evidence.</span></dd>
+        <dt>Acceptable audit risk</dt><dd>A measure of how willing the auditor is to accept that the F/S may be materially misstated after the audit is completed and an unmodified opinion has been issued.<span class="plain">In plain terms: set by the firm; the target the whole model works back from.</span></dd>
+      </dl>
+    </article>
+
+    <article class="card" data-card="ch10">
+      <h2><span class="tag">Ch 10</span>Fraud</h2>
+      <p>Two kinds: <b>fraudulent financial reporting</b> and <b>misappropriation of assets</b>. The fraud triangle (incentives/pressures, opportunities, attitudes/rationalization) is usually all present.</p>
+      <p><b>Management override</b> skips the controls entirely (dashed path on the left), so the audit has to respond to it directly: examine journal entries, look for bias in estimates, and question unusual transactions.</p>
+      <p class="hint">Professional skepticism = a questioning mind + critical assessment of evidence.</p>
+    </article>
+
+    <article class="card" data-card="ch11">
+      <h2><span class="tag">Ch 11</span>Internal control: public vs. private</h2>
+      <p>Management's three objectives match Ch 8: reliable financial reporting, efficient and effective operations, and compliance with laws and regulations. The auditor's opinion covers financial reporting. Poor operations can still raise inherent risk.</p>
+      <p><b>Public:</b> SOX 404 requires management to maintain and report on ICFR. For accelerated filers the auditor also opines on ICFR, so an integrated audit produces two opinions.</p>
+      <p><b>Private:</b> the reporting framework is up to the business: U.S. GAAP, IFRS, or a special-purpose framework (tax basis, cash basis, AICPA's FRF for SMEs). Controls are management's choice too. The auditor still assesses control risk; with no controls, CR is set at max and planned evidence goes up. Use the Public/Private switch above the diagram.</p>
+      <p class="hint">COSO components: control environment, risk assessment, control activities, information &amp; communication, monitoring.</p>
+    </article>
+  </section>
+  <footer class="credit">© 2026 Paul Richardson, PhD, CPA. All rights reserved.<br>Chapter numbers refer to Arens, Elder, Beasley &amp; Hogan, <i>Auditing and Assurance Services</i> (18th ed., Pearson, 2024). Definitions adapted from that text and PCAOB auditing standards. “In plain terms” notes are study aids; know the formal definitions for exams.</footer>
+</div>
+
+<script>
+(function(){
+
+  const svg = document.getElementById('stack');
+  const layers = [...svg.querySelectorAll('.layer')];
+  const STACK = ['econ','je','icfr','unaud','audit','audited'];
+  const CHIPS = [
+    {k:'ms',     ch:0,  tag:'',          name:'Errors & fraud',      g:['msLow','msUp','msTop']},
+    {k:'biz',    ch:8,  tag:'Ch 8',      name:'Business risk',       g:['biz']},
+    {k:'defs',   ch:8,  tag:'Ch 8',      name:'Risk definitions',    g:['defs']},
+    {k:'time',   ch:9,  tag:'Ch 9',      name:'Timeline',            g:['time']},
+    {k:'rap',    ch:9,  tag:'Ch 9',      name:'Risk assessment',     g:['rap']},
+    {k:'arm',    ch:9,  tag:'Ch 9',      name:'Audit risk model',    g:['arm']},
+    {k:'ch10',   ch:10, tag:'Ch 10',     name:'Fraud',               g:['ch10']},
+    {k:'ch11',   ch:11, tag:'Ch 11',     name:'Public vs. private',  g:['ch11']}
+  ];
+  const STEPS = [
+    {ch:0, g:['econ'], t:'<b>Economic transactions.</b> The business sells, buys, pays, and borrows.'},
+    {ch:0, g:['je'], t:'<b>Journal entries.</b> Every transaction is recorded into a pool of journal entries. Some contain errors; a few are fraud.'},
+    {ch:0, g:['icfr'], t:'<b>Internal controls</b> over financial reporting filter the journal entries. The filter has holes.'},
+    {ch:0, g:['unaud'], t:'<b>Unaudited F/S.</b> What comes out of the filter is the financial statements management prepares.'},
+    {ch:0, g:['msLow'], t:'<b>Errors and fraud.</b> Controls catch most (✕). The ones that slip through become material misstatements in the unaudited F/S.'},
+    {ch:0, g:['audit','msUp'], t:'<b>The audit</b> is a second filter. Our procedures catch most of what controls missed.'},
+    {ch:0, g:['audited','msTop'], t:'<b>Audited F/S</b> carry reasonable assurance, not absolute. A misstatement can still get through: that is audit risk.'},
+    {ch:8, g:['biz'], t:'<b>Ch 8 · Client business risk:</b> the client could fail at reliable reporting, efficient operations, or compliance.'},
+    {ch:8, g:['defs'], t:'<b>Ch 8 · Three risks on three layers:</b> RoMM on the unaudited F/S, acceptable audit risk on the audit, audit risk on the audited F/S.'},
+    {ch:9, g:['time'], t:'<b>Ch 9 · Timeline:</b> planning and risk assessment happen months before year end and busy season.'},
+    {ch:9, g:['rap'], t:'<b>Ch 9 · Risk assessment procedures</b> are how we size up RoMM before we design the audit.'},
+    {ch:9, g:['arm'], t:'<b>Ch 9 · Audit risk model:</b> IR and CR set RoMM, the firm sets AAR, and we solve for PDR, which drives how much evidence we need.'},
+    {ch:10, g:['ch10'], t:'<b>Ch 10 · Fraud:</b> incentive, opportunity, rationalization. Management override goes around the controls, so the audit has to respond to it directly.'},
+    {ch:11, g:['ch11'], t:'<b>Ch 11 · Public vs. private:</b> SOX 404 makes ICFR required for public companies, and the auditor gives a second opinion on it. Flip the switch to see a private company.'}
+  ];
+  const ALLOWED = new Set(STEPS.flatMap(s => s.g).concat(['msLow','msUp','msTop']));
+  const LAST = STEPS.length - 1;
+  let vis = new Set(), step = LAST, blank = false, entity = 'public';
+
+  const $ = id => document.getElementById(id);
+  const chipBox = $('chips');
+  CHIPS.forEach(c => {
+    const b = document.createElement('button');
+    b.className = 'chip'; b.dataset.chip = c.k; b.setAttribute('aria-pressed','true');
+    b.innerHTML = (c.tag ? '<span class="tag">' + c.tag + '</span>' : '') + c.name;
+    chipBox.appendChild(b);
+  });
+  const chips = [...chipBox.children];
+  const CH = Object.fromEntries(CHIPS.map(c => [c.k, c.g]));
+  const cards = [...document.querySelectorAll('.card')];
+  // hide cards for chapters beyond the cutoff
+  cards.forEach(c => { const k = c.dataset.card; if (k !== 'base' && !CH[k]) c.remove(); });
+  const liveCards = [...document.querySelectorAll('.card')];
+
+  function setStep(i){
+    step = Math.max(0, Math.min(LAST, i)); blank = false;
+    vis = new Set(STEPS.slice(0, step + 1).flatMap(s => s.g));
+    render();
+  }
+  function render(){
+    layers.forEach(el => el.classList.toggle('off', !vis.has(el.dataset.layer) || !ALLOWED.has(el.dataset.layer)));
+    svg.classList.toggle('blank', blank);
+    svg.classList.toggle('private', entity === 'private' && vis.has('ch11'));
+    chips.forEach(c => c.setAttribute('aria-pressed', CH[c.dataset.chip].every(g => vis.has(g)) ? 'true' : 'false'));
+    liveCards.forEach(c => {
+      const k = c.dataset.card;
+      c.hidden = blank || (k !== 'base' && !CH[k].every(g => vis.has(g)));
+    });
+    $('entity-group').hidden = !vis.has('ch11') || blank;
+    $('ent-public').setAttribute('aria-pressed', entity === 'public');
+    $('ent-private').setAttribute('aria-pressed', entity === 'private');
+    $('counter').textContent = step === null ? '–' : (step + 1) + ' / ' + STEPS.length;
+    $('btn-prev').disabled = step === 0;
+    $('btn-next').disabled = step === LAST;
+    $('caption').innerHTML = blank
+      ? '<b>Blank template.</b> Just the shapes, ready to draw over.'
+      : step === null
+        ? '<b>Custom view.</b> Switch layers with the buttons above, or press Start build to draw it in order.'
+        : (step === LAST ? '<b>Everything on.</b> ' + STEPS[step].t.replace(/<\/?b>/g,'') : STEPS[step].t);
+  }
+
+  $('btn-start').addEventListener('click', () => setStep(0));
+  $('btn-prev').addEventListener('click', () => setStep(step === null ? LAST : step - 1));
+  $('btn-next').addEventListener('click', () => setStep(step === null ? 0 : step + 1));
+  $('btn-all').addEventListener('click', () => setStep(LAST));
+  $('btn-blank').addEventListener('click', () => { blank = true; step = null; vis = new Set(STACK); render(); });
+  chips.forEach(c => c.addEventListener('click', () => {
+    const groups = CH[c.dataset.chip];
+    const on = groups.every(g => vis.has(g));
+    blank = false; step = null;
+    STACK.forEach(g => vis.add(g));
+    groups.forEach(g => on ? vis.delete(g) : vis.add(g));
+    render();
+  }));
+  function setEntity(e){
+    entity = e;
+    // Ch 11: no controls at a private client → control risk at max
+    const cr = document.getElementById(e === 'private' ? 'cr-H' : 'cr-M');
+    cr.checked = true; updateARM(); render();
+  }
+  $('ent-public').addEventListener('click', () => setEntity('public'));
+  $('ent-private').addEventListener('click', () => setEntity('private'));
+  document.addEventListener('keydown', e => {
+    if (e.target.closest('input, select, textarea')) return;
+    if (e.key === 'ArrowRight' || e.key === 'PageDown') { e.preventDefault(); setStep(step === null ? 0 : step + 1); }
+    if (e.key === 'ArrowLeft' || e.key === 'PageUp') { e.preventDefault(); setStep(step === null ? LAST : step - 1); }
+  });
+
+  // Audit risk model: PDR = AAR / (IR x CR), qualitative levels calibrated to reproduce Table 9.3
+  const RISK = {L:.3, M:.6, H:1}, AAR = {L:.02, M:.05, H:.10};
+  const NAME = {L:'Low', M:'Moderate', H:'High'};
+  const HOLE = {L:8, M:16, H:25};
+  const MS_BY_IR = {L:['C','F'], M:['A','C','D','F'], H:['A','B','C','D','E','F']};
+  function val(n){ return document.querySelector('input[name="'+n+'"]:checked').value; }
+  function updateARM(){
+    const a = val('aar'), ir = val('ir'), cr = val('cr');
+    const p = AAR[a] / (RISK[ir] * RISK[cr]);
+    const pdr = p < .1 ? 'L' : p < .6 ? 'M' : 'H';
+    const ev = {L:'H', M:'M', H:'L'}[pdr];
+    $('out-pdr').textContent = NAME[pdr]; $('out-ev').textContent = NAME[ev];
+    $('svg-pdr').textContent = pdr === 'M' ? 'Mod' : NAME[pdr];
+    $('svg-ev').textContent = ev === 'M' ? 'Mod' : NAME[ev];
+    [...$('meter').children].forEach((m, i) => m.classList.toggle('on', i < {L:1, M:2, H:3}[ev]));
+    svg.querySelectorAll('.h-icfr').forEach(h => h.setAttribute('rx', HOLE[cr]));
+    svg.querySelectorAll('.h-audit').forEach(h => h.setAttribute('rx', HOLE[pdr]));
+    const show = MS_BY_IR[ir];
+    svg.querySelectorAll('[data-ms]').forEach(g => g.classList.toggle('ms-off', !show.includes(g.dataset.ms)));
+  }
+  document.querySelectorAll('.arm-controls input').forEach(i => i.addEventListener('change', updateARM));
+
+  updateARM();
+  setStep(LAST);
+})();
+</script>
+
+</body>
+</html>

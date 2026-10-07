@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Conceptual Audit Diagrams</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Patrick+Hand&display=swap">
+<style>
+/* Layout: header → list of diagrams → credit. */
+:root{
+  --bg:#f4f6f9; --panel:#ffffff; --ink:#1b1e27; --muted:#626a79; --rule:#dce1e8; --soft:#eef1f5;
+  --blue:#1f45c4; --blue-t:#e7edfc; --green:#23803a; --orange:#cf5f0e; --red:#c42b2b;
+  --f-sans:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-hand:'Patrick Hand','Comic Neue','Segoe Print','Bradley Hand',cursive;
+}
+@media (prefers-color-scheme: dark){:root{
+  --bg:#12151c; --panel:#1a1e27; --ink:#e7e9ee; --muted:#9ca3b2; --rule:#2c3340; --soft:#232834;
+  --blue:#8ea9ff; --blue-t:#1c2546; --green:#6cc77f; --orange:#f3a05c; --red:#ff8080; color-scheme:dark}}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:var(--f-sans);font-size:15.5px;line-height:1.5}
+.wrap{max-width:860px;margin:0 auto;padding:32px 16px 48px;display:grid;gap:18px}
+h1{font-size:30px;line-height:1.1;margin:0;letter-spacing:-.01em}
+.sub{margin:4px 0 0;color:var(--muted)}
+.hand{font-family:var(--f-hand);font-size:21px;color:var(--blue);margin:0}
+ol{list-style:none;margin:0;padding:0;display:grid;gap:10px}
+li a{display:grid;grid-template-columns:auto 1fr auto;gap:4px 16px;align-items:center;background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:14px 16px;color:inherit;text-decoration:none}
+li a:hover{border-color:var(--blue)}
+li a:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.ch{font-size:11.5px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);min-width:76px}
+.name{font-weight:700;font-size:17px}
+.desc{grid-column:2;color:var(--muted);font-size:14.5px}
+.go{color:var(--blue);font-weight:600;font-size:14px;white-space:nowrap}
+.credit{font-size:12.5px;color:var(--muted);border-top:1px solid var(--rule);padding-top:12px}
+@media (max-width:560px){li a{grid-template-columns:1fr}.desc{grid-column:1}.ch{min-width:0}h1{font-size:24px}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <h1>Conceptual Audit Diagrams</h1>
+    <p class="sub">Auditing · Paul Richardson, PhD, CPA</p>
+  </header>
+  <p class="hand">Interactive diagrams of core auditing concepts</p>
+  <p class="sub" style="margin:0;font-size:14px">Chapter numbers follow Arens, Elder, Beasley &amp; Hogan, <i>Auditing and Assurance Services</i>, 18th edition.</p>
+  <ol id="list">
+    <li><a href="audit-map/"><span class="ch">Ch 8–11</span><span class="name">The Audit Map</span><span class="go">Open →</span><span class="desc">Transactions → journal entries → controls → F/S → audit. Layers build chapter by chapter.</span></a></li>
+  </ol>
+  <footer class="credit">© 2026 Paul Richardson, PhD, CPA. All rights reserved.<br>Chapter numbers refer to Arens, Elder, Beasley &amp; Hogan, <i>Auditing and Assurance Services</i> (18th ed., Pearson, 2024). Definitions adapted from that text and PCAOB auditing standards.</footer>
+</div>
+</body>
+</html>
