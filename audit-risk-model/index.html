@@ -1,0 +1,380 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+.home{color:var(--blue);font-size:13px;font-weight:600;text-decoration:none;margin-left:auto}
+.home:hover{text-decoration:underline}
+</style>
+<title>Audit Risk Model</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Patrick+Hand&display=swap">
+<style>
+/* Layout: the equation up top → a Low/Mod/High calculator with example clients → what moves each risk (clickable factors feed the calculator)
+   → solve with numbers → how each risk moves evidence → exam traps. Same marker palette and type as the other pages:
+   AAR violet (firm decides), IR blue, CR green, PDR red (auditor solves for), evidence ink. */
+:root{
+  --bg:#f4f6f9; --panel:#ffffff; --ink:#1b1e27; --muted:#626a79; --rule:#dce1e8; --soft:#eef1f5;
+  --blue:#1f45c4; --blue-t:#e7edfc; --green:#23803a; --green-t:#e4f2e7;
+  --orange:#cf5f0e; --orange-t:#fcefe2; --red:#c42b2b; --red-t:#fbe8e8; --violet:#5b44c2; --violet-t:#efecfb;
+  --f-sans:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-hand:'Patrick Hand','Comic Neue','Segoe Print','Bradley Hand',cursive;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12151c; --panel:#1a1e27; --ink:#e7e9ee; --muted:#9ca3b2; --rule:#2c3340; --soft:#232834;
+  --blue:#8ea9ff; --blue-t:#1c2546; --green:#6cc77f; --green-t:#15301d;
+  --orange:#f3a05c; --orange-t:#3a2614; --red:#ff8080; --red-t:#3c1b1d; --violet:#b6a4ff; --violet-t:#262046; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12151c; --panel:#1a1e27; --ink:#e7e9ee; --muted:#9ca3b2; --rule:#2c3340; --soft:#232834;
+  --blue:#8ea9ff; --blue-t:#1c2546; --green:#6cc77f; --green-t:#15301d;
+  --orange:#f3a05c; --orange-t:#3a2614; --red:#ff8080; --red-t:#3c1b1d; --violet:#b6a4ff; --violet-t:#262046; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-sans);font-size:15.5px;line-height:1.5}
+.wrap{max-width:1080px;margin:0 auto;padding:20px 16px 56px;display:grid;gap:16px}
+.wrap>*,section.step>*{min-width:0}
+header{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px}
+h1{font-size:26px;line-height:1.15;margin:0;font-weight:700;letter-spacing:-.01em}
+h2{font-size:19px;margin:0;text-wrap:balance}
+h3{font-size:16px;margin:0}
+p{margin:0}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.lede{color:var(--muted);max-width:72ch}
+.muted{color:var(--muted)}
+.hand{font-family:var(--f-hand)}
+section.step{background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:18px 20px;display:grid;gap:12px}
+.step-head{display:flex;gap:12px;align-items:baseline;flex-wrap:wrap}
+.step-head .tag{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.c-aar{color:var(--violet)}.c-ir{color:var(--blue)}.c-cr{color:var(--green)}.c-pdr{color:var(--red)}
+
+/* equation */
+.eq{display:flex;flex-wrap:wrap;align-items:stretch;gap:8px;font-variant-numeric:tabular-nums}
+.eq .term{border:1.5px solid;border-radius:10px;padding:8px 12px;min-width:120px;flex:1 1 120px}
+.eq .term b{display:block;font-size:22px;line-height:1.1}
+.eq .term small{display:block;font-size:12.5px;color:var(--muted)}
+.eq .op{align-self:center;font-size:24px;color:var(--muted);font-weight:600}
+.t-aar{border-color:var(--violet);background:var(--violet-t)}.t-aar b{color:var(--violet)}
+.t-ir{border-color:var(--blue);background:var(--blue-t)}.t-ir b{color:var(--blue)}
+.t-cr{border-color:var(--green);background:var(--green-t)}.t-cr b{color:var(--green)}
+.t-pdr{border-color:var(--red);background:var(--red-t)}.t-pdr b{color:var(--red)}
+.solved{font-size:17px;font-weight:600}
+.note{font-family:var(--f-hand);font-size:19px;color:var(--blue)}
+
+/* calculator */
+.calc{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:16px;align-items:start}
+@media (max-width:760px){.calc{grid-template-columns:1fr}}
+.controls{display:grid;gap:10px}
+.seg{display:grid;grid-template-columns:150px minmax(0,1fr);align-items:center;gap:8px}
+@media (max-width:420px){.seg{grid-template-columns:1fr}}
+.seg .name{font-size:14px;font-weight:700}
+.seg .name small{display:block;font-weight:400;color:var(--muted);font-size:12px}
+.seg fieldset{border:0;margin:0;padding:0;display:flex}
+.seg legend{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+.seg label{flex:1;position:relative}
+.seg input{position:absolute;opacity:0;pointer-events:none}
+.seg label span{display:block;text-align:center;font-size:14px;padding:6px 4px;border:1px solid var(--rule);background:var(--soft);cursor:pointer}
+.seg label:first-of-type span{border-radius:7px 0 0 7px}
+.seg label:last-of-type span{border-radius:0 7px 7px 0}
+.seg input:checked + span{background:var(--ink);color:var(--panel);border-color:var(--ink);font-weight:600}
+.seg input:focus-visible + span{outline:2px solid var(--blue);outline-offset:1px}
+.seg.flash label span{animation:flash .9s ease}
+@keyframes flash{0%{box-shadow:0 0 0 3px var(--orange)}100%{box-shadow:0 0 0 0 transparent}}
+@media (prefers-reduced-motion: reduce){.seg.flash label span{animation:none}}
+.out{display:grid;gap:10px}
+.boxes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.boxes div{background:var(--soft);border-radius:8px;padding:8px 10px}
+.boxes small{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.boxes strong{font-size:20px}
+#o-pdr{color:var(--red)}
+.meter{display:flex;gap:4px;margin-top:6px}
+.meter i{flex:1;height:6px;border-radius:3px;background:var(--rule)}
+.meter i.on{background:var(--red)}
+.why{background:var(--violet-t);border-radius:8px;padding:10px 12px;font-size:14.5px}
+.why ol{margin:4px 0 0;padding-left:20px;display:grid;gap:3px}
+.illus{font-size:13px;color:var(--muted);font-variant-numeric:tabular-nums}
+.presets{display:flex;flex-wrap:wrap;gap:8px}
+.presets small{flex-basis:100%;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+button{font:inherit;font-size:14px;color:var(--ink);background:var(--soft);border:1px solid var(--rule);border-radius:999px;padding:5px 12px;cursor:pointer;text-align:left}
+button:hover{border-color:var(--muted)}
+button:focus-visible{outline:2px solid var(--blue);outline-offset:1px}
+button[aria-pressed="true"]{background:var(--ink);color:var(--panel);border-color:var(--ink)}
+
+/* factors */
+.grid2{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (max-width:760px){.grid2{grid-template-columns:1fr}}
+.risk{border:1px solid var(--rule);border-top:4px solid;border-radius:10px;padding:12px 14px;display:grid;gap:8px;align-content:start}
+.risk.aar{border-top-color:var(--violet)}.risk.ir{border-top-color:var(--blue)}.risk.cr{border-top-color:var(--green)}.risk.pdr{border-top-color:var(--red)}
+.risk .who{font-size:12px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:var(--muted)}
+.risk ul{margin:0;padding:0;list-style:none;display:grid;gap:6px}
+.risk li{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:4px 10px;align-items:start;font-size:14.5px;border-bottom:1px dashed var(--rule);padding-bottom:6px}
+.risk li:last-child{border-bottom:0;padding-bottom:0}
+.risk li .ex{grid-column:1;font-size:13px;color:var(--muted)}
+.risk li button{grid-row:1 / span 2;grid-column:2;font-size:12.5px;padding:3px 10px;white-space:nowrap}
+.dir{font-weight:700;white-space:nowrap}
+.big-arrow{font-size:14px;background:var(--soft);border-radius:8px;padding:8px 10px}
+
+/* numbers */
+.nums{display:flex;flex-wrap:wrap;gap:10px;align-items:end}
+.nums label{display:grid;gap:3px;font-size:13px;font-weight:700}
+.nums input{font:inherit;font-variant-numeric:tabular-nums;width:110px;text-align:right;padding:5px 8px;border:1px solid var(--rule);border-radius:7px;background:var(--soft);color:var(--ink)}
+.nums input:focus-visible{outline:2px solid var(--blue);outline-offset:1px}
+.work{background:var(--soft);border-radius:8px;padding:10px 12px;font-variant-numeric:tabular-nums;display:grid;gap:4px}
+.work b{font-size:18px}
+
+/* tables, terms */
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:520px}
+th,td{padding:7px 10px;text-align:left;border-bottom:1px solid var(--rule);vertical-align:top}
+th{font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.up,.down{color:var(--ink);font-weight:700;font-size:17px}
+.terms{border:1px solid var(--rule);border-radius:8px;padding:8px 14px}
+.terms summary{cursor:pointer;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.terms dl{margin:8px 0 2px;display:grid;gap:10px}
+.terms dt{font-weight:700}
+.terms dd{margin:0}
+.plain{display:block;font-style:italic;color:var(--blue);font-size:14px;margin-top:3px}
+.terms .src{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+.traps{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+.traps div{border-left:3px solid var(--rule);padding:2px 10px;font-size:14.5px}
+.traps b{display:block}
+.credit{font-size:12.5px;color:var(--muted);border-top:1px solid var(--rule);padding-top:12px;margin-top:8px}
+@media (max-width:640px){h1{font-size:22px}section.step{padding:14px}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <h1>Audit Risk Model</h1>
+    <span class="eyebrow">Chapter 9</span>
+    <a class="home" href="../">← All diagrams</a>
+  </header>
+  <p class="lede">How much evidence does the audit need? The audit risk model answers that in planning. Pick the risks, see what happens to planned detection risk, and learn what moves each one.</p>
+
+  <!-- THE MODEL -->
+  <section class="step" id="model">
+    <div class="step-head"><h2>The model</h2></div>
+    <div class="eq" aria-label="Acceptable audit risk equals inherent risk times control risk times planned detection risk">
+      <div class="term t-aar"><b>AAR</b><small>Acceptable audit risk</small><small>the firm decides</small></div>
+      <span class="op">=</span>
+      <div class="term t-ir"><b>IR</b><small>Inherent risk</small><small>the auditor assesses</small></div>
+      <span class="op">×</span>
+      <div class="term t-cr"><b>CR</b><small>Control risk</small><small>the auditor assesses</small></div>
+      <span class="op">×</span>
+      <div class="term t-pdr"><b>PDR</b><small>Planned detection risk</small><small>the auditor solves for</small></div>
+    </div>
+    <p class="solved">Solve for the one the auditor controls: <span class="c-pdr">PDR</span> = <span class="c-aar">AAR</span> ÷ (<span class="c-ir">IR</span> × <span class="c-cr">CR</span>)</p>
+    <p class="note">IR × CR = the risk of material misstatement (RoMM). It exists before the audit starts; the auditor can only assess it. PDR is solved from the other three: lower PDR → more evidence.</p>
+    <details class="terms" open><summary>Key terms</summary><dl>
+      <dt class="c-aar">Acceptable audit risk</dt><dd>Acceptable audit risk is a measure of how willing the auditor is to accept that the financial statements may be materially misstated after the audit is completed and an unmodified opinion has been issued.<span class="plain">In plain terms: how much risk the firm will accept of signing off on F/S that are still materially wrong. The firm sets it; the whole model works back from it.</span><span class="src">Source: Arens et al., Ch. 9 (exact wording)</span></dd>
+      <dt class="c-ir">Inherent risk</dt><dd>Inherent risk measures the auditor&rsquo;s assessment of the susceptibility of an assertion about a class of transactions, account balance, or disclosure to material misstatement, before considering the effectiveness of related internal controls.<span class="plain">In plain terms: how likely something is to be wrong in the first place, before any controls.</span><span class="src">Source: Arens et al., Ch. 9 (exact wording)</span></dd>
+      <dt class="c-cr">Control risk</dt><dd>Control risk measures the auditor&rsquo;s assessment of the risk that a material misstatement could occur in an assertion and not be prevented or detected and corrected on a timely basis by the client&rsquo;s internal controls.<span class="plain">In plain terms: the chance the client&rsquo;s controls miss a material misstatement.</span><span class="src">Source: Arens et al., Ch. 9 (exact wording)</span></dd>
+      <dt class="c-pdr">Planned detection risk</dt><dd>Planned detection risk is the risk that audit evidence for an audit objective will fail to detect misstatements exceeding performance materiality.<span class="plain">In plain terms: the chance our own procedures miss it. Lower PDR means more evidence.</span><span class="src">Source: Arens et al., Ch. 9 (exact wording)</span></dd>
+      <dt>Risk of material misstatement</dt><dd>The risk of material misstatement is the risk that the financial statements contain a material misstatement due to fraud or error prior to the audit.<span class="plain">In plain terms: the odds the F/S management hands the auditor already contain a material misstatement. In the model, RoMM = IR × CR.</span><span class="src">Source: Arens et al., Ch. 8 (exact wording)</span></dd>
+      <dt>Audit risk</dt><dd>The risk that the auditor will conclude after conducting an adequate audit that the financial statements are fairly stated and an unmodified opinion can therefore be issued when, in fact, they are materially misstated.<span class="plain">In plain terms: the chance the auditor signs off and a material misstatement is still in there. Acceptable audit risk is how much of this the firm is willing to accept.</span><span class="src">Source: Arens et al., glossary (exact wording)</span></dd>
+    </dl></details>
+  </section>
+
+  <!-- CALCULATOR -->
+  <section class="step" id="try">
+    <div class="step-head"><h2>Try it</h2><span class="tag">Low · Mod · High</span></div>
+    <div class="presets" role="group" aria-label="Example clients">
+      <small>Start from an example client</small>
+      <button type="button" data-p="H,L,L">Repeat private client, simple business, tested controls</button>
+      <button type="button" data-p="L,L,L">Same client, but it&rsquo;s going public next year</button>
+      <button type="button" data-p="M,M,M">A typical client</button>
+      <button type="button" data-p="M,H,L">Strong controls, but complex estimates</button>
+      <button type="button" data-p="L,H,H">First-year audit, weak controls, loan covenants close to breach</button>
+    </div>
+    <div class="calc">
+      <div class="controls">
+        <div class="seg" id="seg-aar"><span class="name c-aar">Acceptable audit risk<small>firm decides</small></span>
+          <fieldset><legend>Acceptable audit risk</legend>
+            <label><input type="radio" name="aar" id="aar-L" value="L"><span>Low</span></label>
+            <label><input type="radio" name="aar" id="aar-M" value="M" checked><span>Mod</span></label>
+            <label><input type="radio" name="aar" id="aar-H" value="H"><span>High</span></label>
+          </fieldset></div>
+        <div class="seg" id="seg-ir"><span class="name c-ir">Inherent risk<small>auditor assesses</small></span>
+          <fieldset><legend>Inherent risk</legend>
+            <label><input type="radio" name="ir" id="ir-L" value="L"><span>Low</span></label>
+            <label><input type="radio" name="ir" id="ir-M" value="M" checked><span>Mod</span></label>
+            <label><input type="radio" name="ir" id="ir-H" value="H"><span>High</span></label>
+          </fieldset></div>
+        <div class="seg" id="seg-cr"><span class="name c-cr">Control risk<small>auditor assesses</small></span>
+          <fieldset><legend>Control risk</legend>
+            <label><input type="radio" name="cr" id="cr-L" value="L"><span>Low</span></label>
+            <label><input type="radio" name="cr" id="cr-M" value="M" checked><span>Mod</span></label>
+            <label><input type="radio" name="cr" id="cr-H" value="H"><span>High</span></label>
+          </fieldset></div>
+        <p class="illus" id="illus"></p>
+      </div>
+      <div class="out" aria-live="polite">
+        <div class="boxes">
+          <div><small>RoMM (IR × CR)</small><strong id="o-romm"></strong></div>
+          <div><small>Planned detection risk</small><strong id="o-pdr"></strong></div>
+          <div><small>Evidence needed</small><strong id="o-ev"></strong><div class="meter" id="meter"><i></i><i></i><i></i></div></div>
+        </div>
+        <div class="why" id="why"></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHAT MOVES EACH RISK -->
+  <section class="step" id="factors">
+    <div class="step-head"><h2>What moves each risk</h2></div>
+    <p class="muted">Click <b>Try</b> on any factor to set that risk in the calculator above.</p>
+    <div class="grid2">
+      <div class="risk aar">
+        <span class="who">Acceptable audit risk · the firm decides</span>
+        <h3 class="c-aar">The more is riding on the audit, the lower the firm sets AAR</h3>
+        <ul>
+          <li><span><b>External users rely heavily on the F/S</b> <span class="dir c-aar">→ AAR ↓</span></span><span class="ex">Signs: a large company, widely held (public), large amounts of debt.</span><button type="button" data-set="aar:L">Try</button></li>
+          <li><span><b>The client may have financial trouble after the report is issued</b> <span class="dir c-aar">→ AAR ↓</span></span><span class="ex">Signs: weak liquidity, recent losses, growth financed with debt, a risky industry, weak management.</span><button type="button" data-set="aar:L">Try</button></li>
+          <li><span><b>Management&rsquo;s integrity is questionable</b> <span class="dir c-aar">→ AAR ↓</span></span><span class="ex">If the firm takes the client at all, it accepts less risk and gathers more evidence.</span><button type="button" data-set="aar:L">Try</button></li>
+          <li><span><b>Few outside users, healthy finances, honest management</b> <span class="dir c-aar">→ AAR ↑</span></span><span class="ex">The firm can accept more risk, so the audit needs less evidence.</span><button type="button" data-set="aar:H">Try</button></li>
+        </ul>
+      </div>
+      <div class="risk ir">
+        <span class="who">Inherent risk · the auditor assesses</span>
+        <h3 class="c-ir">The more room for error before any controls, the higher IR</h3>
+        <p class="muted" style="font-size:14px">Such assessments are typically based on discussions with management, knowledge of the company, and results in audits of previous years. <span style="font-size:12px">(Arens et al., Ch. 9)</span></p>
+        <ul>
+          <li><span><b>Nature of the client&rsquo;s business</b> <span class="dir c-ir">→ IR ↑</span></span><span class="ex">Fast-changing products, inventory that goes obsolete, a volatile industry.</span><button type="button" data-set="ir:H">Try</button></li>
+          <li><span><b>Misstatements in prior audits</b> <span class="dir c-ir">→ IR ↑</span></span><span class="ex">Errors found last year tend to show up again.</span><button type="button" data-set="ir:H">Try</button></li>
+          <li><span><b>First-year (initial) engagement</b> <span class="dir c-ir">→ IR ↑</span></span><span class="ex">No prior-year audit experience with this client.</span><button type="button" data-set="ir:H">Try</button></li>
+          <li><span><b>Related parties and nonroutine transactions</b> <span class="dir c-ir">→ IR ↑</span></span><span class="ex">Unusual, one-off, or non-arm&rsquo;s-length deals are easy to get wrong.</span><button type="button" data-set="ir:H">Try</button></li>
+          <li><span><b>Judgment needed to record the amount</b> <span class="dir c-ir">→ IR ↑</span></span><span class="ex">Estimates such as the allowance for doubtful accounts, warranties, goodwill.</span><button type="button" data-set="ir:H">Try</button></li>
+          <li><span><b>Makeup of the population</b> <span class="dir c-ir">→ IR ↑</span></span><span class="ex">A few very large or unusual items, or amounts due from related parties.</span><button type="button" data-set="ir:H">Try</button></li>
+          <li><span><b>Fraud risk factors</b> <span class="dir c-ir">→ IR ↑</span></span><span class="ex">Incentives to misstate the F/S, or assets that are easy to steal, like cash.</span><button type="button" data-set="ir:H">Try</button></li>
+          <li><span><b>Routine, simple, repeat client with no past problems</b> <span class="dir c-ir">→ IR ↓</span></span><span class="ex">Recurring transactions recorded the same way every year.</span><button type="button" data-set="ir:L">Try</button></li>
+        </ul>
+      </div>
+      <div class="risk cr">
+        <span class="who">Control risk · the auditor assesses</span>
+        <h3 class="c-cr">CR depends on how well the client&rsquo;s controls work</h3>
+        <ul>
+          <li><span><b>Effective controls, and the auditor tested them</b> <span class="dir c-cr">→ CR ↓</span></span><span class="ex">Tests of controls are required to assess CR below the maximum.</span><button type="button" data-set="cr:L">Try</button></li>
+          <li><span><b>Controls look reasonable, limited testing</b> <span class="dir c-cr">→ CR moderate</span></span><span class="ex">Some reliance on controls, supported by some tests of controls.</span><button type="button" data-set="cr:M">Try</button></li>
+          <li><span><b>Weak controls, no controls, or the auditor chooses not to test them</b> <span class="dir c-cr">→ CR at maximum</span></span><span class="ex">Common at small private clients. No reliance on controls, so substantive tests carry the load.</span><button type="button" data-set="cr:H">Try</button></li>
+        </ul>
+        <p class="big-arrow">Assessing control risk is the Ch 11–12 work: understand the controls, decide whether to rely on them, then test them.</p>
+      </div>
+      <div class="risk pdr">
+        <span class="who">Planned detection risk · the auditor solves for</span>
+        <h3 class="c-pdr">PDR isn&rsquo;t assessed. It falls out of the other three</h3>
+        <p>Lower PDR means the audit has to catch more, so the auditor plans more evidence. That changes:</p>
+        <ul>
+          <li><span><b>Nature</b>: more reliable evidence</span><span class="ex">For example, confirm with an outside party instead of relying on inquiry.</span></li>
+          <li><span><b>Timing</b>: closer to year end</span><span class="ex">Substantive tests at the balance sheet date instead of at interim.</span></li>
+          <li><span><b>Extent</b>: more of it</span><span class="ex">Larger samples.</span></li>
+          <li><span><b>Staffing</b>: more experienced people</span><span class="ex">Higher-risk areas go to more experienced staff.</span></li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- NUMBERS -->
+  <section class="step" id="numbers">
+    <div class="step-head"><h2>Solve it with numbers</h2></div>
+    <p class="muted">Exam problems sometimes give percentages. Enter any three and solve for PDR.</p>
+    <div class="nums">
+      <label for="n-aar"><span class="c-aar">AAR %</span><input type="text" id="n-aar" value="5" inputmode="decimal"></label>
+      <label for="n-ir"><span class="c-ir">IR %</span><input type="text" id="n-ir" value="100" inputmode="decimal"></label>
+      <label for="n-cr"><span class="c-cr">CR %</span><input type="text" id="n-cr" value="50" inputmode="decimal"></label>
+    </div>
+    <div class="work" id="work" aria-live="polite"></div>
+  </section>
+
+  <!-- RELATIONSHIPS -->
+  <section class="step" id="rel">
+    <div class="step-head"><h2>How each risk moves evidence</h2></div>
+    <div class="tbl"><table>
+      <thead><tr><th>If this goes up</th><th>Planned detection risk</th><th>Evidence needed</th><th>Why</th></tr></thead>
+      <tbody>
+        <tr><td class="c-aar"><b>Acceptable audit risk</b></td><td><span class="up">↑</span></td><td><span class="down">↓</span></td><td>The firm accepts more risk, so the audit can miss more.</td></tr>
+        <tr><td class="c-ir"><b>Inherent risk</b></td><td><span class="down">↓</span></td><td><span class="up">↑</span></td><td>More likely to be wrong in the first place, so the audit has to catch more.</td></tr>
+        <tr><td class="c-cr"><b>Control risk</b></td><td><span class="down">↓</span></td><td><span class="up">↑</span></td><td>Controls are less likely to catch it, so the audit has to catch more.</td></tr>
+        <tr><td class="c-pdr"><b>Planned detection risk</b></td><td>n/a</td><td><span class="down">↓</span></td><td>The audit is allowed to miss more, so less evidence.</td></tr>
+      </tbody>
+    </table></div>
+    <p class="note">AAR and PDR move opposite to evidence. IR and CR move with it.</p>
+  </section>
+
+  <!-- TRAPS -->
+  <section class="step">
+    <div class="step-head"><h2>Keep straight</h2></div>
+    <div class="traps">
+      <div><b>RoMM is not audit risk</b>RoMM (IR × CR) is the risk before the audit. Audit risk is the risk that remains after it.</div>
+      <div><b>The firm sets AAR</b>Not the client. It&rsquo;s a judgment about how much is riding on the audit.</div>
+      <div><b>No testing, no reliance</b>CR can be assessed below the maximum only if the auditor tests the controls.</div>
+      <div><b>PDR follows from the other three</b>It changes only when AAR, IR, or CR changes. The auditor then meets it through the evidence gathered: lower PDR, more evidence.</div>
+      <div><b>It&rsquo;s a planning tool</b>The levels are judgments, usually Low, Moderate, or High. If evidence shows a risk is higher than planned, the auditor revises the model and gathers more evidence.</div>
+      <div><b>Inverse vs. direct</b>AAR and PDR are inversely related to evidence. IR and CR are directly related to it.</div>
+    </div>
+  </section>
+
+  <footer class="credit">© 2026 Paul Richardson, PhD, CPA. All rights reserved.<br>Chapter numbers refer to Arens, Elder, Beasley &amp; Hogan, <i>Auditing and Assurance Services</i> (18th ed., Pearson, 2024). Definitions from that text and PCAOB auditing standards. &ldquo;In plain terms&rdquo; notes are study aids; know the formal definitions for exams.</footer>
+</div>
+
+<script>
+(function(){
+  // Qualitative levels mapped to illustrative numbers; PDR thresholds reproduce the Table 9.3 pattern (same as the Audit Map).
+  const RISK = {L:.3, M:.6, H:1}, AAR = {L:.02, M:.05, H:.10};
+  const NAME = {L:'Low', M:'Moderate', H:'High'};
+  const $ = id => document.getElementById(id);
+  const val = n => document.querySelector('input[name="'+n+'"]:checked').value;
+  const pct = x => (Math.round(x*1000)/10).toString().replace(/\.0$/,'') + '%';
+  const set = (n, v, flash) => {
+    $(n+'-'+v).checked = true;
+    if (flash){ const s = $('seg-'+n); s.classList.remove('flash'); void s.offsetWidth; s.classList.add('flash'); }
+  };
+  function update(){
+    const a = val('aar'), ir = val('ir'), cr = val('cr');
+    const romm = RISK[ir] * RISK[cr];
+    const rommL = romm < .2 ? 'L' : romm < .5 ? 'M' : 'H';
+    const p = AAR[a] / romm;
+    const pdr = p < .1 ? 'L' : p < .6 ? 'M' : 'H';
+    const ev = {L:'H', M:'M', H:'L'}[pdr];
+    $('o-romm').textContent = NAME[rommL];
+    $('o-pdr').textContent = NAME[pdr];
+    $('o-ev').textContent = NAME[ev];
+    [...$('meter').children].forEach((m,i) => m.classList.toggle('on', i < {L:1, M:2, H:3}[ev]));
+    const aarTxt = {L:'The firm accepts little risk (a lot is riding on this audit).', M:'The firm accepts a moderate amount of risk.', H:'The firm can accept more risk (less is riding on this audit).'}[a];
+    const rommTxt = {L:'Misstatements are unlikely to reach the F/S.', M:'Some misstatements could reach the F/S.', H:'Misstatements are likely to reach the F/S.'}[rommL];
+    const pdrTxt = {L:'The audit must catch almost everything, so PDR is low and the auditor plans a lot of evidence.', M:'The audit must catch a fair amount, so PDR is moderate.', H:'The audit can miss more, so PDR is high and less evidence is needed.'}[pdr];
+    $('why').innerHTML = '<b>Why</b><ol>'
+      + '<li><span class="c-aar">AAR ' + NAME[a] + ':</span> ' + aarTxt + '</li>'
+      + '<li><span class="c-ir">IR ' + NAME[ir] + '</span> × <span class="c-cr">CR ' + NAME[cr] + '</span> → RoMM ' + NAME[rommL] + '. ' + rommTxt + '</li>'
+      + '<li><span class="c-pdr">PDR ' + NAME[pdr] + ':</span> ' + pdrTxt + '</li></ol>';
+    $('illus').textContent = 'Illustrative numbers: AAR ' + pct(AAR[a]) + ' ÷ (IR ' + pct(RISK[ir]) + ' × CR ' + pct(RISK[cr]) + ') = PDR ' + pct(p) + '. The levels are judgments; the numbers only show the math.';
+    document.querySelectorAll('.presets button').forEach(b => b.setAttribute('aria-pressed', b.dataset.p === [a,ir,cr].join(',') ? 'true' : 'false'));
+  }
+  document.querySelectorAll('.seg input').forEach(i => i.addEventListener('change', update));
+  document.querySelectorAll('.presets button').forEach(b => b.addEventListener('click', () => {
+    const [a,ir,cr] = b.dataset.p.split(','); set('aar',a); set('ir',ir); set('cr',cr); update();
+  }));
+  document.querySelectorAll('[data-set]').forEach(b => b.addEventListener('click', () => {
+    const [n,v] = b.dataset.set.split(':'); set(n, v, true); update();
+    $('try').scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block:'start'});
+  }));
+  // numbers
+  const num = v => { const n = parseFloat(String(v).replace(/[%,\s]/g,'')); return isFinite(n) ? n : NaN; };
+  function work(){
+    const a = num($('n-aar').value), ir = num($('n-ir').value), cr = num($('n-cr').value);
+    if ([a,ir,cr].some(x => !(x > 0) || x > 100)) { $('work').innerHTML = 'Enter percentages between 0 and 100.'; return; }
+    const romm = ir * cr / 100, p = a / romm * 100;
+    $('work').innerHTML = '<span>RoMM = IR × CR = ' + ir + '% × ' + cr + '% = <b>' + (Math.round(romm*100)/100) + '%</b></span>'
+      + '<span>PDR = AAR ÷ RoMM = ' + a + '% ÷ ' + (Math.round(romm*100)/100) + '% = <b class="c-pdr">' + (Math.round(p*100)/100) + '%</b></span>'
+      + (p >= 100 ? '<span class="muted">A PDR of 100% or more means the model calls for almost no substantive evidence; in practice the auditor still performs some substantive procedures.</span>' : '');
+  }
+  ['n-aar','n-ir','n-cr'].forEach(id => $(id).addEventListener('input', work));
+  update(); work();
+})();
+</script>
+
+</body>
+</html>
