@@ -11,4 +11,5 @@ Chapter numbers refer to Arens, Elder, Beasley & Hogan, *Auditing and Assurance 
 |---|---|---|
 | `assertions-to-evidence/` | Assertions to Evidence | 1, 6, 7, 13 |
 | `opinion-tree/` | Audit Opinion Tree | 3, 12 |
+| `materiality/` | Materiality Walkthrough | 8 |
 | `audit-map/` | The Audit Map | 8–11 |

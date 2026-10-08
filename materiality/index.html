@@ -1,0 +1,402 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+.home{color:var(--blue);font-size:13px;font-weight:600;text-decoration:none;margin-left:auto}
+.home:hover{text-decoration:underline}
+</style>
+<title>Materiality Walkthrough</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Patrick+Hand&display=swap">
+<style>
+/* Layout: the five Ch 8 materiality steps as numbered sections, each with editable inputs (prefilled with AMD fiscal 2025)
+   and computed results; step 5 compares misstatements to performance and overall materiality with bullet bars.
+   Same palette and type as the other course pages. */
+:root{
+  --bg:#f4f6f9; --panel:#ffffff; --ink:#1b1e27; --muted:#626a79; --rule:#dce1e8; --soft:#eef1f5;
+  --blue:#1f45c4; --blue-t:#e7edfc; --green:#23803a; --green-t:#e4f2e7;
+  --orange:#cf5f0e; --orange-t:#fcefe2; --red:#c42b2b; --red-t:#fbe8e8; --violet:#5b44c2; --violet-t:#efecfb;
+  --bar:#8a93a6; --track:#e6e9ef;
+  --f-sans:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-hand:'Patrick Hand','Comic Neue','Segoe Print','Bradley Hand',cursive;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12151c; --panel:#1a1e27; --ink:#e7e9ee; --muted:#9ca3b2; --rule:#2c3340; --soft:#232834;
+  --blue:#8ea9ff; --blue-t:#1c2546; --green:#6cc77f; --green-t:#15301d;
+  --orange:#f3a05c; --orange-t:#3a2614; --red:#ff8080; --red-t:#3c1b1d; --violet:#b6a4ff; --violet-t:#262046;
+  --bar:#7d8699; --track:#2a303c; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12151c; --panel:#1a1e27; --ink:#e7e9ee; --muted:#9ca3b2; --rule:#2c3340; --soft:#232834;
+  --blue:#8ea9ff; --blue-t:#1c2546; --green:#6cc77f; --green-t:#15301d;
+  --orange:#f3a05c; --orange-t:#3a2614; --red:#ff8080; --red-t:#3c1b1d; --violet:#b6a4ff; --violet-t:#262046;
+  --bar:#7d8699; --track:#2a303c; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-sans);font-size:15.5px;line-height:1.5}
+.wrap{max-width:1060px;margin:0 auto;padding:20px 16px 56px;display:grid;gap:16px}
+header{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px}
+h1{font-size:26px;line-height:1.15;margin:0;font-weight:700;letter-spacing:-.01em}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.lede{margin:0;color:var(--muted);max-width:75ch}
+.topbar{display:flex;flex-wrap:wrap;gap:10px 16px;align-items:center}
+.hero{display:flex;flex-wrap:wrap;gap:4px 14px;align-items:baseline;background:var(--panel);border:1px solid var(--rule);border-radius:10px;padding:10px 14px}
+.hero small{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.hero strong{font-size:22px;font-variant-numeric:tabular-nums}
+button{font:inherit;font-size:14px;color:var(--ink);background:var(--soft);border:1px solid var(--rule);border-radius:7px;padding:6px 12px;cursor:pointer}
+button:hover{border-color:var(--muted)}
+button:focus-visible,input:focus-visible{outline:2px solid var(--blue);outline-offset:1px}
+
+section.step{background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:18px 20px;display:grid;gap:12px}
+.step-head{display:flex;gap:12px;align-items:baseline;flex-wrap:wrap}
+.num{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:50%;background:var(--ink);color:var(--panel);font-weight:700;font-size:15px;flex:none}
+.step h2{margin:0;font-size:19px}
+.step .phase{font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.note{font-family:var(--f-hand);font-size:19px;color:var(--blue);margin:0}
+.note.red{color:var(--red)}.note.green{color:var(--green)}
+p{margin:0}
+.muted{color:var(--muted)}
+.rot{background:var(--soft);border-radius:10px;padding:12px 14px}
+.rot h3{margin:0 0 6px;font-size:15px}
+.rot table{min-width:520px}
+.rot td,.rot th{background:transparent}
+.terms{border:1px solid var(--rule);border-radius:8px;padding:8px 14px;background:var(--panel)}
+.terms summary{cursor:pointer;font-size:12px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.terms dl{margin:8px 0 2px;display:grid;gap:10px}
+.terms dt{font-weight:700}
+.terms dd{margin:0}
+.terms .plain{display:block;font-style:italic;color:var(--blue);font-size:14px;margin-top:3px}
+.terms .src{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+td .src{display:block;font-size:11.5px;color:var(--muted);font-weight:400;line-height:1.3;margin-top:1px}
+.srcbox{background:var(--panel);border:1px dashed var(--rule);border-radius:8px;padding:8px 12px;font-size:13.5px;margin:0}
+.srcbox a{color:var(--blue)}
+
+.tbl{overflow-x:auto}
+.wrap>*,section.step>*,.rot>*{min-width:0}
+table{border-collapse:collapse;width:100%;min-width:560px;font-variant-numeric:tabular-nums}
+th,td{padding:7px 10px;text-align:left;border-bottom:1px solid var(--rule);vertical-align:middle}
+th{font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:700}
+td.r,th.r{text-align:right}
+tr.pick td{background:var(--blue-t)}
+input[type=text]{font:inherit;font-variant-numeric:tabular-nums;width:100%;min-width:90px;max-width:170px;text-align:right;padding:4px 8px;border:1px solid var(--rule);border-radius:6px;background:var(--soft);color:var(--ink)}
+input.pct{max-width:70px}
+input.name{text-align:left;max-width:180px}
+input[type=radio]{accent-color:var(--blue);width:16px;height:16px}
+.grp{font-size:12px;color:var(--muted);font-weight:600}
+
+.pill{display:inline-flex;align-items:center;gap:5px;font-size:13px;font-weight:700;border-radius:999px;padding:1px 9px;white-space:nowrap}
+.ok{background:var(--green-t);color:var(--green)}
+.bad{background:var(--red-t);color:var(--red)}
+.warn{background:var(--orange-t);color:var(--orange)}
+.calc{background:var(--soft);border-radius:8px;padding:10px 12px;font-variant-numeric:tabular-nums}
+.calc b{font-size:18px}
+.split{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:10px}
+.split > div{background:var(--soft);border-radius:8px;padding:10px 12px}
+.split small{display:block;font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+
+/* bullet bars */
+.bullet{position:relative;height:16px;background:var(--track);border-radius:4px;min-width:140px}
+.bullet .fill{position:absolute;left:0;top:3px;bottom:3px;border-radius:0 4px 4px 0;background:var(--bar)}
+.bullet .fill.over{background:var(--red)}
+.bullet .tick{position:absolute;top:-3px;bottom:-3px;width:2px;background:var(--ink)}
+.bullet .tick::after{content:attr(data-l);position:absolute;top:-16px;left:-30px;width:60px;text-align:center;font-size:10.5px;color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:14px;font-size:13px;color:var(--muted);align-items:center}
+.legend i{display:inline-block;width:14px;height:8px;border-radius:2px;vertical-align:middle;margin-right:5px}
+.big-bar{display:grid;gap:6px}
+.big-bar .bullet{height:26px}
+.big-bar .bullet .fill{top:4px;bottom:4px}
+.carry{display:flex;flex-wrap:wrap;gap:4px 12px;align-items:baseline;background:var(--violet-t);border-radius:8px;padding:8px 12px;font-size:14.5px;font-variant-numeric:tabular-nums}
+.carry .from{font-size:11.5px;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:var(--violet)}
+.carry .sub{flex-basis:100%;color:var(--muted);font-size:13.5px}
+.defs{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:10px}
+.defs div{border-left:3px solid var(--rule);padding:2px 10px}
+.defs b{display:block}
+@media (max-width:640px){h1{font-size:22px}section.step{padding:14px}}
+.credit{font-size:12.5px;color:var(--muted);border-top:1px solid var(--rule);padding-top:12px;margin-top:8px}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <h1>Materiality Walkthrough</h1>
+    <span class="eyebrow">Chapter 8</span>
+      <a class="home" href="../">← All diagrams</a>
+  </header>
+  <p class="lede">The five steps auditors follow in applying materiality, worked with AMD 2025. Every white box is editable: change a number and everything below updates.</p>
+  <div class="topbar">
+    <div class="hero"><small>Overall materiality</small><strong id="h-overall"></strong><small>Combined misstatement</small><strong id="h-comb"></strong><span id="h-verdict"></span></div>
+    <button id="reset">Reset to AMD 2025</button>
+  </div>
+
+  <!-- STEP 1 -->
+  <section class="step" id="s1">
+    <div class="step-head"><span class="num">1</span><h2>Set materiality for the F/S as a whole</h2><span class="phase">Planning</span></div>
+    <p class="muted">Pick one benchmark and apply a rule-of-thumb percentage. This is the overall (preliminary) materiality: how "wrong" the F/S as a whole can be.</p>
+    <details class="terms" open><summary>Key terms</summary><dl>
+      <dt>Materiality</dt><dd>The magnitude of an omission or misstatement of accounting information in the financial statements that individually or in the aggregate is substantially likely to influence the judgment made by a reasonable user of the financial statements.<span class="plain">In plain terms: an error or omission is material if it&rsquo;s big enough to change a reasonable user&rsquo;s decision.</span><span class="src">Source: Arens et al., glossary (exact wording)</span></dd>
+      <dt>Materiality: the legal standard</dt><dd>In interpreting the federal securities laws, the Supreme Court of the United States has held that a fact is material if there is &ldquo;a substantial likelihood that the . . . fact would have been viewed by the reasonable investor as having significantly altered the &lsquo;total mix&rsquo; of information made available.&rdquo;<span class="plain">In plain terms: the same idea from the Supreme Court, which the PCAOB uses: would a reasonable investor see it differently?</span><span class="src">Source: PCAOB AS 2105.02 (exact wording)</span></dd>
+      <dt>Preliminary judgment about materiality (overall materiality)</dt><dd>The maximum amount by which the auditor believes that the statements could be misstated and still not affect the decisions of reasonable users; used in audit planning.<span class="plain">In plain terms: the most the F/S as a whole can be off before users would care. Set during planning; it&rsquo;s the overall materiality in this step.</span><span class="src">Source: Arens et al., glossary (exact wording)</span></dd>
+    </dl></details>
+    <p class="srcbox"><b>Check the numbers yourself:</b> every AMD amount on this page comes from AMD's <a href="https://www.sec.gov/Archives/edgar/data/2488/000000248826000018/amd-20251227.htm" target="_blank" rel="noopener">Form 10-K for fiscal 2025</a> (year ended December 27, 2025), Item 8: the consolidated statement of operations and consolidated balance sheet. The line it comes from is listed under each amount.</p>
+    <div class="rot">
+      <h3>Rules of thumb at a glance</h3>
+      <div class="tbl"><table>
+        <thead><tr><th>Benchmark</th><th>Range</th><th class="r">Default</th><th class="r">Materiality</th><th>When to use it</th></tr></thead>
+        <tbody>
+          <tr><td>Revenue</td><td>0.5–1%</td><td class="r">1%</td><td class="r" id="rt-sales"></td><td>Earnings are volatile, near zero, or a loss</td></tr>
+          <tr><td>Pre-tax income</td><td>3–10%</td><td class="r">5%</td><td class="r" id="rt-ni"></td><td>Profitable, stable earnings (most common)</td></tr>
+          <tr><td>Total assets</td><td>0.5–1%</td><td class="r">1%</td><td class="r" id="rt-ta"></td><td>Asset-heavy company, or a loss</td></tr>
+        </tbody>
+      </table></div>
+      <p class="muted" style="font-size:13px;margin:4px 0 0">Materiality here is AMD&rsquo;s fiscal 2025 amount × the default %. These ranges are common practice, not set by the auditing standards; each firm sets its own. Try them in the table below.</p>
+    </div>
+    <div class="tbl"><table>
+      <thead><tr><th>Use</th><th>Benchmark</th><th class="r">2025 amount ($)</th><th>Rule of thumb</th><th class="r">%</th><th class="r">Materiality</th><th>When to use it</th></tr></thead>
+      <tbody id="bench"></tbody>
+    </table></div>
+    <p class="note" id="s1-note"></p>
+    <div class="split">
+      <div><small>Individually</small>one entry off by <b id="s1-ind"></b></div>
+      <div><small>In aggregate</small>several entries off, adding up to <b id="s1-agg"></b></div>
+    </div>
+  </section>
+
+  <!-- STEP 2 -->
+  <section class="step" id="s2">
+    <div class="step-head"><span class="num">2</span><h2>Determine performance materiality</h2><span class="phase">Planning</span></div>
+    <div class="carry"><span class="from">↓ From step 1</span><span>Overall materiality <b id="c2-overall"></b> <span class="muted" id="c2-basis"></span></span>
+      <span class="sub">The allocations below are set from pre-tax income materiality ($207M). They stay put if you switch benchmarks in step 1; the check under the table tells you whether they still fit.</span></div>
+    <p class="hint muted" style="font-size:13px">The account balances below tie to AMD's fiscal 2025 10-K (line shown under each account). The bank accounts and test results in steps 3–5 are illustrative.</p>
+    <p class="muted">Allocate overall materiality to the accounts: how much each account can be off (its performance materiality). Each account's amount is set below overall materiality to leave a cushion, because small misstatements in several accounts, including ones the audit doesn't catch, can add up.</p>
+    <details class="terms" open><summary>Key terms</summary><dl>
+      <dt>Allocation of the preliminary judgment about materiality</dt><dd>The process of assigning to each balance sheet account the misstatement amount considered to be material for that account based on the auditor&rsquo;s preliminary judgment.<span class="plain">In plain terms: splitting overall materiality across the accounts: how much each account can be off. That&rsquo;s the table below.</span><span class="src">Source: Arens et al., glossary (exact wording)</span></dd>
+      <dt>Performance materiality</dt><dd>The materiality amount(s) for segments of the audit, set by the auditor at less than materiality for the financial statements as a whole.<span class="plain">In plain terms: a lower amount for each part of the audit, leaving a cushion so small errors in different accounts, including ones the audit misses, are unlikely to add up past overall materiality.</span><span class="src">Source: Arens et al., glossary (exact wording)</span></dd>
+      <dt>Tolerable misstatement</dt><dd>The application of performance materiality to a sampling procedure (AICPA standards) or the materiality allocated to any given account balance (PCAOB standards).<span class="plain">In plain terms: two meanings. Under the AICPA (and on this page), it&rsquo;s performance materiality applied to one test, like each bank account below. Under the PCAOB, it&rsquo;s the amount allocated to an account, which this page calls performance materiality.</span><span class="src">Source: Arens et al., glossary (exact wording)</span></dd>
+    </dl></details>
+    <div class="tbl"><table>
+      <thead><tr><th>Section</th><th>Account</th><th class="r">Balance ($)</th><th class="r">Performance materiality ($)</th></tr></thead>
+      <tbody id="pm"></tbody>
+      <tfoot><tr><td></td><td><b>Total allocated</b></td><td></td><td class="r"><b id="pm-sum"></b></td></tr></tfoot>
+    </table></div>
+    <p id="pm-check"></p>
+    <div class="split" style="margin-top:4px">
+      <div><small>Tolerable misstatement on this page</small>Cash&rsquo;s performance materiality applied to one test: each bank account. <span class="muted">That&rsquo;s the AICPA meaning; see Key terms above for the PCAOB meaning.</span></div>
+      <div><small>TM example</small>Cash has three bank accounts. Tolerable misstatement (TM) is <input type="text" id="tol" aria-label="Tolerable misstatement per bank account" style="max-width:110px;display:inline-block"> for each account: look into any account off by more than that.</div>
+    </div>
+  </section>
+
+  <!-- STEP 3 -->
+  <section class="step" id="s3">
+    <div class="step-head"><span class="num">3</span><h2>Estimate misstatement in each account</h2><span class="phase">Evaluating results</span></div>
+    <div class="carry"><span class="from">↓ From step 2</span><span>Cash: performance materiality <b id="c3-cashpm"></b> · TM <b id="c3-tol"></b> per bank account</span><span>AR: balance <b id="c3-arbal"></b> · performance materiality <b id="c3-arpm"></b></span></div>
+    <details class="terms" open><summary>Key terms</summary><dl>
+      <dt>Known misstatements</dt><dd>Specific misstatements in a class of transactions or account balance identified during the audit.<span class="plain">In plain terms: errors we can measure exactly, like the books vs. the bank for cash.</span><span class="src">Source: Arens et al., glossary (exact wording)</span></dd>
+      <dt>Likely misstatements</dt><dd>Misstatements that arise either from differences between management&rsquo;s and the auditor&rsquo;s judgment about estimates of account balances or from projections of misstatements based on the auditor&rsquo;s test of a sample from a population.<span class="plain">In plain terms: errors we estimate rather than measure: a projection from a sample (AR below) or a disagreement with management about an estimate.</span><span class="src">Source: Arens et al., glossary (exact wording)</span></dd>
+    </dl></details>
+    <h3 style="margin:4px 0 0;font-size:16px">Known misstatement: cash</h3>
+    <p class="muted">We know exactly how wrong the balance is by comparing the general ledger to the bank.</p>
+    <div class="tbl"><table>
+      <thead><tr><th>Bank account</th><th class="r">Balance per GL ($)</th><th class="r">Balance per bank ($)</th><th class="r">Misstatement</th><th>vs. tolerable</th></tr></thead>
+      <tbody id="banks"></tbody>
+      <tfoot><tr><td><b>Total (net)</b></td><td></td><td></td><td class="r"><b id="bank-sum"></b></td><td id="bank-verdict"></td></tr></tfoot>
+    </table></div>
+
+    <h3 style="margin:10px 0 0;font-size:16px">Likely misstatement: accounts receivable</h3>
+    <p class="muted">We don't know exactly how wrong AR is. We test a sample and project the misstatement onto the whole balance.</p>
+    <div class="split">
+      <div><small>AR population</small><input type="text" id="ar-pop" aria-label="Number of AR balances"> balances</div>
+      <div><small>Sample audited</small><input type="text" id="ar-n" aria-label="Number of balances audited"> balances</div>
+      <div><small>Sample overstated by</small><input type="text" id="ar-rate" class="pct" aria-label="Misstatement as a percent of the sample's dollar value"> % of its dollar value</div>
+    </div>
+    <div class="calc" id="ar-calc"></div>
+
+    <h3 style="margin:10px 0 0;font-size:16px">Other accounts</h3>
+    <div class="split" id="others"></div>
+  </section>
+
+  <!-- STEP 4 + 5 -->
+  <section class="step" id="s45">
+    <div class="step-head"><span class="num">4</span><h2>Combine the misstatements</h2><span class="phase">Evaluating results</span></div>
+    <div class="carry"><span class="from">↓ From steps 2 &amp; 3</span><span>Each account's misstatement from step 3, next to its performance materiality from step 2</span></div>
+    <div class="tbl"><table>
+      <thead><tr><th>Account</th><th>Type</th><th class="r">Misstatement</th><th class="r">Performance materiality</th><th style="width:30%">Misstatement vs. performance materiality</th><th>Account</th></tr></thead>
+      <tbody id="comb"></tbody>
+      <tfoot><tr><td><b>Combined</b></td><td></td><td class="r"><b id="comb-sum"></b></td><td></td><td></td><td></td></tr></tfoot>
+    </table></div>
+    <div class="legend"><span><i style="background:var(--bar)"></i>within performance materiality</span><span><i style="background:var(--red)"></i>over it</span><span><i style="background:var(--ink);width:2px;height:12px"></i>the threshold</span></div>
+
+    <div class="step-head" style="margin-top:10px"><span class="num">5</span><h2>Compare to overall materiality</h2></div>
+    <div class="carry"><span class="from">↓ From steps 1 &amp; 4</span><span>Overall materiality <b id="c5-overall"></b> vs. combined misstatement <b id="c5-comb"></b></span></div>
+    <div class="big-bar">
+      <div class="bullet" id="big" title=""><div class="fill"></div><div class="tick" data-l="overall"></div></div>
+      <p id="big-text"></p>
+    </div>
+    <p class="note red" id="lesson"></p>
+  </section>
+
+  <section class="step">
+    <div class="step-head"><h2>Keep straight</h2></div>
+    <div class="defs">
+      <div><b>Materiality is relative</b>A $1M error matters for a small company and not for AMD. That's why it's a % of a benchmark.</div>
+      <div><b>Quantitative and qualitative</b>A small misstatement can still be material (fraud, illegal acts, flipping a loss to income).</div>
+      <div><b>Known vs. likely</b>Known: exact amount (GL vs. bank). Likely: projected from a sample (AR).</div>
+      <div><b>Performance materiality is inversely related to evidence</b>Lower performance materiality → more evidence needed.</div>
+    </div>
+  </section>
+  <footer class="credit">© 2026 Paul Richardson, PhD, CPA. All rights reserved.<br>Chapter numbers refer to Arens, Elder, Beasley &amp; Hogan, <i>Auditing and Assurance Services</i> (18th ed., Pearson, 2024). Definitions from that text and PCAOB auditing standards. “In plain terms” notes are study aids; know the formal definitions for exams.</footer>
+</div>
+
+<script>
+(function(){
+  const DEFAULT = {
+    bench: {
+      sales:{name:'Total sales / revenue', src:'Statement of operations: Net revenue', amt:34639000000, lo:.5, hi:1, pct:1, when:'Earnings are volatile, near zero, or a loss'},
+      ni:   {name:'Pre-tax income', src:'Statement of operations: Income from continuing operations before income taxes and equity income', amt:4140000000, lo:3, hi:10, pct:5, when:'Profitable company with stable earnings (most common)'},
+      ta:   {name:'Total assets (year end)', src:'Balance sheet: Total assets', amt:76926000000, lo:.5, hi:1, pct:1, when:'Asset-heavy company, or a loss'}
+    },
+    basis:'ni',
+    accounts:[
+      {sec:'Assets', name:'Cash and cash equivalents', src:'Balance sheet: Cash and cash equivalents', bal:5539000000, pm:5000000},
+      {sec:'Assets', name:'Accounts receivable', src:'Balance sheet: Accounts receivable, net', bal:6315000000, pm:25000000},
+      {sec:'Assets', name:'Inventories', src:'Balance sheet: Inventories', bal:7920000000, pm:65000000},
+      {sec:'Liabilities', name:'Accounts payable', src:'Balance sheet: Accounts payable', bal:2929000000, pm:40000000},
+      {sec:'Liabilities', name:'Long-term debt', src:'Balance sheet: Long-term debt, net of current portion', bal:2348000000, pm:15000000},
+      {sec:'Equity', name:'Stockholders\' equity', src:'Balance sheet: Total stockholders\' equity', bal:62999000000, pm:50000000}
+    ],
+    tol:1500000,
+    banks:[{name:'Bank of America', gl:1800000000, bank:1797900000},{name:'Chase', gl:2100000000, bank:2101200000},{name:'Citi', gl:1639000000, bank:1637100000}],
+    ar:{pop:10000, n:1000, rate:2},
+    other:{2:10000000, 3:6000000}
+  };
+  let S = JSON.parse(JSON.stringify(DEFAULT));
+  const $ = id => document.getElementById(id);
+  const num = v => { const n = parseFloat(String(v).replace(/[$,\s]/g,'')); return isFinite(n) ? n : 0; };
+  const fmt = n => (n < 0 ? '−' : '') + '$' + Math.abs(Math.round(n)).toLocaleString('en-US');
+  const short = n => { const a = Math.abs(n), s = n < 0 ? '−' : ''; return a >= 1e9 ? s+'$'+(a/1e9).toFixed(2)+'B' : a >= 1e6 ? s+'$'+(a/1e6).toFixed(2).replace(/\.?0+$/,'')+'M' : a >= 1e3 ? s+'$'+(a/1e3).toFixed(1).replace(/\.0$/,'')+'K' : s+'$'+Math.round(a); };
+  const pill = (ok, yes, no) => `<span class="pill ${ok ? 'ok' : 'bad'}">${ok ? '✓ ' + yes : '✕ ' + no}</span>`;
+  const input = (id, val, extra='') => `<input type="text" id="${id}" value="${val.toLocaleString('en-US')}" ${extra}>`;
+
+  function build(){
+    // step 1
+    $('bench').innerHTML = Object.entries(S.bench).map(([k,b]) => `
+      <tr data-k="${k}">
+        <td><input type="radio" name="basis" value="${k}" aria-label="Use ${b.name}" ${S.basis===k?'checked':''}></td>
+        <td>${b.name}<span class="src">10-K · ${b.src}</span></td>
+        <td class="r">${input('amt-'+k, b.amt, 'aria-label="'+b.name+' amount"')}</td>
+        <td>${b.lo}–${b.hi}%</td>
+        <td class="r">${input('pct-'+k, b.pct, 'class="pct" aria-label="'+b.name+' percent"')}</td>
+        <td class="r" id="mat-${k}"></td>
+        <td class="muted">${b.when}</td>
+      </tr>`).join('');
+    // step 2
+    let last = '';
+    $('pm').innerHTML = S.accounts.map((a,i) => { const sec = a.sec !== last ? a.sec : ''; last = a.sec; return `
+      <tr><td class="grp">${sec}</td><td>${a.name}${a.src ? '<span class="src">10-K · ' + a.src + '</span>' : ''}</td>
+        <td class="r">${input('bal-'+i, a.bal, 'aria-label="'+a.name+' balance"')}</td>
+        <td class="r">${input('pm-'+i, a.pm, 'aria-label="'+a.name+' performance materiality"')}</td></tr>`; }).join('');
+    $('tol').value = S.tol.toLocaleString('en-US');
+    // step 3
+    $('banks').innerHTML = S.banks.map((b,i) => `
+      <tr><td>${b.name}</td>
+        <td class="r">${input('gl-'+i, b.gl, 'aria-label="'+b.name+' per GL"')}</td>
+        <td class="r">${input('bk-'+i, b.bank, 'aria-label="'+b.name+' per bank"')}</td>
+        <td class="r" id="bd-${i}"></td><td id="bv-${i}"></td></tr>`).join('');
+    $('ar-pop').value = S.ar.pop.toLocaleString('en-US'); $('ar-n').value = S.ar.n.toLocaleString('en-US'); $('ar-rate').value = S.ar.rate;
+    $('others').innerHTML = Object.entries(S.other).map(([i,v]) => `<div><small>${S.accounts[i].name} (known)</small>${input('oth-'+i, v, 'aria-label="'+S.accounts[i].name+' misstatement"')}</div>`).join('');
+    document.querySelectorAll('input').forEach(el => {
+      el.addEventListener('input', read);
+      if (el.type === 'text') el.addEventListener('blur', () => { if (!el.classList.contains('pct') && el.id !== 'ar-rate') el.value = num(el.value).toLocaleString('en-US'); });
+    });
+    calc();
+  }
+  function read(){
+    S.basis = document.querySelector('input[name=basis]:checked').value;
+    Object.keys(S.bench).forEach(k => { S.bench[k].amt = num($('amt-'+k).value); S.bench[k].pct = num($('pct-'+k).value); });
+    S.accounts.forEach((a,i) => { a.bal = num($('bal-'+i).value); a.pm = num($('pm-'+i).value); });
+    S.tol = num($('tol').value);
+    S.banks.forEach((b,i) => { b.gl = num($('gl-'+i).value); b.bank = num($('bk-'+i).value); });
+    S.ar = {pop:num($('ar-pop').value), n:num($('ar-n').value), rate:num($('ar-rate').value)};
+    Object.keys(S.other).forEach(i => S.other[i] = num($('oth-'+i).value));
+    calc();
+  }
+  function calc(){
+    // 1
+    Object.entries(S.bench).forEach(([k,b]) => {
+      const m = b.amt * b.pct / 100;
+      const inRange = b.pct >= b.lo && b.pct <= b.hi;
+      const rt = $('rt-'+k); if (rt) rt.textContent = short(S.bench[k].amt * DEFAULT.bench[k].pct / 100);
+      $('mat-'+k).innerHTML = short(m) + (inRange ? '' : ' <span class="pill warn">outside range</span>');
+      document.querySelector(`tr[data-k="${k}"]`).classList.toggle('pick', S.basis === k);
+    });
+    const B = S.bench[S.basis], overall = B.amt * B.pct / 100;
+    $('s1-note').textContent = `→ overall (preliminary) materiality is ${short(overall)}: the F/S as a whole can be "wrong" by less than ${short(overall)}.`;
+    $('s1-ind').textContent = short(overall); $('s1-agg').textContent = short(overall);
+    $('c2-overall').textContent = short(overall);
+    $('c2-basis').textContent = '(' + B.name.toLowerCase() + ' × ' + B.pct + '%)';
+    // 2
+    const pmSum = S.accounts.reduce((s,a) => s + a.pm, 0);
+    $('pm-sum').textContent = fmt(pmSum);
+    $('pm-check').innerHTML = pmSum <= overall
+      ? `${pill(true,'Within overall materiality','')} The ${short(pmSum)} allocated is below the ${short(overall)} overall materiality.`
+      : `${pill(false,'','More than overall materiality')} ${short(pmSum)} allocated is above ${short(overall)}. Lower some accounts.`;
+    // 3 known: cash
+    let cash = 0;
+    S.banks.forEach((b,i) => {
+      const d = b.gl - b.bank; cash += d;
+      $('bd-'+i).textContent = fmt(d);
+      const over = Math.abs(d) > S.tol;
+      $('bv-'+i).innerHTML = over ? '<span class="pill warn">▲ over · look into it</span>' : '<span class="pill ok">✓ within</span>';
+    });
+    const cashPM = S.accounts[0].pm;
+    $('c3-cashpm').textContent = short(cashPM); $('c3-tol').textContent = short(S.tol);
+    $('c3-arbal').textContent = short(S.accounts[1].bal); $('c3-arpm').textContent = short(S.accounts[1].pm);
+    $('bank-sum').textContent = fmt(cash);
+    $('bank-verdict').innerHTML = Math.abs(cash) < cashPM ? pill(true, `under cash PM of ${short(cashPM)} · OK`, '') : pill(false, '', `over cash PM of ${short(cashPM)}`) + ' Over cash\'s performance materiality: the auditor can\'t yet conclude cash is fairly stated. Next, ask management to correct it. Whether it affects the opinion depends on the total uncorrected misstatement vs. overall materiality (step 5).';
+    // 3 likely: AR
+    const arBal = S.accounts[1].bal, arPM = S.accounts[1].pm, arMiss = arBal * S.ar.rate / 100;
+    $('ar-calc').innerHTML = `We audited ${S.ar.n.toLocaleString('en-US')} of ${S.ar.pop.toLocaleString('en-US')} balances and found them overstated by ${S.ar.rate}% of their dollar value. Projecting that rate onto the AR balance: ${short(arBal)} × ${S.ar.rate}% = <b>${short(arMiss)}</b> likely misstatement.<br>` +
+      (arMiss < arPM ? pill(true, `under AR PM of ${short(arPM)}`, '') : pill(false, '', `over AR PM of ${short(arPM)}`) + ' Over AR\'s performance materiality: the auditor can\'t yet conclude AR is fairly stated. Next, expand testing and ask management to investigate and correct. Whether it affects the opinion depends on the total uncorrected misstatement vs. overall materiality (step 5).');
+    // 4
+    const rows = [
+      {i:0, type:'known', m:cash},
+      {i:1, type:'likely', m:arMiss},
+      ...Object.entries(S.other).map(([i,v]) => ({i:+i, type:'known', m:v}))
+    ];
+    const comb = rows.reduce((s,r) => s + r.m, 0);
+    let anyOver = false;
+    $('comb').innerHTML = rows.map(r => {
+      const a = S.accounts[r.i], over = Math.abs(r.m) >= a.pm; if (over) anyOver = true;
+      const scale = Math.max(Math.abs(r.m), a.pm) * 1.15 || 1;
+      return `<tr><td>${a.name}</td><td class="muted">${r.type}</td><td class="r">${fmt(r.m)}</td><td class="r">${fmt(a.pm)}</td>
+        <td><div class="bullet" title="${a.name}: ${fmt(r.m)} misstatement vs. ${fmt(a.pm)} performance materiality"><div class="fill ${over?'over':''}" style="width:${Math.abs(r.m)/scale*100}%"></div><div class="tick" style="left:${a.pm/scale*100}%"></div></div></td>
+        <td>${over ? '<span class="pill bad">✕ over: more work needed</span>' : '<span class="pill ok">✓ OK</span>'}</td></tr>`;
+    }).join('');
+    $('comb-sum').textContent = fmt(comb);
+    // 5
+    const scale = Math.max(comb, overall) * 1.1 || 1, fsOK = comb < overall;
+    const big = $('big');
+    big.querySelector('.fill').style.width = (Math.max(comb,0)/scale*100) + '%';
+    big.querySelector('.fill').classList.toggle('over', !fsOK);
+    big.querySelector('.tick').style.left = (overall/scale*100) + '%';
+    big.title = `Combined ${fmt(comb)} vs. overall materiality ${fmt(overall)}`;
+    $('big-text').innerHTML = `Combined misstatement of <b>${short(comb)}</b> vs. overall materiality of <b>${short(overall)}</b> ` + (fsOK ? pill(true,'F/S as a whole not materially misstated','') : pill(false,'','F/S as a whole materially misstated'));
+    $('lesson').textContent = fsOK && anyOver
+      ? '* The F/S as a whole pass: combined misstatement is under overall materiality, so on these numbers the opinion isn\'t affected. But an account is over its performance materiality, so the auditor does more work on that account and asks management to correct it before signing off. Check both levels.'
+      : !fsOK ? '* The combined misstatement is over overall materiality: the client needs to adjust or the opinion is affected.' : '* Every account is within its performance materiality and the total is under overall materiality.';
+    $('c5-overall').textContent = short(overall); $('c5-comb').textContent = short(comb);
+    // hero
+    $('h-overall').textContent = short(overall); $('h-comb').textContent = short(comb);
+    $('h-verdict').innerHTML = fsOK ? (anyOver ? '<span class="pill warn">▲ one account over</span>' : '<span class="pill ok">✓ OK</span>') : '<span class="pill bad">✕ over</span>';
+  }
+  $('reset').addEventListener('click', () => { S = JSON.parse(JSON.stringify(DEFAULT)); build(); });
+  build();
+})();
+</script>
+
+</body>
+</html>
