@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+.home{color:var(--blue);font-size:13px;font-weight:600;text-decoration:none;margin-left:auto}
+.home:hover{text-decoration:underline}
+</style>
+<title>Why Audit?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Patrick+Hand&display=swap">
+<style>
+/* Layout: "why audit → information risk" with public vs. private cards, then the nested assurance / attest / audit circles (clickable)
+   with a detail panel. Same palette as the other pages. */
+:root{
+  --bg:#f4f6f9; --panel:#ffffff; --ink:#1b1e27; --muted:#626a79; --rule:#dce1e8; --soft:#eef1f5;
+  --blue:#1f45c4; --blue-t:#e7edfc; --green:#23803a; --green-t:#e4f2e7;
+  --orange:#cf5f0e; --red:#c42b2b; --red-t:#fbe8e8;
+  --f-sans:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-hand:'Patrick Hand','Comic Neue','Segoe Print','Bradley Hand',cursive;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12151c; --panel:#1a1e27; --ink:#e7e9ee; --muted:#9ca3b2; --rule:#2c3340; --soft:#232834;
+  --blue:#8ea9ff; --blue-t:#1c2546; --green:#6cc77f; --green-t:#15301d; --orange:#f3a05c; --red:#ff8080; --red-t:#3c1b1d; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12151c; --panel:#1a1e27; --ink:#e7e9ee; --muted:#9ca3b2; --rule:#2c3340; --soft:#232834;
+  --blue:#8ea9ff; --blue-t:#1c2546; --green:#6cc77f; --green-t:#15301d; --orange:#f3a05c; --red:#ff8080; --red-t:#3c1b1d; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-sans);font-size:15.5px;line-height:1.5}
+.wrap{max-width:1080px;margin:0 auto;padding:20px 16px 48px;display:grid;gap:16px}
+header{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px}
+h1{font-size:26px;line-height:1.15;margin:0;font-weight:700;letter-spacing:-.01em}
+h2.sec{font-size:17px;margin:6px 0 0;font-weight:600}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.thesis{font-family:var(--f-hand);font-size:26px;margin:0}
+.ir-link{font:inherit;color:var(--blue);background:none;border:0;padding:0;cursor:pointer;text-decoration:underline;text-underline-offset:4px}
+.ir-link::after{content:" ⓘ";font-size:.7em;vertical-align:super}
+.ir-link:focus-visible{outline:2px solid var(--blue);outline-offset:3px;border-radius:4px}
+.ir-def{background:var(--panel);border:1px solid var(--rule);border-left:4px solid var(--blue);border-radius:8px;padding:10px 14px;display:grid;gap:4px;max-width:80ch}
+.ir-def p{margin:0}
+.ir-def .plain{font-style:italic;color:var(--blue);font-size:14.5px}
+.ir-def .src{font-size:12.5px;color:var(--muted)}
+.who{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}
+.card{background:var(--panel);border:1px solid var(--rule);border-radius:10px;padding:14px 16px;min-width:0}
+.card h3{margin:0 0 6px;font-size:17px}
+.card .flow{display:flex;flex-wrap:wrap;align-items:center;gap:6px 8px;margin:0 0 6px}
+.card .flow span{background:var(--soft);border-radius:6px;padding:2px 8px;font-size:14px}
+.card .flow i{font-style:normal;color:var(--muted)}
+.card p{margin:0;color:var(--muted);font-size:14.5px}
+.tag-req{color:var(--red);font-weight:700}.tag-opt{color:var(--green);font-weight:700}
+.reasons{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:12px}
+.reasons div{font-family:var(--f-hand);font-size:20px;background:var(--panel);border:1px dashed var(--rule);border-radius:10px;padding:10px 14px}
+figure{margin:0;background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:10px;overflow-x:auto}
+figure svg{display:block;width:100%;height:auto;min-width:640px}
+svg text{font-family:var(--f-sans);fill:var(--ink)}
+.hand{font-family:var(--f-hand)!important;font-size:17px}
+.ring{cursor:pointer;stroke-width:2.5;transition:stroke-width .2s,fill-opacity .2s}
+.ring:focus{outline:none}
+.ring:focus-visible{stroke-dasharray:6 4}
+.r-as{fill:var(--blue-t);stroke:var(--blue);fill-opacity:.35}
+.r-at{fill:var(--green-t);stroke:var(--green);fill-opacity:.55}
+.r-au{fill:var(--red-t);stroke:var(--red);fill-opacity:.8}
+.r-rv{fill:var(--green-t);stroke:var(--green);stroke-dasharray:4 3;fill-opacity:.9}
+.ring.sel{stroke-width:5;fill-opacity:1}
+.c-blue{fill:var(--blue)!important}.c-green{fill:var(--green)!important}.c-red{fill:var(--red)!important}.c-muted{fill:var(--muted)!important}
+.lbl{pointer-events:none}
+.detail{background:var(--panel);border:1px solid var(--rule);border-radius:10px;padding:14px 16px}
+.detail .kind{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.detail h3{margin:2px 0 4px;font-size:18px}
+.detail p{margin:0;max-width:75ch}
+.detail .plain{display:block;font-style:italic;color:var(--blue);font-size:14.5px;margin-top:4px}
+.detail .src{display:block;font-size:12.5px;color:var(--muted);margin-top:3px}
+@media (max-width:640px){h1{font-size:22px}.thesis{font-size:22px}}
+.credit{font-size:12.5px;color:var(--muted);border-top:1px solid var(--rule);padding-top:12px;margin-top:8px}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <h1>Why Audit?</h1>
+    <span class="eyebrow">Chapter 1</span>
+      <a class="home" href="../">← All diagrams</a>
+  </header>
+  <p class="thesis">Why audit → <button type="button" class="ir-link" id="ir-link" aria-expanded="false" aria-controls="ir-def">information risk</button></p>
+  <div class="ir-def" id="ir-def" hidden>
+    <b>Information risk</b>
+    <p>Information risk reflects the possibility that the information upon which the business risk decision was made was inaccurate. A likely cause of the information risk is the possibility of inaccurate financial statements.</p>
+    <span class="plain">In plain terms: the risk that the numbers people base decisions on are wrong. Investors and lenders face it because they can&rsquo;t check the F/S themselves; an audit reduces it.</span>
+    <span class="src">Source: Arens et al., Ch. 1 (exact wording)</span>
+  </div>
+
+  <section class="who">
+    <article class="card">
+      <h3>Public company <span class="tag-req">· required</span></h3>
+      <div class="flow"><span>shares are public</span><i>→</i><span>audits mandatory (SEC)</span></div>
+      <div class="flow"><span>F/S audit (all) + IC audit (accelerated filers)</span><i>=</i><span>integrated audit</span></div>
+      <p>Quarterly F/S (the 10-Q) are reviewed, not audited.</p>
+    </article>
+    <article class="card">
+      <h3>Private company <span class="tag-opt">· optional</span></h3>
+      <div class="flow"><span>audits when users want them</span><i>→</i><span>bank, owners</span></div>
+      <p>The F/S audit and the IC audit are both optional.</p>
+    </article>
+  </section>
+  <section class="reasons">
+    <div>Reasons to audit → information risk; learn from the audit</div>
+    <div>Reasons not to audit → $</div>
+  </section>
+
+  <h2 class="sec">Assurance deals with information risk</h2>
+  <figure>
+<svg id="circles" viewBox="0 0 900 520" role="img" aria-label="Nested circles. Assurance services, the outer circle, help with information risk and quality and don't require a written report. Attest services, inside it, come with a written report and include reviews, such as the quarterly 10-Q. Audits, the innermost circle, follow GAAS and end in the standard audit report. The level of assurance and the cost rise toward the center: assurance $, attest $$, audit $$$.">
+  <defs>
+    <marker id="m-ink" viewBox="0 0 10 10" refX="8.5" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M0 0L10 5L0 10z" style="fill:var(--ink)"/></marker>
+  </defs>
+  <ellipse class="ring r-as" data-r="as" tabindex="0" role="button" aria-label="Assurance services" cx="450" cy="270" rx="430" ry="240"/>
+  <ellipse class="ring r-at" data-r="at" tabindex="0" role="button" aria-label="Attest services" cx="480" cy="300" rx="300" ry="170"/>
+  <ellipse class="ring r-rv" data-r="rv" tabindex="0" role="button" aria-label="Review" cx="300" cy="300" rx="72" ry="44"/>
+  <ellipse class="ring r-au" data-r="au" tabindex="0" role="button" aria-label="Audit" cx="560" cy="320" rx="160" ry="96"/>
+
+  <text class="lbl hand c-blue" x="250" y="104" style="font-size:26px">Assurance</text>
+  <text class="lbl hand c-blue" x="372" y="100">helps with information risk &amp; quality</text>
+  <text class="lbl hand c-blue" x="372" y="121" style="font-size:16px">(no written report required)</text>
+  <text class="lbl hand c-green" x="330" y="196" style="font-size:24px">Attest</text>
+  <text class="lbl hand c-green" x="404" y="196">written report</text>
+  <text class="lbl hand c-green" x="300" y="296" text-anchor="middle" style="font-size:20px">Review</text>
+  <text class="lbl hand c-green" x="300" y="318" text-anchor="middle">(10-Q)</text>
+  <text class="lbl hand c-red" x="560" y="306" text-anchor="middle" style="font-size:28px">Audit</text>
+  <text class="lbl hand c-red" x="560" y="334" text-anchor="middle">GAAS + standard audit report</text>
+
+  <line x1="70" y1="440" x2="470" y2="360" style="stroke:var(--ink);stroke-width:2" marker-end="url(#m-ink)" class="lbl"/>
+  <text class="lbl hand" x="80" y="414" transform="rotate(-11 80 414)">level of assurance</text>
+  <text class="lbl hand" x="190" y="446" text-anchor="middle" style="font-size:20px">$</text>
+  <text class="lbl hand" x="315" y="422" text-anchor="middle" style="font-size:20px">$$</text>
+  <text class="lbl hand" x="497" y="394" text-anchor="middle" style="font-size:20px">$$$</text>
+</svg>
+  </figure>
+  <section class="detail" aria-live="polite">
+    <div class="kind">Click a circle</div><h3 id="d-name"></h3><p id="d-def"></p>
+  </section>
+  <footer class="credit">© 2026 Paul Richardson, PhD, CPA. All rights reserved.<br>Chapter numbers refer to Arens, Elder, Beasley &amp; Hogan, <i>Auditing and Assurance Services</i> (18th ed., Pearson, 2024). Definitions from that text and PCAOB auditing standards. “In plain terms” notes are study aids; know the formal definitions for exams.</footer>
+</div>
+
+<script>
+(function(){
+  const INFO = {
+    as:{name:'Assurance services', def:'An independent professional service that improves the quality of information for decision makers.', plain:'any independent service that makes information more reliable or useful for the people relying on it. Helps with information risk; no written report required.', src:'Arens et al., Ch. 1 (exact wording)'},
+    at:{name:'Attestation services', def:'A type of assurance service in which the CPA firm issues a report about a subject matter or assertion that is made by another party.', plain:'assurance where the CPA puts a conclusion in writing about someone else\'s information. Reviews and audits are both attest work.', src:'Arens et al., Ch. 1 (exact wording)'},
+    rv:{name:'Review of historical financial statements', def:'For a review of historical financial statements, management asserts that the statements are fairly stated in accordance with accounting standards, the same as for audits. The CPA provides a lower level of assurance for reviews of financial statements compared to a high level for audits; therefore, less evidence is needed.', plain:'an attest service with limited assurance, mainly inquiry and analytical procedures. Public companies\' quarterly F/S (the 10-Q) are reviewed, not audited, and many private companies get a review instead of an audit. Cheaper than an audit.', src:'Arens et al., Ch. 1 (exact wording)'},
+    au:{name:'Audit of historical financial statements', def:'A form of attestation service in which the auditor issues a written report expressing an opinion about whether the financial statements are fairly stated in accordance with the applicable accounting standards.', plain:'the highest level of assurance, and the most expensive. Performed under GAAS and ends in the standard audit report with an opinion on the F/S.', src:'Arens et al., Ch. 1 (exact wording)'}
+  };
+  const rings = document.querySelectorAll('.ring');
+  function select(k){
+    rings.forEach(r => r.classList.toggle('sel', r.dataset.r === k));
+    document.getElementById('d-name').textContent = INFO[k].name;
+    const dd = document.getElementById('d-def'); dd.textContent = INFO[k].def;
+    const sp = document.createElement('span'); sp.className = 'plain'; sp.textContent = (INFO[k].def ? 'In plain terms: ' : '') + (INFO[k].def ? INFO[k].plain : INFO[k].plain.charAt(0).toUpperCase() + INFO[k].plain.slice(1)); dd.appendChild(sp);
+    if (INFO[k].src){ const sr = document.createElement('span'); sr.className = 'src'; sr.textContent = 'Source: ' + INFO[k].src; dd.appendChild(sr); }
+  }
+  rings.forEach(r => {
+    r.addEventListener('click', () => select(r.dataset.r));
+    r.addEventListener('keydown', e => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); select(r.dataset.r); } });
+  });
+  select('au');
+  const link = document.getElementById('ir-link'), box = document.getElementById('ir-def');
+  link.addEventListener('click', () => { const open = box.hidden; box.hidden = !open; link.setAttribute('aria-expanded', open); });
+})();
+</script>
+
+</body>
+</html>

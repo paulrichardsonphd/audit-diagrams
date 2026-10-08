@@ -9,6 +9,7 @@ Chapter numbers refer to Arens, Elder, Beasley & Hogan, *Auditing and Assurance 
 
 | Folder | Page | Chapters |
 |---|---|---|
+| `why-audit/` | Why Audit? | 1 |
 | `assertions-to-evidence/` | Assertions to Evidence | 1, 6, 7, 13 |
 | `opinion-tree/` | Audit Opinion Tree | 3, 12 |
 | `materiality/` | Materiality Walkthrough | 8 |
