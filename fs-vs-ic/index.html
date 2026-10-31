@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+.home{color:var(--blue);font-size:13px;font-weight:600;text-decoration:none;margin-left:auto}
+.home:hover{text-decoration:underline}
+</style>
+<title>F/S vs. Internal Control</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Patrick+Hand&display=swap">
+<style>
+/* Layout: one comparison grid (rows = purpose, framework, standards, issues, opinions; columns = F/S audit vs. ICFR audit)
+   with a Public/Private filter, then the "material misstatement ≠ material weakness" callout. Same palette as the other pages. */
+:root{
+  --bg:#f4f6f9; --panel:#ffffff; --ink:#1b1e27; --muted:#626a79; --rule:#dce1e8; --soft:#eef1f5;
+  --blue:#1f45c4; --blue-t:#e7edfc; --green:#23803a; --green-t:#e4f2e7;
+  --orange:#cf5f0e; --orange-t:#fcefe2; --red:#c42b2b; --red-t:#fbe8e8; --violet:#5b44c2; --violet-t:#efecfb; --hl:#fff3b0;
+  --f-sans:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-hand:'Patrick Hand','Comic Neue','Segoe Print','Bradley Hand',cursive;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12151c; --panel:#1a1e27; --ink:#e7e9ee; --muted:#9ca3b2; --rule:#2c3340; --soft:#232834;
+  --blue:#8ea9ff; --blue-t:#1c2546; --green:#6cc77f; --green-t:#15301d;
+  --orange:#f3a05c; --orange-t:#3a2614; --red:#ff8080; --red-t:#3c1b1d; --violet:#b6a4ff; --violet-t:#262046; --hl:#4a4320; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12151c; --panel:#1a1e27; --ink:#e7e9ee; --muted:#9ca3b2; --rule:#2c3340; --soft:#232834;
+  --blue:#8ea9ff; --blue-t:#1c2546; --green:#6cc77f; --green-t:#15301d;
+  --orange:#f3a05c; --orange-t:#3a2614; --red:#ff8080; --red-t:#3c1b1d; --violet:#b6a4ff; --violet-t:#262046; --hl:#4a4320; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-sans);font-size:16px;line-height:1.5}
+.wrap{max-width:1040px;margin:0 auto;padding:20px 16px 48px;display:grid;gap:16px}
+header{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px}
+h1{font-size:26px;line-height:1.15;margin:0;font-weight:700;letter-spacing:-.01em}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.bar span{font-size:13px;color:var(--muted);font-weight:600}
+.toggle{display:inline-flex;border:1px solid var(--rule);border-radius:8px;overflow:hidden}
+.toggle button{font:inherit;font-size:14px;border:0;background:var(--soft);color:var(--ink);padding:6px 14px;cursor:pointer}
+.toggle button[aria-pressed="true"]{background:var(--ink);color:var(--panel);font-weight:600}
+.toggle button:focus-visible{outline:2px solid var(--blue);outline-offset:-2px}
+
+.grid{background:var(--panel);border:1px solid var(--rule);border-radius:12px;overflow-x:auto}
+table{border-collapse:collapse;width:100%;min-width:620px}
+th,td{padding:14px 18px;text-align:left;vertical-align:top;border-bottom:1px solid var(--rule)}
+tr:last-child th,tr:last-child td{border-bottom:0}
+thead th{font-size:22px;font-weight:700;border-bottom:2px solid var(--ink)}
+thead th.fs{color:var(--blue)}
+thead th.ic{color:var(--green)}
+thead th small{display:block;font-size:13px;font-weight:500;color:var(--muted)}
+tbody th{font-family:var(--f-hand);font-size:22px;font-weight:400;width:150px;color:var(--ink)}
+td{width:42%}
+td .main{font-weight:600}
+td .note{color:var(--muted);font-size:14px}
+.pp{display:grid;gap:6px}
+.pp div{display:grid;grid-template-columns:72px 1fr;gap:8px;align-items:baseline;border-radius:6px;padding:2px 6px;transition:background .2s,opacity .2s}
+.pp b{font-size:13px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.mark{background:var(--hl);border-radius:4px;padding:0 3px}
+body[data-filter="public"] .pp div[data-who="private"],body[data-filter="private"] .pp div[data-who="public"]{opacity:.3}
+body[data-filter="public"] .pp div[data-who="public"],body[data-filter="private"] .pp div[data-who="private"]{background:var(--soft)}
+.op{display:flex;flex-wrap:wrap;gap:6px}
+.op span{font-size:13.5px;border-radius:999px;padding:2px 10px;border:1.5px solid}
+.o-u{border-color:var(--green);background:var(--green-t)}
+.o-q{border-color:var(--orange);background:var(--orange-t)}
+.o-a{border-color:var(--red);background:var(--red-t)}
+.o-d{border-color:var(--violet);background:var(--violet-t)}
+.big{display:grid;grid-template-columns:1fr auto 1fr;gap:16px;align-items:center;background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:18px}
+.big .side h3{margin:0;font-size:20px}
+.big .side p{margin:4px 0 0;color:var(--muted);font-size:14.5px}
+.big .neq{font-family:var(--f-hand);font-size:56px;line-height:1;color:var(--red)}
+.big .side.fs h3{color:var(--blue)}.big .side.ic h3{color:var(--green)}
+.foot{font-size:13px;color:var(--muted);margin:0}
+.big .side .q{color:var(--ink)}
+.big .side .plain{display:block;font-style:italic;color:var(--blue);font-size:13.5px;margin-top:4px}
+.big .side .src{display:block;font-size:12px;color:var(--muted);margin-top:2px}
+.big .side .rule{margin-top:10px;padding-top:8px;border-top:1px dashed var(--rule)}
+@media (max-width:640px){.big{grid-template-columns:1fr}.big .neq{text-align:center}h1{font-size:22px}tbody th{width:110px}}
+.who{background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:14px 18px}
+.who h3{margin:0 0 8px;font-size:17px}
+.wgrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px}
+.wgrid div{background:var(--soft);border-radius:8px;padding:8px 10px;font-size:14px;min-width:0}
+.wgrid b{display:block;font-size:15px}
+.credit{font-size:12.5px;color:var(--muted);border-top:1px solid var(--rule);padding-top:12px;margin-top:8px}
+</style>
+</head>
+<body>
+
+<div class="wrap" id="app">
+  <header>
+    <h1>F/S vs. Internal Control</h1>
+    <span class="eyebrow">Chapters 3, 11, 12</span>
+      <a class="home" href="../">← All diagrams</a>
+  </header>
+  <div class="bar">
+    <span>Highlight:</span>
+    <div class="toggle" role="group" aria-label="Highlight public or private companies">
+      <button data-f="both" aria-pressed="true">Both</button>
+      <button data-f="public" aria-pressed="false">Public</button>
+      <button data-f="private" aria-pressed="false">Private</button>
+    </div>
+  </div>
+
+  <div class="grid">
+    <table>
+      <thead>
+        <tr><th></th><th class="fs">F/S<small>audit of the financial statements</small></th><th class="ic">IC<small>audit of internal control over financial reporting</small></th></tr>
+      </thead>
+      <tbody>
+        <tr><th scope="row">Purpose</th>
+          <td><div class="main">Reasonable assurance the <span class="mark">F/S</span> are free of material misstatement</div><div class="note">about the numbers</div></td>
+          <td><div class="main">Reasonable assurance the <span class="mark">controls</span> are operating properly</div><div class="note">about the process</div></td></tr>
+        <tr><th scope="row">Reporting framework</th>
+          <td><div class="pp"><div data-who="public"><b>Public</b><span><span class="mark">U.S. GAAP</span> (set by FASB)<span class="note" style="display:block">Required: the SEC requires U.S. GAAP for U.S. public companies.</span></span></div><div data-who="private"><b>Private</b><span><span class="mark">Up to the business</span><span class="note" style="display:block">• U.S. GAAP (same FASB GAAP, with optional private-company alternatives)<br>• IFRS<br>• A special-purpose framework: tax basis, cash basis, or the AICPA's FRF for SMEs (next row)</span></span></div></div></td>
+          <td><div class="pp"><div data-who="public"><b>Public</b><span>COSO framework</span></div><div data-who="private"><b>Private</b><span>COSO framework</span></div></div></td></tr>
+        <tr><th scope="row">AICPA framework</th>
+          <td><div class="pp"><div data-who="public"><b>Public</b><span>Not allowed<span class="note" style="display:block">Public companies must use U.S. GAAP.</span></span></div><div data-who="private"><b>Private</b><span><span class="mark">FRF for SMEs</span> (optional)<span class="note" style="display:block">A simpler framework the AICPA wrote for small and medium-sized private businesses. It is <b>not</b> GAAP.</span></span></div></div></td>
+          <td><div class="note">Doesn't apply: it's a framework for the F/S, not for controls.</div></td></tr>
+        <tr><th scope="row">Audit standards</th>
+          <td><div class="pp"><div data-who="public"><b>Public</b><span><span class="mark">PCAOB</span> standards</span></div><div data-who="private"><b>Private</b><span><span class="mark">GAAS</span> (AICPA)</span></div></div></td>
+          <td><div class="pp"><div data-who="public"><b>Public</b><span>PCAOB standards (AS 2201)</span></div><div data-who="private"><b>Private</b><span>GAAS (AICPA)</span></div></div></td></tr>
+        <tr><th scope="row">Issues</th>
+          <td><div class="main">Material <u>misstatement</u></div></td>
+          <td><div class="main">Material <u>weakness</u></div></td></tr>
+        <tr><th scope="row">Opinions</th>
+          <td><div class="op"><span class="o-u">Unqualified</span><span class="o-q">Qualified</span><span class="o-a">Adverse</span><span class="o-d">Disclaimer</span></div></td>
+          <td><div class="op"><span class="o-u">Unqualified</span><span class="o-a">Adverse</span><span class="o-d">Disclaimer</span></div><div class="note" style="margin-top:4px">1 material weakness = adverse; no qualified opinion on controls; a scope limitation means disclaim or withdraw</div></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="who">
+    <h3>Who sets what</h3>
+    <div class="wgrid">
+      <div><b>FASB</b>U.S. GAAP, for public <i>and</i> private companies</div>
+      <div><b>SEC</b>Requires public companies to use U.S. GAAP and get audited</div>
+      <div><b>PCAOB</b>Audit standards for public companies</div>
+      <div><b>AICPA</b>Audit standards (GAAS) for private companies, plus the optional FRF for SMEs. It does <u>not</u> set GAAP.</div>
+      <div><b>COSO</b>The internal control framework</div>
+    </div>
+  </div>
+  <div class="big">
+    <div class="side fs"><h3>Material misstatement</h3><p>A problem in the numbers: the F/S are materially wrong.</p></div>
+    <div class="neq" aria-label="is not the same as">≠</div>
+    <div class="side ic"><h3>Material weakness</h3><p class="q">A material weakness is a deficiency, or a combination of deficiencies, in internal control over financial reporting, such that there is a reasonable possibility that a material misstatement of the company&rsquo;s annual or interim financial statements will not be prevented or detected on a timely basis.<span class="plain">In plain terms: a problem in the process. The controls might not prevent or catch a material misstatement, even if the F/S turn out to be right.</span><span class="src">Source: PCAOB AS 2201.A7 (exact wording)</span></p><p class="q rule"><b>1 material weakness = adverse opinion on internal control.</b> If there are deficiencies that, individually or in combination, result in one or more material weaknesses, the auditor must express an adverse opinion on the company&rsquo;s internal control over financial reporting, unless there is a restriction on the scope of the engagement.<span class="src">Source: PCAOB AS 2201.90 (exact wording)</span></p></div>
+  </div>
+  <p class="foot">Public companies: the auditor&rsquo;s opinion on internal control is required only for accelerated and large accelerated filers (SOX 404(b)), and that audit is performed together with the F/S audit (an integrated audit, AS 2201). Smaller public companies include management&rsquo;s own assessment of internal control, without an auditor&rsquo;s opinion on it. For private companies both are optional.</p>
+  <footer class="credit">© 2026 Paul Richardson, PhD, CPA. All rights reserved.<br>Chapter numbers refer to Arens, Elder, Beasley &amp; Hogan, <i>Auditing and Assurance Services</i> (18th ed., Pearson, 2024). Quoted definitions are from PCAOB auditing standards (pcaobus.org); all other wording is the author&rsquo;s own. “In plain terms” notes are study aids; know the formal definitions for exams.</footer>
+</div>
+
+<script>
+document.querySelectorAll('.toggle button').forEach(b => b.addEventListener('click', () => {
+  document.querySelectorAll('.toggle button').forEach(x => x.setAttribute('aria-pressed', x === b));
+  document.body.dataset.filter = b.dataset.f;
+}));
+</script>
+
+</body>
+</html>

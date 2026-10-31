@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+.home{color:var(--blue);font-size:13px;font-weight:600;text-decoration:none;margin-left:auto}
+.home:hover{text-decoration:underline}
+</style>
+<title>Subsequent Events Timeline</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=Patrick+Hand&display=swap">
+<style>
+/* Layout: scenario picker → timeline (YE → report date → filing → later) with lettered events → verdict card for the picked scenario.
+   Hypothetical example. Same palette as the other pages. */
+:root{
+  --bg:#f4f6f9; --panel:#ffffff; --ink:#1b1e27; --muted:#626a79; --rule:#dce1e8; --soft:#eef1f5;
+  --blue:#1f45c4; --blue-t:#e7edfc; --green:#23803a; --green-t:#e4f2e7;
+  --orange:#cf5f0e; --orange-t:#fcefe2; --red:#c42b2b; --red-t:#fbe8e8; --violet:#5b44c2; --violet-t:#efecfb;
+  --f-sans:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-hand:'Patrick Hand','Comic Neue','Segoe Print','Bradley Hand',cursive;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12151c; --panel:#1a1e27; --ink:#e7e9ee; --muted:#9ca3b2; --rule:#2c3340; --soft:#232834;
+  --blue:#8ea9ff; --blue-t:#1c2546; --green:#6cc77f; --green-t:#15301d;
+  --orange:#f3a05c; --orange-t:#3a2614; --red:#ff8080; --red-t:#3c1b1d; --violet:#b6a4ff; --violet-t:#262046; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12151c; --panel:#1a1e27; --ink:#e7e9ee; --muted:#9ca3b2; --rule:#2c3340; --soft:#232834;
+  --blue:#8ea9ff; --blue-t:#1c2546; --green:#6cc77f; --green-t:#15301d;
+  --orange:#f3a05c; --orange-t:#3a2614; --red:#ff8080; --red-t:#3c1b1d; --violet:#b6a4ff; --violet-t:#262046; color-scheme:dark}
+body{background:var(--bg);color:var(--ink);font-family:var(--f-sans);font-size:15.5px;line-height:1.5}
+.wrap{max-width:1160px;margin:0 auto;padding:20px 16px 48px;display:grid;gap:14px}
+header{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px}
+h1{font-size:26px;line-height:1.15;margin:0;font-weight:700;letter-spacing:-.01em}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.lede{margin:0;color:var(--muted);max-width:78ch}
+.picker{display:flex;flex-wrap:wrap;gap:8px}
+.picker button{font:inherit;font-size:14px;color:var(--ink);background:var(--panel);border:1.5px solid var(--rule);border-radius:999px;padding:5px 12px 5px 6px;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.picker button b{display:inline-grid;place-items:center;min-width:26px;height:26px;border-radius:999px;color:var(--panel);font-size:12.5px;padding:0 4px}
+.picker button[aria-pressed="true"]{border-color:var(--ink);background:var(--soft);font-weight:600}
+.picker button:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.s-A{background:var(--blue)}.s-B{background:var(--violet)}.s-C{background:var(--green)}.s-R{background:var(--red)}
+figure{margin:0;background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:10px;overflow-x:auto}
+figure svg{display:block;width:100%;height:auto;min-width:900px}
+svg text{font-family:var(--f-sans);fill:var(--ink)}
+.hand{font-family:var(--f-hand)!important;font-size:17px}
+.t-date{font-size:13.5px;font-weight:600}
+.t-sub{font-size:12.5px;fill:var(--muted)}
+.c-blue{fill:var(--blue)!important}.c-green{fill:var(--green)!important}.c-orange{fill:var(--orange)!important}.c-red{fill:var(--red)!important}.c-violet{fill:var(--violet)!important}.c-muted{fill:var(--muted)!important}.c-panel{fill:var(--panel)!important}
+.f-A{fill:var(--blue)}.f-B{fill:var(--violet)}.f-C{fill:var(--green)}.f-R{fill:var(--red)}.f-O{fill:var(--orange)}
+.ev{transition:opacity .2s}
+.ev.dim{opacity:.22}
+.ev.on circle{stroke:var(--ink);stroke-width:2.5}
+.lead{stroke-width:1.3;fill:none}
+@media (prefers-reduced-motion: reduce){.ev{transition:none}}
+.verdict{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:14px}
+.card{background:var(--panel);border:1px solid var(--rule);border-radius:10px;padding:14px 16px;min-width:0}
+.card .kind{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.card h3{margin:2px 0 6px;font-size:19px}
+.card p{margin:0 0 8px}
+.card p:last-child{margin-bottom:0}
+.pill{display:inline-block;font-weight:700;border-radius:6px;padding:1px 8px;font-size:14px}
+.p-yes{background:var(--green-t);color:var(--green)}.p-no{background:var(--soft);color:var(--muted)}.p-sdf{background:var(--orange-t);color:var(--orange)}.p-dec{background:var(--red-t);color:var(--red)}
+table{border-collapse:collapse;font-size:14px;margin-top:6px}
+td,th{padding:3px 10px 3px 0;text-align:left;font-variant-numeric:tabular-nums}
+th{color:var(--muted);font-weight:600;font-size:12.5px;text-transform:uppercase;letter-spacing:.04em}
+s{color:var(--muted)}
+.defs{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px}
+.defs .card h3{font-size:17px}
+.defs .plain{display:block;font-style:italic;color:var(--blue);font-size:14px;margin-top:6px}
+.src{display:block;font-size:12.5px;color:var(--muted);margin-top:4px}
+.how{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.how div{font-family:var(--f-hand);font-size:19px;background:var(--panel);border:1px dashed var(--rule);border-radius:10px;padding:10px 14px}
+@media (max-width:760px){.verdict{grid-template-columns:1fr}h1{font-size:22px}}
+.credit{font-size:12.5px;color:var(--muted);border-top:1px solid var(--rule);padding-top:12px;margin-top:8px}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <h1>Subsequent Events Timeline</h1>
+    <span class="eyebrow">Chapter 24 · hypothetical example</span>
+      <a class="home" href="../">← All diagrams</a>
+  </header>
+  <p class="lede">Ridgeline Motors' year ends 12/31, the audit report is dated Feb 5, and the 10-K is filed Feb 6. When something happens, ask: does it relate to the 12/31 F/S, and did we learn about it before or after the report? Pick a scenario.</p>
+
+  <div class="picker" role="group" aria-label="Scenarios">
+    <button data-s="A"><b class="s-A">A</b>Summit won't pay</button>
+    <button data-s="B"><b class="s-B">B</b>New sale after YE</button>
+    <button data-s="C"><b class="s-C">C</b>Crestway going bankrupt</button>
+    <button data-s="C3"><b class="s-R">C3</b>Between report &amp; filing</button>
+    <button data-s="C2"><b class="s-R">C2</b>After filing</button>
+    <button data-s="B2"><b class="s-B">B2</b>Next year's problem</button>
+  </div>
+
+  <figure>
+<svg id="tl" viewBox="0 0 1100 320" role="img" aria-label="Timeline from before year end through 12/31, January, the February 5 report date, the February 6 filing, and March. The subsequent events period runs from year end to the report date; subsequent discovery of facts applies when, after the report date, the auditor learns of facts that already existed at the report date. Lettered events mark each scenario.">
+  <!-- periods -->
+  <path d="M200 112 v-10 h490 v10" fill="none" style="stroke:var(--blue);stroke-width:2"/>
+  <text x="445" y="90" text-anchor="middle" class="hand c-blue" style="font-size:19px">Subsequent events period · busy season</text>
+  <text x="445" y="132" text-anchor="middle" class="hand c-muted" style="font-size:15px">anything material that relates to last year → we do audit procedures</text>
+  <path d="M700 112 v-10 h370 v10" fill="none" style="stroke:var(--orange);stroke-width:2"/>
+  <text x="885" y="90" text-anchor="middle" class="hand c-orange" style="font-size:19px">Subsequent discovery of facts</text>
+  <text x="885" y="132" text-anchor="middle" class="hand c-muted" style="font-size:15px">facts that existed at the report date,</text><text x="885" y="149" text-anchor="middle" class="hand c-muted" style="font-size:15px">learned after it</text>
+  <text x="730" y="48" text-anchor="middle" class="hand c-red" style="font-size:16px">auditor</text>
+  <text x="730" y="64" text-anchor="middle" class="hand c-red" style="font-size:16px">decides</text>
+
+  <!-- axis -->
+  <line x1="30" y1="200" x2="1080" y2="200" style="stroke:var(--ink);stroke-width:2"/>
+  <g style="stroke:var(--ink);stroke-width:2">
+    <line x1="200" y1="192" x2="200" y2="208"/><line x1="290" y1="194" x2="290" y2="206"/>
+    <line x1="370" y1="194" x2="370" y2="206"/><line x1="450" y1="194" x2="450" y2="206"/>
+    <line x1="530" y1="194" x2="530" y2="206"/><line x1="690" y1="192" x2="690" y2="208"/>
+    <line x1="770" y1="192" x2="770" y2="208"/><line x1="990" y1="194" x2="990" y2="206"/>
+  </g>
+  <text x="200" y="226" text-anchor="middle" class="t-date">12/31</text><text x="200" y="242" text-anchor="middle" class="t-sub">year end</text>
+  <text x="290" y="226" text-anchor="middle" class="t-date">Jan 5</text>
+  <text x="370" y="226" text-anchor="middle" class="t-date c-orange">Jan 10</text><text x="370" y="242" text-anchor="middle" class="t-sub">unaudited F/S</text>
+  <text x="450" y="226" text-anchor="middle" class="t-date">Jan 14</text>
+  <text x="530" y="226" text-anchor="middle" class="t-date">Jan 20</text>
+  <text x="690" y="226" text-anchor="middle" class="t-date">Feb 5</text><text x="700" y="242" text-anchor="end" class="t-sub">opinion date</text>
+  <text x="770" y="226" text-anchor="middle" class="t-date">Feb 6</text><text x="760" y="242" text-anchor="start" class="t-sub">filed on EDGAR</text>
+  <text x="990" y="226" text-anchor="middle" class="t-date">Mar 20</text>
+
+  <!-- events -->
+  <g class="ev" data-s="A">
+    <circle cx="80" cy="200" r="13" class="f-A"/><text x="80" y="205" text-anchor="middle" class="c-panel" style="font-size:12px;font-weight:700">A</text>
+    <text x="34" y="160" class="hand c-blue">big sale to Summit (material)</text>
+    <path d="M80 166 L80 186" class="lead" style="stroke:var(--blue)"/>
+    <circle cx="450" cy="200" r="13" class="f-A"/><text x="450" y="205" text-anchor="middle" class="c-panel" style="font-size:12px;font-weight:700">A</text>
+    <text x="450" y="276" text-anchor="middle" class="hand c-blue">customer refuses to pay</text>
+  </g>
+  <g class="ev" data-s="C C3 C2">
+    <circle cx="140" cy="200" r="13" class="f-C"/><text x="140" y="205" text-anchor="middle" class="c-panel" style="font-size:12px;font-weight:700">C</text>
+    <text x="34" y="276" class="hand c-green">sale to Crestway (material)</text>
+    <path d="M140 258 L140 214" class="lead" style="stroke:var(--green)"/>
+  </g>
+  <g class="ev" data-s="B B2">
+    <circle cx="290" cy="200" r="13" class="f-B"/><text x="290" y="205" text-anchor="middle" class="c-panel" style="font-size:12px;font-weight:700">B</text>
+    <text x="290" y="300" text-anchor="middle" class="hand c-violet">new sale to Crestway</text>
+  </g>
+  <g class="ev" data-s="C">
+    <circle cx="530" cy="200" r="13" class="f-C"/><text x="530" y="205" text-anchor="middle" class="c-panel" style="font-size:12px;font-weight:700">C</text>
+    <text x="560" y="300" text-anchor="middle" class="hand c-green">Crestway going bankrupt</text>
+  </g>
+  <g class="ev" data-s="C3">
+    <circle cx="730" cy="200" r="15" class="f-R"/><text x="730" y="205" text-anchor="middle" class="c-panel" style="font-size:11px;font-weight:700">C3</text>
+    <text x="740" y="300" text-anchor="middle" class="hand c-red">Crestway bankrupt</text>
+  </g>
+  <g class="ev" data-s="B2">
+    <circle cx="880" cy="200" r="15" class="f-B"/><text x="880" y="205" text-anchor="middle" class="c-panel" style="font-size:11px;font-weight:700">B2</text>
+    <text x="880" y="276" text-anchor="middle" class="hand c-violet">Crestway bankrupt</text>
+  </g>
+  <g class="ev" data-s="C2">
+    <circle cx="645" cy="200" r="9" class="f-R"/>
+    <text x="645" y="178" text-anchor="middle" class="hand c-red" style="font-size:15px">Feb 3: Crestway files (no one knows)</text>
+    <circle cx="990" cy="200" r="15" class="f-R"/><text x="990" y="205" text-anchor="middle" class="c-panel" style="font-size:11px;font-weight:700">C2</text>
+    <text x="1000" y="300" text-anchor="middle" class="hand c-red">auditor learns of it</text>
+  </g>
+</svg>
+  </figure>
+
+  <section class="verdict" aria-live="polite">
+    <article class="card">
+      <div class="kind" id="v-kind"></div>
+      <h3 id="v-name"></h3>
+      <p id="v-verdict"></p>
+      <p id="v-what"></p>
+    </article>
+    <article class="card" id="v-extra"></article>
+  </section>
+
+  <section class="defs" aria-label="PCAOB definitions">
+    <article class="card">
+      <div class="kind">Definition</div>
+      <h3>Subsequent events</h3>
+      <p>&ldquo;However, events or transactions sometimes occur subsequent to the balance-sheet date, but prior to the issuance of the financial statements, that have a material effect on the financial statements and therefore require adjustment or disclosure in the statements. These occurrences hereinafter are referred to as &lsquo;subsequent events.&rsquo;&rdquo;<span class="src">Source: PCAOB AS 2801.01 (exact wording)</span></p>
+      <p><span class="plain">In plain terms: two types. If the condition already existed at 12/31 (A, C), adjust the F/S (AS 2801.03). If the condition arose after 12/31, don&rsquo;t adjust, but disclose it if leaving it out would mislead (AS 2801.05). The auditor&rsquo;s subsequent events work runs to the report date (AS 2801.10).</span></p>
+    </article>
+    <article class="card">
+      <div class="kind">Definition</div>
+      <h3>Subsequent discovery of facts</h3>
+      <p>&ldquo;The procedures described in this section should be followed by the auditor who, subsequent to the date of the report upon audited financial statements, becomes aware that facts may have existed at that date which might have affected the report had he or she then been aware of such facts.&rdquo;<span class="src">Source: PCAOB AS 2905.01 (exact wording)</span></p>
+      <p><span class="plain">In plain terms: the fact had to exist at the report date; the auditor just didn&rsquo;t know. Something brand new after the report date doesn&rsquo;t count. If it would have changed the report and people are relying on the F/S, the client revises the F/S and the auditor reissues the report (AS 2905.05&ndash;.06).</span></p>
+    </article>
+  </section>
+
+  <section class="how">
+    <div>What to watch for: bankruptcies, major catastrophes (hurricane, tornado, war), lawsuits</div>
+    <div>How auditors find out: read the news, Google alerts for the client &amp; its customers, social media</div>
+    <div>The audit covers the F/S &amp; notes (Item 8), but auditors must read the entire 10-K for consistency</div>
+  </section>
+  <footer class="credit">© 2026 Paul Richardson, PhD, CPA. All rights reserved.<br>Chapter numbers refer to Arens, Elder, Beasley &amp; Hogan, <i>Auditing and Assurance Services</i> (18th ed., Pearson, 2024). Quoted definitions are from PCAOB auditing standards (pcaobus.org); all other wording is the author&rsquo;s own. “In plain terms” notes are study aids; know the formal definitions for exams.</footer>
+</div>
+
+<script>
+(function(){
+  const S = {
+    A: {kind:'Scenario A', name:'Summit won\'t pay',
+        verdict:'<span class="pill p-yes">Subsequent event</span> It relates to the 12/31 F/S: the receivable was on the books at year end.',
+        what:'Before year end Ridgeline made a large, material sale on account to Summit Sports Club. On Jan 14 the customer refuses to pay. Do more audit procedures on that receivable and adjust if needed.',
+        extra:'<div class="kind">Ask</div><p>Was the problem already there at 12/31? Collectibility of a year-end receivable is a 12/31 question, so it belongs in this year\'s F/S: a type 1 subsequent event, so the F/S are adjusted.</p><span class="src">PCAOB AS 2801.03</span>'},
+    B: {kind:'Scenario B', name:'A new sale after year end',
+        verdict:'<span class="pill p-no">Not a subsequent event</span> It doesn\'t relate to 12/31 balances.',
+        what:'On Jan 5 Ridgeline makes a new sale to Crestway Rentals. That\'s next year\'s transaction, so nothing changes in the 12/31 F/S.',
+        extra:'<div class="kind">Ask</div><p>Does this touch a 12/31 balance? If the transaction itself happened after year end, no.</p><span class="src">PCAOB AS 2801.01</span>'},
+    C: {kind:'Scenario C', name:'Crestway is going bankrupt',
+        verdict:'<span class="pill p-yes">Subsequent event</span> It relates to the 12/31 F/S: Crestway already owed Ridgeline at year end.',
+        what:'Before year end Ridgeline made a material sale to Crestway Rentals. On Jan 20 news breaks that Crestway is going bankrupt. Do additional procedures and ask: will Ridgeline get paid? Will it get all the money? Crestway says the best it can do is 50¢ on the dollar, so AR is written down.',
+        extra:'<div class="kind">Accounts receivable detail</div><table><tr><th>Customer</th><th>AR</th></tr><tr><td>Crestway</td><td><s>$20M</s> $10M</td></tr><tr><td>Summit</td><td>✓</td></tr><tr><td>Meadowbrook</td><td>✓</td></tr></table><p style="margin-top:8px"><b>Balance sheet AR:</b> <s>$800M</s> $790M</p><span class="src">Type 1 (adjust): PCAOB AS 2801.03</span>'},
+    C3:{kind:'Scenario C3', name:'Between the report date and the filing',
+        verdict:'<span class="pill p-dec">Auditor decides</span>',
+        what:'Crestway goes bankrupt after the Feb 5 report date but before the Feb 6 filing. The auditor\'s search for subsequent events ended Feb 5, but the report hasn\'t been released yet, so the auditor can\'t ignore what it now knows. If the F/S are updated for it, the auditor picks how to date the report: (1) dual-date it, keeping Feb 5 and dating only that note Feb 6, so responsibility after Feb 5 covers just this event; or (2) date the whole report Feb 6 and extend the subsequent events procedures to Feb 6.',
+        extra:'<div class="kind">Key date</div><p>The report date marks the end of the auditor\'s responsibility for searching out subsequent events.</p><span class="src">PCAOB AS 2801.10; AS 3110.05 (dual dating)</span>'},
+    C2:{kind:'Scenario C2', name:'After the 10-K is filed',
+        verdict:'<span class="pill p-sdf">Subsequent discovery of facts</span>',
+        what:'On March 20, after Ridgeline\'s 10-K is live on the SEC website, the auditor learns that Crestway had already filed for bankruptcy on Feb 3, before the report date. No one on the audit knew. The fact existed at the report date, so this is a subsequent discovery of facts. It would have changed the 12/31 AR, and investors are relying on the F/S, so Ridgeline issues revised F/S and the auditor reissues the report (for a public company, typically a 10-K/A, with an 8-K alerting investors).',
+        extra:'<div class="kind">What changes</div><p><b>Revised balance sheet:</b> AR $790M</p><p><b>Note to the revised F/S:</b> explains the $10M adjustment</p><span class="src">PCAOB AS 2905.01, .05&ndash;.06</span>'},
+    B2:{kind:'Scenario B2', name:'Next year\'s problem',
+        verdict:'<span class="pill p-no">Not a subsequent discovery of facts</span>',
+        what:'Crestway, the customer from the Jan 5 sale, goes bankrupt after the filing. That receivable didn\'t exist at 12/31, so it only matters for next year\'s audit.',
+        extra:'<div class="kind">Ask</div><p>Did the fact exist at the report date, and would it have changed the 12/31 F/S? No, so nothing is reissued.</p><span class="src">PCAOB AS 2905.01</span>'}
+  };
+  const btns = document.querySelectorAll('.picker button');
+  const evs = document.querySelectorAll('.ev');
+  function select(k){
+    btns.forEach(b => b.setAttribute('aria-pressed', b.dataset.s === k));
+    evs.forEach(e => { const on = e.dataset.s.split(' ').includes(k); e.classList.toggle('dim', !on); e.classList.toggle('on', on); });
+    const s = S[k];
+    document.getElementById('v-kind').textContent = s.kind;
+    document.getElementById('v-name').textContent = s.name;
+    document.getElementById('v-verdict').innerHTML = s.verdict;
+    document.getElementById('v-what').textContent = s.what;
+    document.getElementById('v-extra').innerHTML = s.extra;
+  }
+  btns.forEach(b => b.addEventListener('click', () => select(b.dataset.s)));
+  select('C');
+})();
+</script>
+
+</body>
+</html>

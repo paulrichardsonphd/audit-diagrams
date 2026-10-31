@@ -156,7 +156,7 @@ svg.blank .lbl{display:none}
 <div class="wrap">
   <header>
     <h1>The Audit Map</h1>
-    <span class="eyebrow">Chapters 8–12</span>
+    <span class="eyebrow">Chapters 8–24</span>
       <a class="home" href="../">← All diagrams</a>
   </header>
 
@@ -222,7 +222,33 @@ svg.blank .lbl{display:none}
     <text x="300" y="33" class="hand s c-blue">→ What are the odds the unaudited F/S will have a material misstatement?</text>
   </g>
 
+  <!-- Ch 13 · Audit phases on the timeline -->
+  <g class="layer" data-layer="ch13">
+    <line x1="175" y1="50" x2="1385" y2="50" class="k-ink" stroke-width="1.6"/>
+    <g class="k-violet" stroke-width="5" stroke-linecap="round">
+      <line x1="304" y1="120" x2="466" y2="120"/>
+      <line x1="476" y1="120" x2="784" y2="120"/>
+      <line x1="796" y1="120" x2="994" y2="120"/>
+      <line x1="1006" y1="120" x2="1034" y2="120"/>
+    </g>
+    <text x="385" y="139" text-anchor="middle" class="hand s c-violet">Phase I · plan</text>
+    <text x="630" y="139" text-anchor="middle" class="hand s c-violet">Phase II · interim: ToC &amp; STOT</text>
+    <text x="895" y="139" text-anchor="middle" class="hand s c-violet">Phase III · SAP &amp; TDB</text>
+    <text x="1020" y="139" text-anchor="start" class="hand s c-violet" dx="-10">IV · wrap up</text>
+  </g>
 
+  <!-- Ch 24 · Subsequent events / discovery of facts -->
+  <g class="layer" data-layer="ch24">
+    <line x1="175" y1="50" x2="1385" y2="50" class="k-ink" stroke-width="1.6"/>
+    <line x1="1040" y1="45" x2="1040" y2="55" class="k-ink" stroke-width="1.6"/>
+    <text x="1046" y="70" class="t-sub">Feb 6 · 10-K filed</text>
+    <text x="1000" y="87" text-anchor="middle" class="t-sub" style="font-size:12.5px">report date</text>
+    <path d="M790 150 v7 h210 v-7" fill="none" class="k-blue" stroke-width="2"/>
+    <text x="895" y="176" text-anchor="middle" class="hand s c-blue">subsequent events period</text>
+    <path d="M1005 42 v-7 h380 v7" fill="none" class="k-orange" stroke-width="2"/>
+    <text x="1195" y="24" text-anchor="middle" class="hand b c-orange">Subsequent discovery of facts</text>
+    <text x="1110" y="106" class="hand s c-orange">existed at the report date,</text><text x="1110" y="124" class="hand s c-orange">found after it → revise F/S</text>
+  </g>
 
   <!-- ================= STACK + OVERLAYS (shifted down under the timeline) ================= -->
   <g transform="translate(0,90)">
@@ -453,8 +479,8 @@ svg.blank .lbl{display:none}
       <text class="hand s c-ink" x="1194" y="143" style="font-weight:700">Public company</text>
       <text class="hand s c-ink" x="1194" y="161">• ICFR required (SOX 404);</text>
       <text class="hand s c-muted" x="1206" y="178">management's process</text>
-      <text class="hand s c-ink" x="1194" y="197">• auditor assesses CR, then</text>
-      <text class="hand s c-muted" x="1206" y="214">tests the controls (ToC)</text>
+      <text class="hand s c-ink" x="1194" y="197">• key controls evaluated,</text>
+      <text class="hand s c-muted" x="1206" y="214">then tested (ToC)</text>
       <text class="hand s c-ink" x="1194" y="233">• second opinion, on ICFR</text>
       <text class="hand s c-muted" x="1206" y="250">integrated audit:</text>
       <text class="hand s c-muted" x="1206" y="267">2 opinions</text>
@@ -463,11 +489,11 @@ svg.blank .lbl{display:none}
       <text class="hand s c-ink" x="1194" y="143" style="font-weight:700">Private company</text>
       <text class="hand s c-ink" x="1194" y="161">• controls optional:</text>
       <text class="hand s c-muted" x="1206" y="178">management's choice</text>
-      <text class="hand s c-ink" x="1194" y="197">• auditor still assesses CR</text>
-      <text class="hand s c-ink" x="1194" y="216">• no controls → CR = max</text>
-      <text class="hand s c-muted" x="1206" y="233">→ more planned evidence</text>
-      <text class="hand s c-ink" x="1194" y="252">• testing controls optional</text>
-      <text class="hand s c-muted" x="1206" y="269">(worth it to lower CR)</text>
+      <text class="hand s c-ink" x="1194" y="197">• key controls always</text>
+      <text class="hand s c-muted" x="1206" y="214">evaluated (walkthrough)</text>
+      <text class="hand s c-ink" x="1194" y="233">• ToC only to lower CR</text>
+      <text class="hand s c-ink" x="1194" y="252">• not relying → CR = max</text>
+      <text class="hand s c-muted" x="1206" y="269">→ more STOT &amp; TDB</text>
     </g>
   </g>
 
@@ -502,7 +528,37 @@ svg.blank .lbl{display:none}
     <text class="hand s c-red" x="1194" y="634">MW → adverse ICFR opinion</text>
   </g>
 
+  <!-- Ch 13 · Types of tests on the stack -->
+  <g class="layer" data-layer="ch13">
+    <rect x="181" y="425" width="42" height="26" rx="6" class="pill"/>
+    <text x="202" y="443" text-anchor="middle" style="font-size:13px;font-weight:700" class="c-violet">ToC</text>
+    <rect x="183" y="212" width="124" height="24" rx="6" class="pill"/>
+    <text x="245" y="229" text-anchor="middle" style="font-size:13px;font-weight:700" class="c-violet">STOT · SAP · TDB</text>
+    <rect x="1182" y="668" width="210" height="150" rx="8" class="box"/>
+    <text class="hand b c-violet" x="1194" y="690">Ch 13 · Test targets</text>
+    <text class="hand s c-ink" x="1194" y="711">ToC → the controls</text>
+    <text class="hand s c-ink" x="1194" y="728">STOT → the journal entries</text>
+    <text class="hand s c-ink" x="1194" y="745">TDB → ending balances</text>
+    <text class="hand s c-ink" x="1194" y="762">SAP → everything</text>
+    <text class="hand s c-violet" x="1194" y="784">ToC + STOT + SAP + TDB</text>
+    <text class="hand s c-violet" x="1194" y="801">= suff. &amp; app. evidence</text>
+  </g>
 
+  <!-- Ch 14 & 16 · Sales and collection cycle -->
+  <g class="layer" data-layer="ch1416">
+    <rect x="950" y="626" width="200" height="192" rx="8" class="box"/>
+    <path class="leader k-ink" d="M948 690 C 850 696, 760 732, 698 740" marker-end="url(#m-ink)"/>
+    <text class="hand b c-ink" x="962" y="648">Ch 14 &amp; 16 · Sales cycle</text>
+    <text class="hand s c-muted" x="962" y="667">order → ship → invoice → JE</text>
+    <text class="hand s c-blue" x="962" y="686">trace forward → completeness</text>
+    <text class="hand s c-blue" x="962" y="703">vouch backward → occurrence</text>
+    <text class="hand s c-green" x="962" y="723">key controls: credit OK,</text>
+    <text class="hand s c-green" x="974" y="739">prenum. docs, seg. of duties</text>
+    <text class="hand s c-red" x="962" y="759">STOT: vouch JEs to shipping</text>
+    <text class="hand s c-red" x="974" y="775">docs &amp; sales invoices</text>
+    <text class="hand s c-orange" x="962" y="795">TDB (Ch 16): confirm AR,</text>
+    <text class="hand s c-orange" x="974" y="811">aged trial balance</text>
+  </g>
 
   <!-- Band titles drawn last so arrows pass behind them -->
   <g class="layer" data-layer="audited"><text class="lbl halo t-struct c-blue" x="175" y="100">Audited F/S</text></g>
@@ -611,7 +667,8 @@ svg.blank .lbl{display:none}
       <h2><span class="tag">Ch 11</span>Internal control: public vs. private</h2>
       <p>Management's three objectives match Ch 8: reliable financial reporting, efficient and effective operations, and compliance with laws and regulations. The auditor's opinion covers financial reporting. Poor operations can still raise inherent risk.</p>
       <p><b>Public:</b> SOX 404 requires management to maintain and report on ICFR. For accelerated filers the auditor also opines on ICFR, so an integrated audit produces two opinions.</p>
-      <p><b>Private:</b> the reporting framework is up to the business: U.S. GAAP, IFRS, or a special-purpose framework (tax basis, cash basis, AICPA's FRF for SMEs). Controls are management's choice too. The auditor still assesses control risk; with no controls, CR is set at max and planned evidence goes up. Use the Public/Private switch above the diagram.</p>
+      <p><b>Private:</b> the reporting framework is up to the business: U.S. GAAP, IFRS, or a special-purpose framework (tax basis, cash basis, AICPA's FRF for SMEs). Internal controls are optional too: there's no SOX 404, so having them, and reporting on them, is management's choice. The auditor still assesses control risk; with no controls, CR is set at max and planned evidence goes up.</p>
+      <p><b>Key controls (both):</b> the controls that address significant risks. In every audit, public or private, the auditor evaluates their design and confirms they're in place, usually with a walkthrough (inquiry, observation, inspection). Testing whether they actually worked all year (tests of controls) is required in an integrated audit. In a private audit it's done only when the auditor relies on the controls to lower control risk; if not, CR is set at max and substantive testing goes up. Use the Public/Private switch above the diagram.</p>
       <p class="hint">COSO components: control environment, risk assessment, control activities, information &amp; communication, monitoring.</p>
     </article>
 
@@ -624,6 +681,28 @@ svg.blank .lbl{display:none}
       </dl>
       <p style="margin-top:8px"><b>ICFR opinion (public):</b> no material weakness → unqualified; material weakness → adverse (never qualified); scope limitation → disclaim or withdraw (PCAOB AS 2201).</p>
       <p class="hint">Ch 23 example: the monthly bank reconciliation is a key control over cash.</p>
+    </article>
+
+    <article class="card" data-card="ch13">
+      <h2><span class="tag">Ch 13</span>Tests, evidence &amp; phases</h2>
+      <p><b>Five types of tests:</b> risk assessment procedures, tests of controls, substantive tests of transactions, substantive analytical procedures, tests of details of balances. Least to most costly: SAP, risk assessment procedures, ToC, STOT, TDB.</p>
+      <p><b>Eight types of evidence:</b> physical examination, confirmation, inspection, recalculation, reperformance, analytical procedures, inquiry, observation.</p>
+      <p><b>Phases:</b> I plan (risk assessment, audit program) · II interim ToC &amp; STOT, any time during the year · III SAP &amp; TDB, after the client's F/S arrive · IV complete the audit and issue the report.</p>
+    </article>
+
+    <article class="card" data-card="ch1416">
+      <h2><span class="tag">Ch 14 &amp; 16</span>Sales &amp; collection cycle</h2>
+      <p>Classes of transactions: sales, cash receipts, sales returns and allowances, write-offs of uncollectible accounts, bad debt expense.</p>
+      <p><b>Direction matters:</b> tracing forward from source documents to the journal tests completeness; vouching backward from the journal to the documents tests occurrence.</p>
+      <p><b>Key controls</b> (address significant risks; identified in planning): separation of duties, proper authorization (e.g., credit approval before shipping), prenumbered documents, monthly statements, internal verification.</p>
+      <p><b>Ch 16 TDB on AR:</b> the nine balance-related objectives; confirmations (positive = stronger evidence, requires a response; negative = weaker, reply only if they disagree); aged trial balance for realizable value.</p>
+    </article>
+
+    <article class="card" data-card="ch24">
+      <h2><span class="tag">Ch 24</span>Completing the audit</h2>
+      <p><b>Subsequent events</b> (year end to report date): conditions that already existed at 12/31 get adjusted; conditions that arose after year end get disclosed if needed (PCAOB AS 2801).</p>
+      <p><b>Subsequent discovery of facts</b> (after the report date): the auditor learns of facts that already existed at the report date. If they would have changed the report and people are relying on the F/S, the client revises the F/S and the auditor reissues the report (PCAOB AS 2905).</p>
+      <p>Other final steps: going concern, management representation letter, reading the whole 10-K for consistency, evaluating results, and communicating with the audit committee.</p>
     </article>
   </section>
   <footer class="credit">© 2026 Paul Richardson, PhD, CPA. All rights reserved.<br>Chapter numbers refer to Arens, Elder, Beasley &amp; Hogan, <i>Auditing and Assurance Services</i> (18th ed., Pearson, 2024). Quoted definitions are from PCAOB auditing standards (pcaobus.org); all other wording is the author&rsquo;s own. “In plain terms” notes are study aids; know the formal definitions for exams.</footer>
@@ -644,7 +723,10 @@ svg.blank .lbl{display:none}
     {k:'arm',    ch:9,  tag:'Ch 9',      name:'Audit risk model',    g:['arm']},
     {k:'ch10',   ch:10, tag:'Ch 10',     name:'Fraud',               g:['ch10']},
     {k:'ch11',   ch:11, tag:'Ch 11',     name:'Public vs. private',  g:['ch11']},
-    {k:'ch12',   ch:12, tag:'Ch 12',     name:'Control deficiencies',g:['ch12']}
+    {k:'ch12',   ch:12, tag:'Ch 12',     name:'Control deficiencies',g:['ch12']},
+    {k:'ch13',   ch:13, tag:'Ch 13',     name:'Tests & phases',      g:['ch13']},
+    {k:'ch1416', ch:14, tag:'Ch 14·16',  name:'Sales cycle',         g:['ch1416']},
+    {k:'ch24',   ch:24, tag:'Ch 24',     name:'Completing the audit',g:['ch24']}
   ];
   const STEPS = [
     {ch:0, g:['econ'], t:'<b>Economic transactions.</b> The business sells, buys, pays, and borrows.'},
@@ -661,7 +743,10 @@ svg.blank .lbl{display:none}
     {ch:9, g:['arm'], t:'<b>Ch 9 · Audit risk model:</b> IR and CR set RoMM, the firm sets AAR, and we solve for PDR, which drives how much evidence we need.'},
     {ch:10, g:['ch10'], t:'<b>Ch 10 · Fraud:</b> incentive, opportunity, rationalization. Management override goes around the controls, so the audit has to respond to it directly.'},
     {ch:11, g:['ch11'], t:'<b>Ch 11 · Public vs. private:</b> SOX 404 makes ICFR required for public companies, and the auditor gives a second opinion on it. Flip the switch to see a private company.'},
-    {ch:12, g:['ch12'], t:'<b>Ch 12 · Zoom on one control:</b> a gap in a key control is a deficiency. How serious it is depends on likelihood, size, and compensating controls.'}
+    {ch:12, g:['ch12'], t:'<b>Ch 12 · Zoom on one control:</b> a gap in a key control is a deficiency. How serious it is depends on likelihood, size, and compensating controls.'},
+    {ch:13, g:['ch13'], t:'<b>Ch 13 · Each test has a target:</b> ToC tests the controls, STOT the journal entries, TDB the balances, SAP everything. The phases spread them across the year.'},
+    {ch:14, g:['ch1416'], t:'<b>Ch 14 &amp; 16 · Sales cycle:</b> trace forward for completeness, vouch backward for occurrence, and confirm AR at year end.'},
+    {ch:24, g:['ch24'], t:'<b>Ch 24 · Completing the audit:</b> subsequent events before the report date, subsequent discovery of facts after it.'}
   ];
   const ALLOWED = new Set(STEPS.flatMap(s => s.g).concat(['msLow','msUp','msTop']));
   const LAST = STEPS.length - 1;
@@ -724,7 +809,7 @@ svg.blank .lbl{display:none}
   }));
   function setEntity(e){
     entity = e;
-    // Ch 11: no controls at a private client → control risk at max
+    // Ch 11: private client, auditor not relying on controls → control risk at max
     const cr = document.getElementById(e === 'private' ? 'cr-H' : 'cr-M');
     cr.checked = true; updateARM(); render();
   }
