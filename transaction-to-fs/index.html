@@ -263,10 +263,10 @@ svg text{font-family:var(--f-sans);fill:var(--ink)}
       <text x="816" y="455" class="hand b c-violet">Test of details of balances</text>
       <text x="816" y="474" class="hand s c-muted">test the total balance</text>
     </g>
-    <path d="M30 616 v10 h1002 v-10" fill="none" class="k-violet" stroke-width="2"/>
-    <circle cx="430" cy="652" r="13" class="f-violet"/><text x="430" y="657" text-anchor="middle" class="c-panel" style="font-size:13px;font-weight:700">3</text>
-    <text x="450" y="658" class="hand b c-violet">Substantive analytical procedures</text>
-    <text x="728" y="658" class="hand s c-muted">across everything: flag potential issues</text>
+    <path d="M770 616 v10 h262 v-10" fill="none" class="k-violet" stroke-width="2"/>
+    <circle cx="784" cy="652" r="13" class="f-violet"/><text x="784" y="657" text-anchor="middle" class="c-panel" style="font-size:13px;font-weight:700">3</text>
+    <text x="804" y="658" class="hand b c-violet">Substantive analytical procedures</text>
+    <text x="804" y="678" class="hand s c-muted">test the balances: flag where to look</text>
     <text x="531" y="698" text-anchor="middle" class="hand b c-ink">ToC + STOT + SAP + TDB = sufficient &amp; appropriate evidence ⇒ reasonable assurance</text>
   </g>
 
@@ -341,7 +341,8 @@ svg text{font-family:var(--f-sans);fill:var(--ink)}
     </article>
     <article class="card" data-card="tests">
       <h2><span class="tag">Ch 13</span>Where each test points</h2>
-      <p><b>1 ToC</b> tests the client's process (e.g., credit approval before shipping). <b>2 STOT</b> tests individual entries against the transaction-related objectives. <b>3 SAP</b> runs analytics across everything to flag issues. <b>4 TDB</b> tests the ending balance (e.g., confirm AR).</p>
+      <p><b>1 ToC</b> tests the client's process (e.g., credit approval before shipping). <b>2 STOT</b> tests individual entries against the transaction-related objectives. <b>3 SAP</b> runs analytics on the balances (e.g., AR or sales vs. last year) to flag where to look. <b>4 TDB</b> tests the ending balance (e.g., confirm AR).</p>
+      <p>1 and 2 cover the 7 transaction-related objectives; 3 and 4 cover the 9 balance-related objectives.</p>
       <p class="hint">Good results from 1 and 2 let the auditor do less of 4.</p>
     </article>
     <article class="card" data-card="miss">
@@ -371,7 +372,7 @@ svg text{font-family:var(--f-sans);fill:var(--ink)}
     {g:'dir',    t:'<b>Direction matters.</b> Trace forward to test completeness; vouch backward to test occurrence.'},
     {g:'trao',   t:'<b>Transaction-related objectives</b> live on the individual entry: date (timing), accounts (classification), amounts (accuracy), and so on.'},
     {g:'brao',   t:'<b>Balance-related objectives</b> live on the ending balance: does the $300,000 of AR exist, is it complete, is it collectible?'},
-    {g:'tests',  t:'<b>Each test has a target:</b> ToC the process, STOT the entry, TDB the balance, and SAP everything.'},
+    {g:'tests',  t:'<b>Each test has a target:</b> ToC the process, STOT the entry, and SAP and TDB the balance.'},
     {g:'miss',   t:'<b>A known misstatement:</b> the JE says $1,500 but the invoice says $1,000.'}
   ];
   const LAST = STEPS.length - 1;
