@@ -13,7 +13,7 @@ Quoted definitions are from PCAOB auditing standards (pcaobus.org); all other wo
 | `why-audit/` | Why Audit? | 1 |
 | `assertions-to-evidence/` | Assertions to Evidence | 1, 6, 7, 13 |
 | `opinion-tree/` | Choosing the Audit Opinion | 3, 12 |
-| `fs-vs-ic/` | F/S vs. Internal Control | 3, 11–12 |
+| `fs-vs-ic/` | F/S Audit vs. ICFR Audit | 3, 11–12 |
 | `transaction-to-fs/` | Life of a Transaction | 6, 13–16 |
 | `materiality/` | Setting Materiality | 8 |
 | `audit-risk-model/` | Audit Risk Model | – |
