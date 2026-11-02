@@ -18,4 +18,5 @@ Quoted definitions are from PCAOB auditing standards (pcaobus.org); all other wo
 | `materiality/` | Materiality Walkthrough | 8 |
 | `audit-risk-model/` | Audit Risk Model | – |
 | `audit-map/` | The Audit Map | 8–24 |
+| `workpaper-walkthrough/` | Workpaper Walkthrough | 13, 14, 16 |
 | `subsequent-events/` | Subsequent Events Timeline | 24 |

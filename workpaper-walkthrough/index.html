@@ -1,0 +1,684 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>
+:root{padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0}
+img{max-width:100%}
+[hidden]{display:none!important}
+.home{color:var(--blue);font-size:13px;font-weight:600;text-decoration:none;margin-left:auto}
+.home:hover{text-decoration:underline}
+</style>
+<title>Workpaper Walkthrough</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&family=Patrick+Hand&display=swap">
+<style>
+/* Layout: binder tabs (A, A-1 … A-5) → workpaper on the left, evidence panel on the right (bottom sheet on phones) → study notes → check yourself.
+   Same tokens and type as the other pages; red hand-drawn tickmarks open the source documents behind them. */
+:root{
+  --bg:#f4f6f9; --panel:#ffffff; --ink:#1b1e27; --muted:#626a79; --rule:#dce1e8; --soft:#eef1f5;
+  --blue:#1f45c4; --blue-t:#e7edfc; --green:#23803a; --green-t:#e4f2e7;
+  --orange:#cf5f0e; --orange-t:#fcefe2; --red:#c42b2b; --red-t:#fbe8e8; --violet:#5b44c2; --violet-t:#efecfb;
+  --paper:#fffef9; --paper-rule:#e6e9df;
+  --f-sans:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-mono:'IBM Plex Mono',ui-monospace,'SFMono-Regular',Menlo,Consolas,monospace;
+  --f-hand:'Patrick Hand','Comic Neue','Segoe Print','Bradley Hand',cursive;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12151c; --panel:#1a1e27; --ink:#e7e9ee; --muted:#9ca3b2; --rule:#2c3340; --soft:#232834;
+  --blue:#8ea9ff; --blue-t:#1c2546; --green:#6cc77f; --green-t:#15301d;
+  --orange:#f3a05c; --orange-t:#3a2614; --red:#ff8080; --red-t:#3c1b1d; --violet:#b6a4ff; --violet-t:#262046;
+  --paper:#1d212a; --paper-rule:#2a303b; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --bg:#12151c; --panel:#1a1e27; --ink:#e7e9ee; --muted:#9ca3b2; --rule:#2c3340; --soft:#232834;
+  --blue:#8ea9ff; --blue-t:#1c2546; --green:#6cc77f; --green-t:#15301d;
+  --orange:#f3a05c; --orange-t:#3a2614; --red:#ff8080; --red-t:#3c1b1d; --violet:#b6a4ff; --violet-t:#262046;
+  --paper:#1d212a; --paper-rule:#2a303b; color-scheme:dark}
+
+body{background:var(--bg);color:var(--ink);font-family:var(--f-sans);font-size:15px;line-height:1.5}
+.wrap{max-width:1280px;margin:0 auto;padding:20px 16px 48px;display:grid;gap:14px}
+header{display:flex;flex-wrap:wrap;align-items:baseline;gap:6px 16px}
+h1{font-size:26px;line-height:1.15;margin:0;font-weight:700;letter-spacing:-.01em;text-wrap:balance}
+.eyebrow{font-size:12px;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.lede{margin:0;max-width:78ch}
+.lede b{font-weight:600}
+.how{display:flex;flex-wrap:wrap;gap:6px 22px;margin:0;padding:0;list-style:none;font-size:14px;color:var(--muted)}
+.how li{display:flex;gap:7px;align-items:baseline}
+.how .n{font-weight:700;color:var(--ink)}
+.hand{font-family:var(--f-hand)}
+
+/* binder tabs */
+.binder{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px}
+.tab{font:inherit;text-align:left;color:var(--ink);background:var(--panel);border:1px solid var(--rule);border-radius:10px;padding:9px 11px;cursor:pointer;display:grid;gap:1px;min-width:0}
+.tab:hover{border-color:var(--muted)}
+.tab:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.tab[aria-selected="true"]{border-color:var(--blue);background:var(--blue-t)}
+.tab .r{font-family:var(--f-mono);font-weight:500;font-size:13px;color:var(--muted)}
+.tab[aria-selected="true"] .r{color:var(--blue)}
+.tab .t{font-weight:600;font-size:14px;line-height:1.25}
+.tab .k{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:700}
+@media (max-width:980px){.binder{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media (max-width:520px){.binder{grid-template-columns:repeat(2,minmax(0,1fr))}}
+
+/* stage: workpaper + evidence */
+.stage{display:grid;grid-template-columns:minmax(0,1fr) 360px;gap:14px;align-items:start}
+.wp{background:var(--paper);border:1px solid var(--rule);border-radius:6px;padding:18px 20px 20px;min-width:0;box-shadow:0 1px 0 var(--rule)}
+.wp-top{display:grid;grid-template-columns:1fr auto;gap:10px 18px;align-items:start;border-bottom:2px solid var(--ink);padding-bottom:10px}
+.wp-co{font-weight:700;font-size:15px}
+.wp-title{font-size:19px;font-weight:700;line-height:1.2;margin:2px 0 0;text-wrap:balance}
+.wp-per{font-size:13.5px;color:var(--muted)}
+.wp-ref{font-family:var(--f-mono);font-size:22px;font-weight:500;border:2px solid var(--ink);border-radius:6px;padding:2px 12px;text-align:center;line-height:1.3}
+.wp-ref small{display:block;font-family:var(--f-sans);font-size:10.5px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700}
+.signoff{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:4px 20px;font-size:12.5px;color:var(--muted)}
+.signoff b{color:var(--ink);font-weight:600}
+.signoff .hand{font-size:16px;color:var(--blue)}
+.pbc{display:inline-block;border:1.5px solid var(--orange);color:var(--orange);font-weight:700;font-size:11px;letter-spacing:.08em;padding:1px 6px;border-radius:3px;transform:rotate(-3deg);margin-left:6px;vertical-align:2px}
+.sec{margin-top:14px}
+.sec h3{font-size:11.5px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);margin:0 0 3px;font-weight:700}
+.sec p{margin:0 0 6px;max-width:92ch}
+.sec ul{margin:0;padding-left:18px}
+.tbl{overflow-x:auto;margin-top:6px;-webkit-overflow-scrolling:touch}
+.tbl table{border-collapse:collapse;width:100%;font-size:13.5px;font-variant-numeric:tabular-nums}
+.tbl th{font-size:11px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);font-weight:700;text-align:left;padding:6px 8px;border-bottom:1.5px solid var(--ink);vertical-align:bottom;white-space:nowrap}
+.tbl td{padding:6px 7px;border-bottom:1px solid var(--paper-rule);white-space:nowrap;vertical-align:middle}
+.tbl .num{text-align:right}
+.tbl th.num{text-align:right}
+.tbl .mono{font-family:var(--f-mono);font-size:12.5px}
+.tbl tr.tot td{border-top:1.5px solid var(--ink);border-bottom:3px double var(--ink);font-weight:600}
+.tbl tr.sub td{border-top:1.5px solid var(--ink);font-weight:600}
+.tbl tr.xrow td{background:var(--red-t)}
+.tbl td.note{white-space:normal;min-width:180px;font-size:12.5px;color:var(--muted)}
+.tbl td.wrap{white-space:normal;min-width:170px}
+.swipe{display:none;font-size:12.5px;color:var(--muted);margin-top:4px}
+@media (max-width:760px){.swipe{display:block}}
+
+/* tickmarks and refs */
+.tm{font-family:var(--f-hand);font-size:17px;line-height:1;color:var(--red);background:none;border:0;border-radius:4px;padding:1px 3px;margin-left:3px;cursor:pointer;vertical-align:-1px}
+.tm:hover{background:var(--red-t)}
+.tm:focus-visible{outline:2px solid var(--red);outline-offset:1px}
+.tm.on{background:var(--red-t);box-shadow:0 0 0 1.5px var(--red)}
+.tm.x{display:inline-grid;place-items:center;width:21px;height:21px;padding:0;border:1.6px solid var(--red);border-radius:50%;font-size:15px;font-weight:700}
+.ref{font-family:var(--f-hand);font-size:17px;line-height:1;color:var(--violet);background:none;border:0;padding:1px 2px;cursor:pointer;text-decoration:underline;text-underline-offset:2px;text-decoration-thickness:1px}
+.ref:hover{background:var(--violet-t);border-radius:4px}
+.ref:focus-visible{outline:2px solid var(--violet);outline-offset:1px}
+.mnote{font-family:var(--f-hand);font-size:16px;color:var(--red)}
+.legend{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:3px 18px;font-size:13px;margin:0}
+.legend div{display:flex;gap:8px;align-items:baseline}
+.legend dt{font-family:var(--f-hand);font-size:17px;color:var(--red);min-width:26px;text-align:center}
+.legend dt.xx span{display:inline-grid;place-items:center;width:19px;height:19px;border:1.5px solid var(--red);border-radius:50%;font-size:14px}
+.legend dd{margin:0;color:var(--muted)}
+.finding{border-left:3px solid var(--red);background:var(--red-t);padding:8px 12px;border-radius:0 6px 6px 0;margin:6px 0 0}
+.finding.ok{border-color:var(--green);background:var(--green-t)}
+.finding p{margin:0 0 4px}.finding p:last-child{margin:0}
+.concl{font-weight:500}
+
+/* evidence panel */
+.ev{position:sticky;top:12px;max-height:calc(100vh - 24px);overflow:auto;background:var(--panel);border:1px solid var(--rule);border-radius:12px;padding:14px 16px;min-width:0}
+.ev-h{display:flex;align-items:baseline;gap:10px}
+.ev-h h2{font-size:16px;margin:0;font-weight:700;flex:1;text-wrap:balance}
+.ev .close{display:none;font:inherit;font-size:14px;color:var(--ink);background:var(--soft);border:1px solid var(--rule);border-radius:7px;padding:4px 10px;cursor:pointer}
+.ev .lab{font-size:11px;letter-spacing:.07em;text-transform:uppercase;color:var(--muted);font-weight:700;margin:10px 0 2px}
+.ev p{margin:0 0 6px}
+.res{display:inline-block;font-weight:700;font-size:13px;padding:2px 9px;border-radius:999px;margin-top:2px}
+.res.ok{background:var(--green-t);color:var(--green)}
+.res.x{background:var(--red-t);color:var(--red)}
+.res.note{background:var(--blue-t);color:var(--blue)}
+.ev-empty{color:var(--muted);font-size:14px}
+.ev-empty .big{font-family:var(--f-hand);font-size:22px;color:var(--red);display:block;margin-bottom:4px}
+.scrim{display:none}
+@media (max-width:980px){
+  .stage{grid-template-columns:1fr}
+  .ev{position:fixed;left:0;right:0;bottom:0;top:auto;max-height:78vh;border-radius:14px 14px 0 0;z-index:30;
+      padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));
+      padding-bottom:calc(16px + env(safe-area-inset-bottom,0px));box-shadow:0 -8px 30px rgba(0,0,0,.25);transform:translateY(105%);transition:transform .25s ease}
+  .ev.open{transform:none}
+  .ev .close{display:inline-block}
+  .scrim.open{display:block;position:fixed;inset:0;background:rgba(10,12,18,.35);z-index:29}
+}
+@media (prefers-reduced-motion: reduce){.ev{transition:none}}
+
+/* source documents */
+.d{--dc:var(--muted);border:1px solid var(--rule);border-top:4px solid var(--dc);border-radius:6px;background:var(--paper);padding:10px 12px 12px;font-size:12.5px;margin-top:8px;overflow-x:auto}
+.d.inv{--dc:var(--blue)}.d.bol{--dc:var(--orange)}.d.po{--dc:var(--green)}.d.so{--dc:var(--violet)}.d.conf{--dc:var(--red)}
+.d-head{display:flex;justify-content:space-between;gap:10px;align-items:baseline;border-bottom:1px solid var(--rule);padding-bottom:5px;margin-bottom:6px}
+.d-head b{font-size:13px}
+.d-type{font-family:var(--f-mono);font-size:11.5px;letter-spacing:.08em;color:var(--dc);font-weight:500;white-space:nowrap}
+.d-meta{display:grid;grid-template-columns:auto 1fr;gap:1px 10px;margin-bottom:6px}
+.d-meta span:nth-child(odd){color:var(--muted)}
+.d table{border-collapse:collapse;width:100%;font-variant-numeric:tabular-nums}
+.d th{font-size:10.5px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);text-align:left;font-weight:700;border-bottom:1px solid var(--rule);padding:3px 4px}
+.d td{padding:3px 4px;border-bottom:1px solid var(--paper-rule)}
+.d .num{text-align:right;white-space:nowrap}
+.d .gap td{color:var(--muted);text-align:center;font-style:italic}
+.d-total{display:flex;justify-content:flex-end;gap:12px;margin-top:6px;font-weight:700}
+.d-sig{margin-top:8px;display:flex;flex-wrap:wrap;gap:4px 18px;color:var(--muted)}
+.d-sig .hand{font-size:16px;color:var(--ink)}
+.d .script{font-family:var(--f-hand);font-size:16px;color:var(--blue)}
+.stamp{display:inline-block;border:2px solid var(--red);color:var(--red);font-weight:700;letter-spacing:.05em;transform:rotate(-3deg);padding:3px 8px;border-radius:4px;font-size:11px;margin-top:8px;text-transform:uppercase}
+.stamp.g{border-color:var(--green);color:var(--green)}
+.d p{margin:0 0 5px}
+.box-check{font-family:var(--f-mono)}
+mark.hl{background:var(--orange-t);color:inherit;outline:1.5px solid var(--orange);border-radius:3px;padding:0 2px}
+tr.hlrow td{background:var(--orange-t)}
+.dnote{font-size:12px;color:var(--muted);margin-top:4px}
+
+/* notes + quiz */
+.lower{display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:12px}
+.card{background:var(--panel);border:1px solid var(--rule);border-radius:10px;padding:14px 16px;min-width:0}
+.card h2{font-size:15px;margin:0 0 6px;font-weight:600;display:flex;gap:8px;align-items:baseline;flex-wrap:wrap}
+.card h2 .tag{font-size:11px;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);font-weight:700;white-space:nowrap}
+.card p{margin:0 0 8px}.card p:last-child{margin-bottom:0}
+.card ul{margin:0;padding-left:18px;display:grid;gap:4px}
+.pill{display:inline-block;font-size:11.5px;font-weight:700;letter-spacing:.04em;padding:2px 8px;border-radius:999px;background:var(--violet-t);color:var(--violet);margin-right:4px}
+.pill.o{background:var(--blue-t);color:var(--blue)}
+.quiz{display:grid;gap:8px}
+.quiz details{background:var(--panel);border:1px solid var(--rule);border-radius:10px;padding:10px 14px}
+.quiz summary{cursor:pointer;font-weight:600;list-style-position:outside}
+.quiz summary:focus-visible{outline:2px solid var(--blue);outline-offset:2px;border-radius:4px}
+.quiz details p{margin:8px 0 0;color:var(--ink)}
+.quiz details[open] summary{color:var(--blue)}
+h2.sh{font-size:17px;margin:8px 0 0;font-weight:600}
+.credit{font-size:12.5px;color:var(--muted);border-top:1px solid var(--rule);padding-top:12px;margin-top:8px}
+@media (max-width:700px){h1{font-size:22px}.wp{padding:14px 12px 16px}.wp-title{font-size:17px}.wp-ref{font-size:18px}}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+  <header>
+    <h1>Workpaper Walkthrough</h1>
+    <span class="eyebrow">Chapters 13, 14, 16</span>
+      <a class="home" href="../">← All diagrams</a>
+  </header>
+
+  <p class="lede">Part of a made-up audit file for <b>Ridgeline Tech Supply, Inc.</b>, a company that sells computer equipment to businesses, for the year ended December 31, 2025. These are the accounts receivable and sales workpapers a first-year associate might prepare. Every number ties, and a few things go wrong on purpose.</p>
+  <ul class="how">
+    <li><span class="n">1</span>Start with <b>A</b>, the lead schedule, and work down.</li>
+    <li><span class="n">2</span>Click a <span class="hand" style="color:var(--red);font-size:18px">red tickmark</span> to see the evidence behind it.</li>
+    <li><span class="n">3</span>Click a <span class="hand" style="color:var(--violet);font-size:18px;text-decoration:underline">W/P reference</span> to jump to that workpaper.</li>
+  </ul>
+
+  <nav class="binder" role="tablist" aria-label="Workpapers" id="binder"></nav>
+
+  <div class="stage">
+    <article class="wp" id="wp" role="tabpanel" aria-live="polite"></article>
+    <aside class="ev" id="ev" aria-label="Evidence"></aside>
+  </div>
+  <div class="scrim" id="scrim"></div>
+
+  <section class="lower" aria-label="Study notes">
+    <article class="card" id="note-what"></article>
+    <article class="card" id="note-see"></article>
+    <article class="card">
+      <h2><span class="tag">Every workpaper</span>The parts of a workpaper</h2>
+      <ul>
+        <li><b>Heading:</b> client, title, period, and the W/P reference that files it in the binder.</li>
+        <li><b>Sign-offs:</b> who prepared it, who reviewed it, and when.</li>
+        <li><b>Objective and procedure:</b> what the auditor was trying to learn, and exactly what was done, including where the sample came from.</li>
+        <li><b>Tickmarks and legend:</b> a shorthand for each step performed on each item.</li>
+        <li><b>Findings and conclusion:</b> what was found, how it was resolved, and what the auditor concluded.</li>
+      </ul>
+      <p class="hint" style="font-size:13px;color:var(--muted);margin-top:8px">The PCAOB requires documentation clear enough that an experienced auditor with no connection to the engagement could tell what was done, what evidence was obtained, what was concluded, and who did and reviewed the work (AS 1215, Audit Documentation).</p>
+    </article>
+  </section>
+
+  <h2 class="sh">Check yourself</h2>
+  <div class="quiz" id="quiz"></div>
+
+  <footer class="credit">© 2026 Paul Richardson, PhD, CPA. All rights reserved.<br>Chapter numbers refer to Arens, Elder, Beasley &amp; Hogan, <i>Auditing and Assurance Services</i> (18th ed., Pearson, 2024). All wording is the author&rsquo;s own. The company, customers, people, audit firm, and documents on this page are made up for teaching. Sales tax and freight are left out to keep the numbers simple, and the samples are smaller than a real audit would use.</footer>
+</div>
+
+<script>
+(function(){
+  /* ---------- helpers ---------- */
+  const $ = id => document.getElementById(id);
+  const fmt = n => { const s = Math.abs(n).toLocaleString('en-US'); return n < 0 ? '(' + s + ')' : s; };
+  const usd = n => '$' + fmt(n);
+  const dt = s => { const [y,m,d] = s.split('-'); return (+m) + '/' + (+d) + '/' + y.slice(2); };
+  const dtl = s => { const [y,m,d] = s.split('-'); return ['January','February','March','April','May','June','July','August','September','October','November','December'][m-1] + ' ' + (+d) + ', ' + y; };
+  const mon = s => { const [y,m] = s.split('-'); return ['January','February','March','April','May','June','July','August','September','October','November','December'][m-1] + ' ' + y; };
+  const addD = (s, n) => { const d = new Date(s + 'T12:00:00'); d.setDate(d.getDate() + n); return d.toISOString().slice(0,10); };
+  const H = (on, k, html) => on.has(k) ? '<mark class="hl">' + html + '</mark>' : html;
+
+  /* ---------- the made-up world ---------- */
+  const CO = 'Ridgeline Tech Supply, Inc.';
+  const FIRM = 'Hale &amp; Moreno LLP';
+  const FYE = '2025-12-31';
+  const PREP = {i:'KLM', role:'Staff'}, REV = {i:'DRT', role:'Senior'};
+  const PM = 45000;              // performance materiality from planning
+  const POP_N = 3412, POP_AMT = 9846210;
+
+  const ITEMS = {
+    LT14:['Business laptop, 14"',1140], LT16:['Workstation laptop, 16"',1890], MN27:['27" monitor',285],
+    DOCK:['USB-C docking station',185], SW24:['24-port network switch',640], KBM:['Keyboard and mouse set',45],
+    PRT:['Office laser printer',420], SRV:['1U rack server',4350]
+  };
+  const CUST = {
+    CH:{no:'C-1001', name:'Cedar Hollow ISD', who:'D. Kowalski', title:'Business Manager', limit:150000},
+    MV:{no:'C-1002', name:'Mesa Verde Logistics', who:'M. Reyes', title:'Controller', limit:125000},
+    OC:{no:'C-1003', name:'Oakline Credit Union', who:'T. Nguyen', title:'AP Supervisor', limit:100000},
+    PW:{no:'C-1004', name:'Prairie Wind Energy', who:'', title:'', limit:100000},
+    HP:{no:'C-1005', name:'Harlan &amp; Pike LLP', who:'S. Brandt', title:'Office Administrator', limit:75000},
+    BD:{no:'C-1006', name:'Brightwater Dental Group', who:'L. Okafor', title:'Office Manager', limit:60000},
+    NG:{no:'C-1007', name:'Northgate Clinics', who:'', title:'', limit:60000},
+    TP:{no:'C-1008', name:'Tall Pines Veterinary', who:'', title:'', limit:40000},
+    RA:{no:'C-1009', name:'Redbud Architects', who:'', title:'', limit:25000},
+    SR:{no:'C-1010', name:'Summit Ridge Realty', who:'', title:'', limit:25000}
+  };
+  // Sales. date = invoice date; ship = bill of lading date; sj = date recorded in the sales journal (defaults to invoice date)
+  const TX = [
+    {inv:'1046', date:'2025-01-14', c:'SR', po:'SRR-0112', bol:'5004', lines:[['LT14',6],['DOCK',6],['KBM',6]]},
+    {inv:'1201', date:'2025-02-06', c:'TP', po:'TPV-0031', bol:'5120', lines:[['LT14',2],['MN27',2]]},
+    {inv:'1388', date:'2025-03-11', c:'CH', po:'25-0417',  bol:'5320', lines:[['LT14',30],['KBM',30]]},
+    {inv:'1539', date:'2025-04-02', c:'MV', po:'MVL-9310', bol:'5541', lines:[['LT14',8],['DOCK',8]]},
+    {inv:'1712', date:'2025-04-29', c:'OC', po:'OCU-2291', bol:'5735', lines:[['SRV',2],['SW24',3]]},
+    {inv:'1880', date:'2025-05-21', c:'PW', po:'PWE-1844', bol:'5903', lines:[['SW24',4],['SRV',1]]},
+    {inv:'2240', date:'2025-06-17', c:'BD', po:'BDG-77',   bol:'6150', lines:[['MN27',8],['PRT',4]]},
+    {inv:'2481', date:'2025-07-08', c:'CH', po:'25-1102',  bol:'6377', lines:[['MN27',25],['PRT',5]]},
+    {inv:'2695', date:'2025-07-30', c:'HP', po:'HP-5530',  bol:'6520', lines:[['LT16',10],['DOCK',10],['MN27',20]]},
+    {inv:'2914', date:'2025-08-26', c:'SR', po:'SRR-0388', bol:'6840', lines:[['LT16',3]]},
+    {inv:'3561', date:'2025-09-18', c:'RA', po:'RA-318',   bol:'7045', lines:[['LT14',3],['MN27',6],['DOCK',3],['KBM',7],['PRT',2]], rec:8640, pay:[['2025-10-20','Check 4471',6840]]},
+    {inv:'3802', date:'2025-10-14', c:'BD', po:'BDG-112',  bol:'7212', lines:[['LT14',4],['KBM',4]]},
+    {inv:'3970', date:'2025-10-28', c:'MV', po:'MVL-9902', bol:'7395', lines:[['SRV',1],['SW24',4],['LT14',6]]},
+    {inv:'4205', date:'2025-11-18', c:'NG', po:'NGC-1450', bol:'7505', lines:[['MN27',12],['PRT',6]]},
+    {inv:'4296', date:'2025-11-25', c:'OC', po:'OCU-2540', bol:'7533', lines:[['LT14',10],['DOCK',10],['MN27',10]]},
+    {inv:'4388', date:'2025-12-12', c:'PW', po:'PWE-2175', bol:'7640', lines:[['SRV',2],['LT16',12],['DOCK',12],['MN27',12],['SW24',3]]},
+    {inv:'4467', date:'2025-12-22', c:'PW', po:'PWE-2210', bol:'7702', lines:[['LT14',10],['MN27',20],['DOCK',10],['PRT',6],['SW24',2]]},
+    {inv:'4489', date:'2025-12-29', c:'HP', po:'HP-5791',  bol:'7779', lines:[['LT14',4]]},
+    {inv:'4491', date:'2025-12-29', c:'SR', po:'SRR-0540', bol:'7780', lines:[['PRT',2],['KBM',4]]},
+    {inv:'4495', date:'2025-12-30', c:'CH', po:'25-1688',  bol:'7783', lines:[['DOCK',10]]},
+    {inv:'4500', date:'2025-12-31', c:'OC', po:'OCU-2611', bol:'7785', lines:[['SW24',2]]},
+    {inv:'4502', date:'2025-12-31', c:'TP', po:'TPV-0207', bol:'7789', ship:'2026-01-02', lines:[['LT16',4],['MN27',4],['KBM',4],['PRT',1]]},
+    {inv:'4503', date:'2025-12-31', c:'BD', po:'BDG-140',  bol:'7786', lines:[['MN27',3]]},
+    {inv:'4508', date:'2026-01-02', c:'MV', po:'MVL-0014', bol:'7787', lines:[['LT16',2]]},
+    {inv:'4519', date:'2026-01-02', c:'NG', po:'NGC-1612', bol:'7781', ship:'2025-12-30', lines:[['LT16',6],['DOCK',6]]},
+    {inv:'4523', date:'2026-01-05', c:'RA', po:'RA-402',   bol:'7791', lines:[['PRT',1]]},
+    {inv:'4525', date:'2026-01-05', c:'PW', po:'PWE-0019', bol:'7792', lines:[['SW24',3]]}
+  ];
+  TX.forEach(t => {
+    t.total = t.lines.reduce((s,[k,q]) => s + q * ITEMS[k][1], 0);
+    t.rec = t.rec || t.total;
+    t.ship = t.ship || t.date;
+    t.sj = t.sj || t.date;
+    t.poDate = addD(t.ship, -6);
+    t.so = 'SO-' + (16000 + (+t.inv));
+    t.soDate = addD(t.ship, -5);
+    t.appr = addD(t.ship, -4);
+  });
+  const T = Object.fromEntries(TX.map(t => [t.inv, t]));
+  const byBol = Object.fromEntries(TX.map(t => [t.bol, t]));
+
+  // Client's aged trial balance (PBC), unadjusted, 12/31/25: [code, current, 31-60, 61-90, over 90]
+  const AGING = [
+    ['CH', 58200, 38280, 0, 0], ['MV', 70015, 14200, 0, 0], ['OC', 56840, 16100, 0, 0],
+    ['PW', T['4388'].total + T['4467'].total, 0, 0, 0], ['HP', 48655, 0, 0, 0], ['BD', 31260, 8560, 0, 0],
+    ['NG', 27310, 0, 0, 0], ['TP', 18960, 0, 0, 0], ['RA', 10635, 0, 0, T['3561'].rec - T['3561'].total], ['SR', 9880, 0, 0, 0],
+    ['OTHER', 98412, 26880, 9746, 6566]
+  ];
+  const rowTot = r => r[1] + r[2] + r[3] + r[4];
+  const colTot = i => AGING.reduce((s,r) => s + r[i], 0);
+  const AR = colTot(1) + colTot(2) + colTot(3) + colTot(4);
+  const bal = c => rowTot(AGING.find(r => r[0] === c));
+  const ALLOW = -24300, PY_AR = 548912, PY_ALLOW = -21600;
+  // Proposed adjustments, built from the findings
+  const AJE = [
+    {n:1, amt:-(T['3561'].rec - T['3561'].total), wp:['A-2'], dr:'Sales', cr:'Accounts receivable', why:'Redbud invoice #3561 was keyed as ' + usd(T['3561'].rec) + '; the invoice, PO, and bill of lading support ' + usd(T['3561'].total) + '.'},
+    {n:2, amt:T['4519'].total, wp:['A-3','A-5'], dr:'Accounts receivable', cr:'Sales', why:'Northgate shipment on 12/30/25 (BOL #7781) was not billed until 1/2/26, so it was left out of 2025.'},
+    {n:3, amt:-T['4502'].total, wp:['A-5'], dr:'Sales', cr:'Accounts receivable', why:'Tall Pines invoice #4502 was dated and recorded 12/31/25, but the goods did not ship until 1/2/26 (BOL #7789).'}
+  ];
+  const AJE_NET = AJE.reduce((s,a) => s + a.amt, 0);
+  // Confirmations (A-4)
+  const CONF = [
+    {c:'CH', r:'agree'}, {c:'MV', r:'diff', diff:-14200, ck:'20914', paid:'2025-12-29', rcv:'2026-01-05', inv:'4290'},
+    {c:'OC', r:'agree'}, {c:'PW', r:'none'}, {c:'HP', r:'agree'}, {c:'BD', r:'agree'}
+  ];
+  CONF.forEach(f => { f.bal = bal(f.c); f.conf = f.r === 'agree' ? f.bal : f.r === 'diff' ? f.bal + f.diff : null; });
+  const CONF_BAL = CONF.reduce((s,f) => s + f.bal, 0);
+  const SENT = '2026-01-06', SECOND = '2026-01-20';
+  const PW_PAID = {date:'2026-01-16', ck:'88213', inv:'4388'};
+  // Cash receipts journal, January 2026 (excerpt)
+  const CRJ = [
+    ['2026-01-05', 'MV', 'Check 20914', 'Inv. 4290', 14200],
+    ['2026-01-07', 'OC', 'ACH', 'Inv. 4296', T['4296'].total],
+    ['2026-01-09', 'CH', 'Check 3307', 'Inv. 4210 and others', 38280],
+    ['2026-01-16', 'PW', 'Check 88213', 'Inv. 4388', T['4388'].total],
+    ['2026-01-21', 'BD', 'Check 1290', 'Inv. 4240 and others', 8560]
+  ];
+
+  /* ---------- source documents ---------- */
+  const custName = c => c === 'OTHER' ? 'All other customers (37)' : CUST[c].name;
+  const linesTbl = (t, on, prices) => '<table><thead><tr><th>Item</th><th class="num">Qty</th>' + (prices ? '<th class="num">Unit price</th><th class="num">Amount</th>' : '') + '</tr></thead><tbody>' +
+    t.lines.map(([k,q]) => '<tr><td>' + ITEMS[k][0] + '</td><td class="num">' + H(on,'qty',q) + '</td>' + (prices ? '<td class="num">' + H(on,'price',fmt(ITEMS[k][1])) + '</td><td class="num">' + fmt(q*ITEMS[k][1]) + '</td>' : '') + '</tr>').join('') + '</tbody></table>';
+
+  const DOC = {
+    inv: (t, on=new Set()) => '<div class="d inv"><div class="d-head"><b>' + CO + '</b><span class="d-type">SALES INVOICE</span></div>' +
+      '<div class="d-meta"><span>Invoice #</span><span>' + H(on,'no',t.inv) + '</span><span>Invoice date</span><span>' + H(on,'date',dt(t.date)) + '</span>' +
+      '<span>Bill to</span><span>' + H(on,'cust',CUST[t.c].name + ' (' + CUST[t.c].no + ')') + '</span><span>Customer PO</span><span>' + H(on,'po',t.po) + '</span>' +
+      '<span>Shipped</span><span>' + H(on,'ship', dt(t.ship) + ', BOL #' + t.bol) + '</span><span>Terms</span><span>Net 30 · FOB shipping point</span></div>' +
+      linesTbl(t, on, true) + '<div class="d-total"><span>Total due</span><span>' + H(on,'total',usd(t.total)) + '</span></div></div>',
+    bol: (t, on=new Set()) => '<div class="d bol"><div class="d-head"><b>Bill of lading</b><span class="d-type">SHIPPING DOCUMENT</span></div>' +
+      '<div class="d-meta"><span>BOL #</span><span>' + H(on,'no',t.bol) + '</span><span>Ship date</span><span>' + H(on,'date',dt(t.ship)) + '</span>' +
+      '<span>Ship from</span><span>' + CO + ', main warehouse</span><span>Ship to</span><span>' + H(on,'cust',CUST[t.c].name) + '</span>' +
+      '<span>Order</span><span>' + t.so + ' · Customer PO ' + t.po + '</span><span>Carrier</span><span>Statewide Freight Co.</span></div>' +
+      linesTbl(t, on, false) + '<div class="d-sig"><span>Shipper: <span class="hand">R. Diaz</span></span><span>Carrier: <span class="hand">picked up ' + dt(t.ship) + '</span></span></div>' +
+      '<div class="dnote">A bill of lading shows what left the building and when. It has no prices.</div></div>',
+    po: (t, on=new Set()) => '<div class="d po"><div class="d-head"><b>' + CUST[t.c].name + '</b><span class="d-type">PURCHASE ORDER</span></div>' +
+      '<div class="d-meta"><span>PO #</span><span>' + H(on,'no',t.po) + '</span><span>Date</span><span>' + dt(t.poDate) + '</span><span>Vendor</span><span>' + CO + '</span></div>' +
+      linesTbl(t, on, true) + '<div class="d-total"><span>PO total</span><span>' + H(on,'total',usd(t.total)) + '</span></div>' +
+      '<div class="d-sig"><span>Approved by buyer: <span class="hand">' + (CUST[t.c].who || 'J. Walsh') + '</span></span></div></div>',
+    so: (t, on=new Set()) => '<div class="d so"><div class="d-head"><b>' + CO + '</b><span class="d-type">SALES ORDER</span></div>' +
+      '<div class="d-meta"><span>Order #</span><span>' + t.so + '</span><span>Date</span><span>' + dt(t.soDate) + '</span><span>Customer</span><span>' + CUST[t.c].name + '</span>' +
+      '<span>Customer PO</span><span>' + t.po + '</span><span>Order total</span><span>' + usd(t.total) + '</span><span>Credit limit</span><span>' + usd(CUST[t.c].limit) + '</span></div>' +
+      H(on,'stamp','<span class="stamp g">Credit approved · J. Ortiz · ' + dt(t.appr) + '</span>') + '</div>',
+    sj: (month, hl, note) => {
+      const rows = TX.filter(t => t.sj.slice(0,7) === month).sort((a,b) => a.sj.localeCompare(b.sj) || a.inv.localeCompare(b.inv));
+      let body = '<tr class="gap"><td colspan="4">… other entries …</td></tr>';
+      rows.forEach(t => { body += '<tr class="' + (t.inv === hl ? 'hlrow' : '') + '"><td>' + dt(t.sj) + '</td><td>' + t.inv + '</td><td>' + CUST[t.c].name + '</td><td class="num">' + fmt(t.rec) + '</td></tr><tr class="gap"><td colspan="4">…</td></tr>'; });
+      return '<div class="d"><div class="d-head"><b>Sales journal · ' + mon(month + '-01') + '</b><span class="d-type">EXCERPT</span></div>' +
+        '<table><thead><tr><th>Date</th><th>Invoice</th><th>Customer</th><th class="num">Dr AR / Cr Sales</th></tr></thead><tbody>' + body + '</tbody></table>' + (note ? '<div class="dnote">' + note + '</div>' : '') + '</div>';
+    },
+    sl: (t) => {
+      const c = CUST[t.c];
+      let body = '<tr class="gap"><td colspan="4">… earlier activity …</td></tr><tr class="hlrow"><td>' + dt(t.sj) + '</td><td>Invoice ' + t.inv + '</td><td class="num">' + fmt(t.rec) + '</td><td class="num"></td></tr>';
+      (t.pay || []).forEach(p => { body += '<tr><td>' + dt(p[0]) + '</td><td>' + p[1] + ' (inv. ' + t.inv + ')</td><td class="num"></td><td class="num">' + fmt(p[2]) + '</td></tr>'; });
+      body += '<tr class="gap"><td colspan="4">… later activity …</td></tr>';
+      return '<div class="d"><div class="d-head"><b>AR subledger · ' + c.no + ' ' + c.name + '</b><span class="d-type">CUSTOMER ACCOUNT</span></div>' +
+        '<table><thead><tr><th>Date</th><th>Reference</th><th class="num">Charges</th><th class="num">Payments</th></tr></thead><tbody>' + body + '</tbody></table></div>';
+    },
+    tb: (hl) => {
+      const rows = [['1000','Cash',1284330],['1100','Accounts receivable, trade',AR],['1150','Allowance for doubtful accounts',ALLOW],['1200','Inventory',1906450],['4000','Sales',-POP_AMT],['5000','Cost of sales',6794880]];
+      return '<div class="d"><div class="d-head"><b>' + CO + ' · Trial balance, 12/31/25 (unadjusted)</b><span class="d-type">EXCERPT</span></div><table><thead><tr><th>Acct</th><th>Account</th><th class="num">Dr (Cr)</th></tr></thead><tbody>' +
+        rows.map(r => '<tr class="' + (hl.includes(r[0]) ? 'hlrow' : '') + '"><td>' + r[0] + '</td><td>' + r[1] + '</td><td class="num">' + fmt(r[2]) + '</td></tr>').join('') + '</tbody></table></div>';
+    },
+    py: () => '<div class="d"><div class="d-head"><b>2024 audit file · W/P A · AR lead (excerpt)</b><span class="d-type">PRIOR YEAR</span></div><table><thead><tr><th>Account</th><th class="num">12/31/24 audited</th></tr></thead><tbody>' +
+      '<tr class="hlrow"><td>Accounts receivable, trade</td><td class="num">' + fmt(PY_AR) + '</td></tr><tr class="hlrow"><td>Allowance for doubtful accounts</td><td class="num">' + fmt(PY_ALLOW) + '</td></tr></tbody></table>' +
+      '<div class="d-sig"><span>Signed off: <span class="hand">KLM / DRT</span></span></div></div>',
+    conf: (f) => {
+      const c = CUST[f.c];
+      let resp;
+      if (f.r === 'agree') resp = '<p><span class="box-check">[X]</span> The balance above agrees with our records.<br><span class="box-check">[&nbsp;&nbsp;]</span> The balance does not agree (explain below).</p><div class="d-sig"><span>Signed: <span class="hand">' + c.who + '</span>, ' + c.title + '</span><span>Date: <span class="hand">' + dt(addD(SENT, 7)) + '</span></span></div>';
+      else if (f.r === 'diff') resp = '<p><span class="box-check">[&nbsp;&nbsp;]</span> The balance above agrees with our records.<br><span class="box-check">[X]</span> The balance does not agree (explain below).</p><p><mark class="hl"><span class="script">Our records show ' + usd(f.conf) + '. We paid invoice ' + f.inv + ' for $14,200 on ' + dt(f.paid) + ', check #' + f.ck + '.</span></mark></p><div class="d-sig"><span>Signed: <span class="hand">' + c.who + '</span>, ' + c.title + '</span><span>Date: <span class="hand">' + dt(addD(SENT, 9)) + '</span></span></div>';
+      else resp = '<p><span class="box-check">[&nbsp;&nbsp;]</span> Agrees &nbsp; <span class="box-check">[&nbsp;&nbsp;]</span> Does not agree</p><span class="stamp">No reply · 2nd request sent ' + dt(SECOND) + ' · no reply by ' + dt('2026-02-03') + '</span>';
+      return '<div class="d conf"><div class="d-head"><b>' + CO + '</b><span class="d-type">CONFIRMATION REQUEST</span></div>' +
+        '<p>' + dtl(SENT) + '</p><p>To: ' + c.name + ', Accounts Payable</p>' +
+        '<p>Our auditors, ' + FIRM + ', are examining our financial statements. Our records show that you owed us <mark class="hl">' + usd(f.bal) + '</mark> at ' + dtl(FYE) + '. Please compare this to your records and reply <b>directly to our auditors</b>. This is not a request for payment.</p>' +
+        '<div class="d-sig" style="margin-bottom:8px"><span>' + CO + ': <span class="hand">A. Lindqvist, CFO</span></span></div>' +
+        '<div style="border-top:1px dashed var(--rule);padding-top:8px"><b>Customer response</b>' + resp + '</div></div>';
+    },
+    crj: (hl) => '<div class="d"><div class="d-head"><b>Cash receipts journal · January 2026</b><span class="d-type">EXCERPT</span></div><table><thead><tr><th>Date</th><th>Customer</th><th>Payment</th><th>Applied to</th><th class="num">Amount</th></tr></thead><tbody><tr class="gap"><td colspan="5">…</td></tr>' +
+      CRJ.map(r => '<tr class="' + (r[1] === hl ? 'hlrow' : '') + '"><td>' + dt(r[0]) + '</td><td>' + CUST[r[1]].name + '</td><td>' + r[2] + '</td><td>' + r[3] + '</td><td class="num">' + fmt(r[4]) + '</td></tr>').join('') +
+      '<tr class="gap"><td colspan="5">…</td></tr></tbody></table><div class="dnote">Each receipt was also agreed to the January bank statement deposit.</div></div>'
+  };
+
+  /* ---------- evidence registry ---------- */
+  let EV = [];
+  const S = (...a) => new Set(a);
+  // tm(symbol, evidence, isException, label)
+  const tm = (sym, ev, x) => { EV.push(ev); return '<button type="button" class="tm' + (x ? ' x' : '') + '" data-ev="' + (EV.length - 1) + '" aria-label="' + (x ? 'Exception: ' : 'Tickmark: ') + ev.title.replace(/<[^>]+>/g,'').replace(/"/g,'') + '">' + sym + '</button>'; };
+  const ref = (code, label) => '<button type="button" class="ref" data-go="' + code + '">' + (label || code) + '</button>';
+  const legend = items => '<dl class="legend">' + items.map(([s,t,x]) => '<div><dt' + (x ? ' class="xx"' : '') + '>' + (x ? '<span>' + s + '</span>' : s) + '</dt><dd>' + t + '</dd></div>').join('') + '</dl>';
+  const head = (ref_, title, extra) => '<div class="wp-top"><div><div class="wp-co">' + CO + '</div><h2 class="wp-title">' + title + '</h2><div class="wp-per">Year ended December 31, 2025' + (extra || '') + '</div></div>' +
+    '<div class="wp-ref"><small>W/P ref</small>' + ref_ + '</div>' +
+    '<div class="signoff"><span><b>Prepared by</b> <span class="hand">' + PREP.i + '</span> 1/26/26</span><span><b>Reviewed by</b> <span class="hand">' + REV.i + '</span> 2/4/26</span><span>' + FIRM + '</span></div></div>';
+  const sec = (h, body) => '<div class="sec"><h3>' + h + '</h3>' + body + '</div>';
+  const table = (thead, rows) => '<div class="tbl"><table><thead><tr>' + thead + '</tr></thead><tbody>' + rows + '</tbody></table></div><div class="swipe">Swipe the table sideways to see every column.</div>';
+  const note = (title, did, result, docs) => ({title, did, result, docs: docs || []});
+
+  /* ---------- workpapers ---------- */
+  const WP = {};
+
+  WP.A = {tab:'AR Lead Schedule', kind:'Lead', render(){
+    const tbT = note('Agreed to the trial balance', 'Compared the unadjusted balances on this lead schedule to the client’s trial balance at 12/31/25.', ['ok','Agrees'], [() => DOC.tb(['1100','1150'])]);
+    const pyT = note('Agreed to last year’s audited workpapers', 'Compared the prior-year column to the audited balances in last year’s file. This confirms the starting point and lets the auditor see how much the balance moved.', ['ok','Agrees'], [() => DOC.py()]);
+    const ft = (what, n) => note('Footed', 'Added the ' + what + ' column. The total of ' + fmt(n) + ' is correct.', ['ok','Foots']);
+    const cf = note('Cross-footed', 'Checked across the row: unadjusted ' + fmt(AR + ALLOW) + ' + adjustments ' + fmt(AJE_NET) + ' = adjusted ' + fmt(AR + ALLOW + AJE_NET) + '.', ['ok','Cross-foots']);
+    const ajeRefs = AJE.map(a => ref('AJE' + a.n, '(' + a.n + ')')).join(' ');
+    const rows =
+      '<tr><td class="mono">1100</td><td>Accounts receivable, trade</td><td>' + ref('A-1') + '</td><td class="num">' + fmt(PY_AR) + tm('PY', pyT) + '</td><td class="num">' + fmt(AR) + tm('TB', tbT) + '</td><td class="num">' + fmt(AJE_NET) + ' ' + ajeRefs + '</td><td class="num">' + fmt(AR + AJE_NET) + '</td></tr>' +
+      '<tr><td class="mono">1150</td><td>Allowance for doubtful accounts</td><td><span class="mnote">A-6*</span></td><td class="num">' + fmt(PY_ALLOW) + tm('PY', pyT) + '</td><td class="num">' + fmt(ALLOW) + tm('TB', tbT) + '</td><td class="num">–</td><td class="num">' + fmt(ALLOW) + '</td></tr>' +
+      '<tr class="tot"><td></td><td>Accounts receivable, net</td><td></td><td class="num">' + fmt(PY_AR + PY_ALLOW) + tm('F', ft('prior-year', PY_AR + PY_ALLOW)) + '</td><td class="num">' + fmt(AR + ALLOW) + tm('F', ft('unadjusted', AR + ALLOW)) + '</td><td class="num">' + fmt(AJE_NET) + '</td><td class="num">' + fmt(AR + ALLOW + AJE_NET) + tm('CF', cf) + '</td></tr>';
+    const ajeRows = AJE.map(a => '<tr id="aje' + a.n + '"><td class="mono">AJE ' + a.n + '</td><td class="wrap">Dr ' + a.dr + '<br>&nbsp;&nbsp;&nbsp;Cr ' + a.cr + '</td><td class="num">' + fmt(Math.abs(a.amt)) + '</td><td class="num">' + fmt(a.amt) + '</td><td class="note">' + a.why + ' ' + a.wp.map(w => ref(w)).join(' ') + '</td></tr>').join('') +
+      '<tr class="tot"><td></td><td>Net effect on AR</td><td></td><td class="num">' + fmt(AJE_NET) + '</td><td></td></tr>';
+    return head('A', 'Accounts Receivable: Lead Schedule') +
+      sec('Objective', '<p>Tie accounts receivable on the trial balance to the detailed testing, and show every adjustment in one place.</p>') +
+      table('<th>Acct</th><th>Account</th><th>W/P</th><th class="num">12/31/24<br>audited</th><th class="num">12/31/25<br>unadjusted</th><th class="num">Adjustments</th><th class="num">12/31/25<br>adjusted</th>', rows) +
+      '<p class="dnote" style="font-size:12.5px;color:var(--muted);margin:6px 0 0">* The allowance (realizable value) is tested on A-6, which is not part of this walkthrough.</p>' +
+      sec('Proposed adjusting entries', table('<th>AJE</th><th>Entry</th><th class="num">Amount</th><th class="num">Effect on AR</th><th>Reason and source</th>', ajeRows) +
+        '<p class="dnote" style="font-size:12.5px;color:var(--muted);margin:6px 0 0">The cost of sales and inventory side of AJE 2 and AJE 3 is on the inventory workpapers (not shown).</p>') +
+      sec('Legend', legend([['TB','Agreed to the client’s trial balance'],['PY','Agreed to prior-year audited workpapers'],['F','Footed'],['CF','Cross-footed']])) +
+      sec('Evaluation', '<p>Each misstatement is well below performance materiality of ' + usd(PM) + ' (planning memo, B-2), and they partly offset. The senior still looked at each one on its own. AJE 3 matters more than its size: billing a customer on the last day of the year for goods that had not shipped is the kind of thing that could signal pressure to hit sales targets, so the team asked management why it happened and documented the answer on the fraud workpapers (Ch. 10).</p><p>Management agreed to record AJE 1 through 3.</p>') +
+      sec('Conclusion', '<p class="concl">Based on the work on A-1 through A-6, accounts receivable is fairly stated at December 31, 2025, in all material respects, after AJE 1 through 3.</p>');
+  }};
+
+  WP['A-1'] = {tab:'Aged Trial Balance', kind:'TDB · Detail tie-in', render(){
+    const ft = (i, label) => note('Footed the ' + label + ' column', 'Added every customer in the ' + label + ' column. The total of ' + fmt(colTot(i)) + ' is correct.', ['ok','Foots']);
+    const cfT = note('Cross-footed', 'Added the column totals across: ' + [1,2,3,4].map(i => fmt(colTot(i))).join(' + ') + ' = ' + fmt(AR) + ', which matches the total column.', ['ok','Cross-foots']);
+    const tbT = note('Agreed the total to the general ledger', 'The aging total of ' + fmt(AR) + ' agrees with account 1100 on the trial balance. Until the list ties to the ledger, the auditor can’t rely on it to pick customers for confirmation.', ['ok','Agrees'], [() => DOC.tb(['1100'])]);
+    const notes = {RA:'Over-90 amount is the AJE 1 error ' + ref('AJE1','see A'), NG:'Missing the 12/30 shipment, AJE 2 ' + ref('A-3'), TP:'Includes invoice 4502 billed early, AJE 3 ' + ref('A-5')};
+    const confd = new Set(CONF.map(f => f.c));
+    const rows = AGING.map(r => '<tr><td class="mono">' + (r[0] === 'OTHER' ? '' : CUST[r[0]].no) + '</td><td>' + custName(r[0]) + '</td>' +
+      [1,2,3,4].map(i => '<td class="num">' + (r[i] ? fmt(r[i]) : '–') + '</td>').join('') + '<td class="num">' + fmt(rowTot(r)) + '</td><td>' + (confd.has(r[0]) ? ref('A-4') : '') + '</td><td class="note">' + (notes[r[0]] ? '<span class="mnote">' + notes[r[0]] + '</span>' : '') + '</td></tr>').join('') +
+      '<tr class="tot"><td></td><td>Total</td>' + [1,2,3,4].map((i,k) => '<td class="num">' + fmt(colTot(i)) + tm('F', ft(i, ['current','31–60 day','61–90 day','over-90 day'][k])) + '</td>').join('') +
+      '<td class="num">' + fmt(AR) + tm('CF', cfT) + tm('GL', tbT) + '</td><td>' + ref('A') + '</td><td></td></tr>';
+    return head('A-1', 'Accounts Receivable: Aged Trial Balance <span class="pbc">PBC</span>', ' · prepared by the client, tested by ' + PREP.i) +
+      sec('Objective', '<p>Make sure the client’s list of customer balances is complete and adds up before using it (balance-related objective: <b>detail tie-in</b>).</p>') +
+      sec('Procedure', '<ul><li>Obtained the aged trial balance from the client (PBC: prepared by client).</li><li>Footed and cross-footed it, and agreed the total to the general ledger.</li><li>Agreed the aging of a sample of invoices to invoice dates (separate testing, not shown).</li><li>Used this list to select customers for confirmation on A-4.</li></ul>') +
+      table('<th>Cust #</th><th>Customer</th><th class="num">Current</th><th class="num">31–60</th><th class="num">61–90</th><th class="num">Over 90</th><th class="num">Total</th><th>W/P</th><th>Notes</th>', rows) +
+      sec('Legend', legend([['F','Footed'],['CF','Cross-footed'],['GL','Agreed to the general ledger (trial balance account 1100)']])) +
+      sec('Conclusion', '<p class="concl">The aged trial balance foots, cross-foots, and agrees to the general ledger, so it can be used for further testing.</p>');
+  }};
+
+  WP['A-2'] = {tab:'Vouching Sales', kind:'STOT · Occurrence', render(){
+    const sample = ['1046','1388','1712','2240','2695','3561','3970','4205'];
+    const rows = sample.map(n => {
+      const t = T[n], bad = t.rec !== t.total, nm = CUST[t.c].name;
+      const sjT = note('Selected from the sales journal', 'This is where the test starts: an entry already recorded in the 2025 sales journal. Vouching asks whether the recorded sale really happened.', ['note','Starting point'], [() => DOC.sj(t.sj.slice(0,7), n)]);
+      const invT = bad
+        ? note('Compared to the sales invoice', 'Pulled invoice #' + n + ' and compared it to the journal entry. Customer and date agree, but the journal shows ' + usd(t.rec) + ' and the invoice shows ' + usd(t.total) + '. The PO and bill of lading support the invoice, so the journal entry is wrong.', ['x','Exception: ' + usd(t.rec - t.total) + ' overstated'], [() => DOC.sj(t.sj.slice(0,7), n), () => DOC.inv(t, S('total','no'))])
+        : note('Compared to the sales invoice', 'Pulled invoice #' + n + ' and compared the customer, date, and amount to the journal entry.', ['ok','Agrees: ' + usd(t.total)], [() => DOC.inv(t, S('total','no','date','cust'))]);
+      const bolT = note('Matched to the shipping document', 'Found bill of lading #' + t.bol + ': same customer, same items and quantities, shipped ' + dt(t.ship) + '. This is the key evidence that the goods actually left, so the sale occurred.', ['ok','Agrees'], [() => DOC.bol(t, S('no','date','qty','cust'))]);
+      const poT = note('Matched to the customer’s purchase order', 'Customer PO ' + t.po + ' shows the customer ordered these items at these prices.', ['ok','Agrees'], [() => DOC.po(t, S('no','price','qty','total'))]);
+      const crT = note('Checked credit approval', 'The sales order shows credit was approved on ' + dt(t.appr) + ', before shipping. That is a control, so this also gives a little evidence on the control, though credit approval mainly supports realizable value.', ['ok','Approved before shipment'], [() => DOC.so(t, S('stamp'))]);
+      const slT = note('Traced to the customer’s AR account', 'The invoice was posted to ' + nm + '’s account in the AR subledger' + (bad ? ', at the wrong amount of ' + usd(t.rec) + '. The customer paid the correct ' + usd(t.total) + ' on 10/20/25, leaving ' + usd(t.rec - t.total) + ' that will never be collected sitting in the account (see the over-90 column on A-1).' : '.'), bad ? ['x','Posted at the wrong amount'] : ['ok','Posted'], [() => DOC.sl(t)]);
+      return '<tr class="' + (bad ? 'xrow' : '') + '"><td>' + dt(t.sj) + '</td><td class="mono">' + n + '</td><td>' + nm + '</td><td class="num">' + fmt(t.rec) + tm('SJ', sjT) + '</td>' +
+        '<td class="num">' + fmt(t.total) + (bad ? tm('X', invT, true) : tm('✓', invT)) + '</td><td class="mono">' + t.bol + ' · ' + dt(t.ship) + tm('S', bolT) + '</td>' +
+        '<td class="mono">' + t.po + tm('P', poT) + '</td><td>' + dt(t.appr) + tm('C', crT) + '</td><td>' + (bad ? tm('L', slT, true) : tm('L', slT)) + '</td></tr>';
+    }).join('');
+    const tRA = T['3561'];
+    return head('A-2', 'Sales: Vouching Recorded Sales to Support') +
+      sec('Objective', '<p>Find out whether sales recorded in the journal really happened (transaction-related objective: <b>occurrence</b>, with evidence on <b>accuracy</b> too).</p>') +
+      sec('Procedure', '<p><b>Population:</b> the 2025 sales journal, ' + POP_N.toLocaleString() + ' invoices totaling ' + usd(POP_AMT) + '. <b>Sample:</b> 8 entries selected at random. For each one, started with the <b>recorded entry</b> and went <b>back</b> to the documents: the invoice, the bill of lading, the customer’s PO, the credit approval, and the posting to the customer’s account.</p>') +
+      table('<th>SJ date</th><th>Invoice</th><th>Customer</th><th class="num">Amount<br>per SJ</th><th class="num">Per<br>invoice</th><th>Shipping doc<br>(BOL · date)</th><th>Customer PO</th><th>Credit<br>approved</th><th>Posted<br>to AR</th>', rows) +
+      sec('Legend', legend([['SJ','Selected from the 2025 sales journal'],['✓','Agreed customer, date, and amount to the sales invoice'],['S','Agreed customer, items, and quantities to the bill of lading'],['P','Agreed items, quantities, and prices to the customer’s PO'],['C','Credit approval noted on the sales order before shipment'],['L','Traced posting to the customer’s AR subledger account'],['X','Exception, see findings',1]])) +
+      sec('Findings', '<div class="finding"><p><b>Invoice #3561, Redbud Architects.</b> Recorded at ' + usd(tRA.rec) + '; the invoice, PO, and bill of lading all support ' + usd(tRA.total) + '. Billing keyed the amount with two digits swapped. Sales and AR are overstated by ' + usd(tRA.rec - tRA.total) + '. The customer paid ' + usd(tRA.total) + ', so the difference still sits in Redbud’s account ' + ref('A-1') + '. Proposed ' + ref('AJE1','AJE 1') + '.</p><p>One error in eight is a known misstatement. The senior decides whether to test more and how to project it to the whole population (audit sampling, Ch. 15).</p></div>') +
+      sec('Conclusion', '<p class="concl">Except for the item above, the recorded sales tested occurred and are supported by shipping documents and customer orders.</p>');
+  }};
+
+  WP['A-3'] = {tab:'Tracing Shipments', kind:'STOT · Completeness', render(){
+    const sample = ['5120','5541','5903','6377','6840','7212','7533','7781'];
+    const rows = sample.map(b => {
+      const t = byBol[b], bad = t.sj.slice(0,4) !== '2025', nm = CUST[t.c].name;
+      const bolT = note('Selected from the shipping log', 'This is where the test starts: a bill of lading for goods that left the warehouse. Tracing asks whether every shipment made it into the sales journal.', ['note','Starting point'], [() => DOC.bol(t, S('no','date'))]);
+      const invT = note('Traced to the sales invoice', 'Found invoice #' + t.inv + ' for this shipment' + (bad ? '. It is dated ' + dt(t.date) + ', after year end, even though the goods shipped ' + dt(t.ship) + '.' : ', with the same customer, items, and quantities.'), bad ? ['x','Invoiced in the wrong year'] : ['ok','Agrees'], [() => DOC.inv(t, bad ? S('date','ship') : S('ship','qty','cust'))]);
+      const sjT = bad
+        ? note('Looked for the sale in the 2025 sales journal', 'Not there. The sale was recorded on ' + dt(t.sj) + ' in the January 2026 journal. With FOB shipping point terms, it belongs in 2025.', ['x','Missing from 2025: ' + usd(t.total) + ' understated'], [() => DOC.sj('2025-12', null, 'No entry for invoice ' + t.inv + ' or BOL #' + t.bol + ' in December.'), () => DOC.sj('2026-01', t.inv)])
+        : note('Traced to the sales journal', 'Invoice #' + t.inv + ' is recorded in the 2025 sales journal on ' + dt(t.sj) + ' for ' + usd(t.rec) + '.', ['ok','Recorded'], [() => DOC.sj(t.sj.slice(0,7), t.inv)]);
+      const slT = note('Traced to the customer’s AR account', 'Posted to ' + nm + '’s account on ' + dt(t.sj) + (bad ? ', in the wrong year.' : '.'), bad ? ['x','Posted in 2026'] : ['ok','Posted'], [() => DOC.sl(t)]);
+      return '<tr class="' + (bad ? 'xrow' : '') + '"><td class="mono">' + b + tm('S', bolT) + '</td><td>' + dt(t.ship) + '</td><td>' + nm + '</td><td class="mono">' + t.inv + '</td><td>' + dt(t.date) + (bad ? tm('X', invT, true) : tm('I', invT)) + '</td>' +
+        '<td class="num">' + fmt(t.total) + '</td><td>' + (bad ? tm('X', sjT, true) : tm('J', sjT)) + '</td><td>' + (bad ? tm('L', slT, true) : tm('L', slT)) + '</td></tr>';
+    }).join('');
+    const tNG = T['4519'];
+    return head('A-3', 'Sales: Tracing Shipments to the Sales Journal') +
+      sec('Objective', '<p>Find out whether every shipment was recorded as a sale (transaction-related objective: <b>completeness</b>).</p>') +
+      sec('Procedure', '<p><b>Population:</b> the 2025 shipping log (bills of lading #5001 to #7786). <b>Sample:</b> 8 shipments selected at random. For each one, started with the <b>shipping document</b> and went <b>forward</b> to the invoice, the sales journal, and the customer’s account.</p><p>The starting point matters. Picking from the sales journal can never find a sale that was left out of it, so a completeness test has to start from documents created when the goods ship.</p>') +
+      table('<th>BOL</th><th>Ship date</th><th>Customer</th><th>Invoice</th><th>Invoice date</th><th class="num">Amount</th><th>In 2025<br>sales journal</th><th>Posted<br>to AR</th>', rows) +
+      sec('Legend', legend([['S','Selected from the 2025 shipping log'],['I','Traced to the sales invoice: same customer, items, and quantities'],['J','Traced to the 2025 sales journal'],['L','Traced posting to the customer’s AR subledger account'],['X','Exception, see findings',1]])) +
+      sec('Findings', '<div class="finding"><p><b>BOL #7781, Northgate Clinics.</b> Goods shipped ' + dt(tNG.ship) + ' but invoice #4519 was not issued until ' + dt(tNG.date) + ' and the sale was recorded in January 2026. Billing said the shipping paperwork reached them after the holiday. 2025 sales and AR are understated by ' + usd(tNG.total) + '.</p><p>Because the error is about timing at year end, the team expanded cutoff testing on ' + ref('A-5') + '. Proposed ' + ref('AJE2','AJE 2') + '.</p></div>') +
+      sec('Conclusion', '<p class="concl">Except for the shipment above, shipments tested were billed and recorded as sales in the correct period.</p>');
+  }};
+
+  WP['A-4'] = {tab:'AR Confirmations', kind:'TDB · Existence', render(){
+    const rows = CONF.map(f => {
+      const c = CUST[f.c];
+      let mark, res;
+      if (f.r === 'agree') { mark = tm('R', note('Confirmation returned and agrees', c.name + ' replied directly to ' + FIRM + ' and agreed with the balance. Evidence from an outside party, sent straight to the auditor, is strong evidence that the receivable exists.', ['ok','Agrees'], [() => DOC.conf(f)])); res = 'Agrees'; }
+      else if (f.r === 'diff') {
+        mark = tm('D', note('Difference reconciled', c.name + ' reported ' + usd(f.conf) + ', which is $14,200 less than the client’s records. They mailed check #' + f.ck + ' on ' + dt(f.paid) + '. The client received and deposited it on ' + dt(f.rcv) + '. At 12/31/25 the money had not reached Ridgeline, so the receivable still existed. This is a timing difference, not a misstatement.', ['note','Timing difference, no misstatement'], [() => DOC.conf(f), () => DOC.crj('MV')]));
+        res = 'Payment in transit: check mailed ' + dt(f.paid) + ', received ' + dt(f.rcv) + '. No misstatement.';
+      } else {
+        const a = T['4388'], b = T['4467'];
+        mark = tm('N', note('No reply: alternative procedures', 'Sent a second request on ' + dt(SECOND) + ' and still received no reply, so the auditor gathered other evidence for each invoice making up the balance. See the CR and V tickmarks on this row.', ['note','Alternative procedures performed'], [() => DOC.conf(f)])) +
+          tm('CR', note('Subsequent cash receipt', 'Invoice #' + a.inv + ' for ' + usd(a.total) + ' was paid by check #' + PW_PAID.ck + ' on ' + dt(PW_PAID.date) + '. A customer paying the invoice after year end is good evidence it was a real receivable at 12/31/25.', ['ok','Paid ' + dt(PW_PAID.date)], [() => DOC.crj('PW'), () => DOC.inv(a, S('no','total'))])) +
+          tm('V', note('Vouched the unpaid invoice', 'Invoice #' + b.inv + ' for ' + usd(b.total) + ' was still unpaid at the end of fieldwork, so the auditor vouched it to the bill of lading (shipped ' + dt(b.ship) + ') and the customer’s PO.', ['ok','Supported'], [() => DOC.inv(b, S('no','total')), () => DOC.bol(b, S('no','date','qty')), () => DOC.po(b, S('no','total'))]));
+        res = 'Inv. ' + a.inv + ' ' + fmt(a.total) + ' paid ' + dt(PW_PAID.date) + '; inv. ' + b.inv + ' ' + fmt(b.total) + ' vouched to BOL and PO.';
+      }
+      return '<tr><td>' + c.name + '</td><td class="num">' + fmt(f.bal) + '</td><td>' + dt(SENT) + '</td><td>' + (f.r === 'none' ? 'None' : dt(addD(SENT, f.r === 'diff' ? 9 : 7))) + '</td>' +
+        '<td class="num">' + (f.conf === null ? '–' : fmt(f.conf)) + mark + '</td><td class="num">' + (f.conf === null ? '–' : fmt(f.conf - f.bal)) + '</td><td class="note">' + res + '</td></tr>';
+    }).join('') +
+      '<tr class="tot"><td>Total confirmed</td><td class="num">' + fmt(CONF_BAL) + '</td><td colspan="5"></td></tr>';
+    const cov = (CONF_BAL / AR * 100).toFixed(1);
+    return head('A-4', 'Accounts Receivable: Confirmation Summary') +
+      sec('Objective', '<p>Get evidence from customers that the balances on A-1 really exist at year end (balance-related objective: <b>existence</b>).</p>') +
+      sec('Procedure', '<ul><li>Selected the six largest balances from ' + ref('A-1') + '.</li><li>Sent positive confirmations on ' + dt(SENT) + '. The audit team mailed them and had replies come straight back to the firm, so the client could not change a request or a reply (PCAOB AS 2310, The Auditor’s Use of Confirmation).</li><li>Investigated every difference. Sent second requests to non-responders, then performed alternative procedures.</li></ul>') +
+      table('<th>Customer</th><th class="num">Balance<br>per A-1</th><th>Sent</th><th>Reply</th><th class="num">Amount<br>confirmed</th><th class="num">Difference</th><th>Resolution</th>', rows) +
+      '<p style="margin:6px 0 0;font-size:13.5px">Coverage: ' + usd(CONF_BAL) + ' of ' + usd(AR) + ' total AR, or ' + cov + '%. The remaining balances are covered by other testing.</p>' +
+      sec('Legend', legend([['R','Reply received directly by the auditor; agrees'],['D','Reply shows a difference; investigated and reconciled'],['N','No reply after a second request; alternative procedures performed'],['CR','Agreed to a payment received after year end (cash receipts journal and bank deposit)'],['V','Vouched to the invoice, bill of lading, and customer PO']])) +
+      sec('Findings', '<div class="finding ok"><p>No misstatements. A difference on a confirmation is not automatically an error: the Mesa Verde difference was a payment still in the mail at year end. A missing reply is not evidence either way, so Prairie Wind needed other evidence before the auditor could conclude.</p></div>') +
+      sec('Conclusion', '<p class="concl">The confirmed balances exist at December 31, 2025.</p>');
+  }};
+
+  WP['A-5'] = {tab:'Sales Cutoff', kind:'TDB · Cutoff', render(){
+    const bols = ['7779','7780','7781','7783','7785','7786','7787','7789','7791','7792'];
+    let rows = '', drew = false;
+    bols.forEach(b => {
+      const t = byBol[b], shipY = t.ship.slice(0,4), recY = t.sj.slice(0,4), bad = shipY !== recY;
+      if (!drew && shipY === '2026') { rows += '<tr><td colspan="8" style="text-align:center;font-family:var(--f-hand);font-size:16px;color:var(--red);border-bottom:2px dashed var(--red)">— December 31, 2025 year end —</td></tr>'; drew = true; }
+      const sT = note('Shipping date from the bill of lading', 'With FOB shipping point terms, the sale belongs in the period the goods ship. Bill of lading #' + b + ' shows ' + dt(t.ship) + ', so this is a ' + shipY + ' sale.', ['note','Shipped in ' + shipY], [() => DOC.bol(t, S('no','date'))]);
+      const iT = note('Invoice date', 'Invoice #' + t.inv + ' is dated ' + dt(t.date) + '.', t.date.slice(0,4) === shipY ? ['ok','Same period as shipment'] : ['x','Invoice and shipment in different years'], [() => DOC.inv(t, S('date','ship'))]);
+      let jT;
+      if (!bad) jT = note('Period recorded', 'Recorded in the ' + mon(t.sj) + ' sales journal, which matches the shipping date.', ['ok','Correct period'], [() => DOC.sj(t.sj.slice(0,7), t.inv)]);
+      else if (shipY === '2025') jT = note('Recorded in the wrong period', 'Shipped ' + dt(t.ship) + ' but recorded ' + dt(t.sj) + '. Sales and AR for 2025 are understated by ' + usd(t.total) + '. This is the same item found on A-3.', ['x','Understated ' + usd(t.total)], [() => DOC.sj('2025-12', null, 'No entry for invoice ' + t.inv + ' in December.'), () => DOC.sj('2026-01', t.inv)]);
+      else jT = note('Recorded in the wrong period', 'Invoiced and recorded on ' + dt(t.sj) + ' but the goods did not ship until ' + dt(t.ship) + '. The sale belongs in 2026, so 2025 sales and AR are overstated by ' + usd(t.total) + '.', ['x','Overstated ' + usd(t.total)], [() => DOC.sj('2025-12', t.inv), () => DOC.bol(t, S('date'))]);
+      rows += '<tr class="' + (bad ? 'xrow' : '') + '"><td class="mono">' + b + '</td><td>' + dt(t.ship) + tm('S', sT) + '</td><td>' + CUST[t.c].name + '</td><td class="mono">' + t.inv + '</td><td>' + dt(t.date) + tm(t.date.slice(0,4) === shipY ? 'I' : 'X', iT, t.date.slice(0,4) !== shipY) + '</td><td class="num">' + fmt(t.total) + '</td>' +
+        '<td>' + mon(t.sj) + (bad ? tm('X', jT, true) : tm('J', jT)) + '</td><td>' + (bad ? '<span class="mnote">' + (shipY === '2025' ? 'AJE 2 ' + ref('A-3') : 'AJE 3') + '</span>' : '✓ Correct') + '</td></tr>';
+    });
+    return head('A-5', 'Sales: Cutoff Test') +
+      sec('Objective', '<p>Find out whether sales near year end landed in the right period (balance-related objective: <b>cutoff</b>).</p>') +
+      sec('Procedure', '<p>From the shipping log, selected shipments made in the last three business days of 2025 and the first two of 2026. Compared each shipping date to the invoice date and to the period the sale was recorded. Terms are FOB shipping point, so a sale belongs in the period the goods leave the warehouse. Testing both sides of year end catches errors in both directions.</p>') +
+      table('<th>BOL</th><th>Ship date</th><th>Customer</th><th>Invoice</th><th>Invoice date</th><th class="num">Amount</th><th>Recorded in</th><th>Right period?</th>', rows) +
+      sec('Legend', legend([['S','Shipping date agreed to the bill of lading'],['I','Invoice date agreed to the sales invoice'],['J','Period recorded agreed to the sales journal'],['X','Exception, see findings',1]])) +
+      sec('Findings', '<div class="finding"><p><b>Recorded too late:</b> BOL #7781, Northgate, shipped 12/30/25 and recorded in January. Understated ' + usd(T['4519'].total) + ' ' + ref('AJE2','AJE 2') + '.</p><p><b>Recorded too early:</b> invoice #4502, Tall Pines, billed and recorded 12/31/25, but shipped 1/2/26. Overstated ' + usd(T['4502'].total) + ' ' + ref('AJE3','AJE 3') + '. The senior raised this with management because billing ahead of shipment on the last day of the year can be a fraud risk indicator.</p></div>') +
+      sec('Conclusion', '<p class="concl">After AJE 2 and AJE 3, sales near year end are recorded in the correct period.</p>');
+  }};
+
+  const ORDER = ['A','A-1','A-2','A-3','A-4','A-5'];
+  const NOTES = {
+    'A': {what:'<p>The lead schedule is the summary page for an account. It starts from the trial balance, points to every workpaper behind the balance, and collects the adjustments. A reviewer usually starts here and works down.</p>',
+      see:['The <b>PY</b> column ties to last year’s audited file and shows how much the balance moved.','Each <b>W/P reference</b> in violet is a link down to the detail, and each detail page links back up.','Three small errors from three different tests all land here as AJE 1 to 3.','Size is not the only thing that matters: AJE 3 gets attention because of <i>why</i> it happened.']},
+    'A-1': {what:'<p>The aged trial balance is the client’s list of who owes them money and for how long. The auditor tests that the list adds up and agrees to the ledger before using it to pick customers to confirm.</p>',
+      see:['The <b>PBC</b> stamp: the client prepared it, so the auditor can’t take it on faith.','The <b>GL</b> tickmark: if the list doesn’t match the ledger, every sample drawn from it is suspect.','The over-90 column is also a lead for the allowance (realizable value).']},
+    'A-2': {what:'<p><b>Vouching</b>: start with what was <b>recorded</b> and go <b>back</b> to the documents. If the documents exist, the sale happened. This tests <b>occurrence</b>.</p>',
+      see:['The direction: journal → invoice → shipping document.','The bill of lading is the strongest document here because it shows the goods actually left.','This test can’t find a sale that was never recorded. That is what A-3 is for.','Click the red X to see the transposed amount.']},
+    'A-3': {what:'<p><b>Tracing</b>: start with what <b>happened</b> (a shipment) and go <b>forward</b> to the records. If it’s not in the journal, a sale is missing. This tests <b>completeness</b>.</p>',
+      see:['The sample comes from the shipping log, not the sales journal.','The direction is the reverse of A-2: shipping document → invoice → journal.','The exception was a timing problem, so the team followed up with a cutoff test on A-5.']},
+    'A-4': {what:'<p><b>Confirmation</b>: ask the customer directly. A reply sent straight to the auditor from an outside party is among the most reliable evidence that a receivable <b>exists</b>.</p>',
+      see:['The auditor, not the client, controls the mailing and receives the replies.','A difference is something to investigate. It may be timing, not an error.','No reply means no evidence, so the auditor finds other evidence: payments after year end and the documents behind unpaid invoices.']},
+    'A-5': {what:'<p><b>Cutoff</b>: check transactions on both sides of year end to make sure each landed in the right period. The shipping date and the shipping terms decide the period.</p>',
+      see:['The dashed red line is year end. Read the ship date first, then where the sale was recorded.','There are errors in both directions: one recorded too late, one too early.','Billing before shipping on 12/31 is a classic red flag for pushing revenue into the year.']}
+  };
+  const KIND_LONG = {'Lead':'Summary', 'TDB':'Test of details of balances', 'STOT':'Substantive test of transactions'};
+
+  /* ---------- quiz ---------- */
+  const QUIZ = [
+    ['On A-2 the auditor started in the sales journal and went back to the invoice and bill of lading. Which objective does that test, and why can’t it test the other direction?',
+      'Occurrence. Starting from recorded entries shows whether those entries are real, but a sale that was never recorded can’t be picked from the journal, so this test can’t find missing sales.'],
+    ['On A-3, bill of lading #7781 was not in the 2025 sales journal. What was the effect on the 2025 financial statements?',
+      'Sales and accounts receivable were understated by ' + usd(T['4519'].total) + '. The goods shipped 12/30/25 under FOB shipping point terms, so the sale belonged in 2025 (AJE 2).'],
+    ['Mesa Verde confirmed a balance $14,200 lower than the client’s records. Is that a misstatement?',
+      'No. Mesa Verde mailed a check on 12/29/25 that Ridgeline did not receive until 1/5/26. At year end the money had not arrived, so the receivable still existed. It’s a timing difference.'],
+    ['Prairie Wind never replied to the confirmation. What did the auditor do instead?',
+      'Alternative procedures: agreed the invoice paid in January to the cash receipts journal and bank deposit, and vouched the unpaid invoice to the bill of lading and the customer’s PO.'],
+    ['Why does A-1 have to foot and agree to the general ledger before the auditor uses it?',
+      'The confirmation sample on A-4 is drawn from A-1. If the list doesn’t add up or doesn’t match the ledger, the auditor could be testing a list that leaves out balances or includes ones that aren’t in the books (detail tie-in).'],
+    ['The three adjustments net to only ' + usd(AJE_NET) + '. Why did the senior still spend time on AJE 3?',
+      'Because of what it suggests, not its size. Billing on the last day of the year for goods that shipped in January could mean someone was trying to pull revenue into 2025, which is a fraud risk the auditor has to follow up on.']
+  ];
+
+  /* ---------- rendering ---------- */
+  const binder = $('binder'), wp = $('wp'), ev = $('ev'), scrim = $('scrim');
+  let cur = 'A', activeTm = null;
+  ORDER.forEach(k => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'tab'; b.dataset.go = k; b.setAttribute('role','tab');
+    b.innerHTML = '<span class="r">' + k + '</span><span class="t">' + WP[k].tab + '</span><span class="k">' + WP[k].kind + '</span>';
+    binder.appendChild(b);
+  });
+  $('quiz').innerHTML = QUIZ.map((q,i) => '<details><summary>' + (i+1) + '. ' + q[0] + '</summary><p>' + q[1] + '</p></details>').join('');
+
+  function emptyEv(){
+    ev.innerHTML = '<div class="ev-h"><h2>Evidence</h2><button type="button" class="close" id="ev-close">Close</button></div>' +
+      '<p class="ev-empty" style="margin-top:8px"><span class="big">Click a red tickmark</span>Each tickmark is a step the auditor performed. Click one to see what was done and the document behind it.</p>';
+    $('ev-close').onclick = closeEv;
+  }
+  function show(k, keepEv){
+    if (!WP[k]) return;
+    cur = k; EV = [];
+    wp.innerHTML = WP[k].render();
+    [...binder.children].forEach(b => b.setAttribute('aria-selected', b.dataset.go === k ? 'true' : 'false'));
+    const n = NOTES[k], kind = WP[k].kind.split(' · ');
+    $('note-what').innerHTML = '<h2><span class="tag">' + k + '</span>What this workpaper does</h2><p><span class="pill">' + (KIND_LONG[kind[0]] || kind[0]) + '</span>' + (kind[1] ? '<span class="pill o">' + kind[1] + '</span>' : '') + '</p>' + n.what;
+    $('note-see').innerHTML = '<h2><span class="tag">' + k + '</span>Things to notice</h2><ul>' + n.see.map(s => '<li>' + s + '</li>').join('') + '</ul>';
+    if (!keepEv) { emptyEv(); closeEv(); }
+    try { localStorage.setItem('wpw-tab', k); } catch(e) {}
+  }
+  function openEv(i, btn){
+    const e = EV[i];
+    if (activeTm) activeTm.classList.remove('on');
+    activeTm = btn; btn.classList.add('on');
+    const cls = e.result[0];
+    ev.innerHTML = '<div class="ev-h"><h2>' + e.title + '</h2><button type="button" class="close" id="ev-close">Close</button></div>' +
+      '<div class="lab">Workpaper ' + cur + ' · tickmark <span class="hand" style="color:var(--red);font-size:16px;text-transform:none;letter-spacing:0">' + btn.textContent + '</span></div>' +
+      '<div class="lab">What the auditor did</div><p>' + e.did + '</p>' +
+      '<div class="lab">Result</div><span class="res ' + cls + '">' + e.result[1] + '</span>' +
+      (e.docs.length ? '<div class="lab" style="margin-top:12px">' + (e.docs.length > 1 ? 'Documents' : 'Document') + ' examined</div>' + e.docs.map(d => d()).join('') : '');
+    $('ev-close').onclick = closeEv;
+    ev.scrollTop = 0;
+    ev.classList.add('open'); scrim.classList.add('open');
+  }
+  function closeEv(){
+    ev.classList.remove('open'); scrim.classList.remove('open');
+    if (activeTm) { activeTm.classList.remove('on'); activeTm = null; }
+  }
+  function go(target){
+    if (/^AJE\d$/.test(target)) {
+      if (cur !== 'A') show('A');
+      const row = document.getElementById(target.toLowerCase());
+      if (row) { row.scrollIntoView({behavior:'smooth', block:'center'}); row.querySelectorAll('td').forEach(td => { td.style.background = 'var(--violet-t)'; setTimeout(() => td.style.background = '', 1600); }); }
+      return;
+    }
+    show(target);
+    wp.scrollIntoView({behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block:'start'});
+  }
+  document.addEventListener('click', e => {
+    const t = e.target.closest('[data-ev],[data-go]');
+    if (!t) return;
+    if (t.dataset.ev !== undefined) openEv(+t.dataset.ev, t);
+    else go(t.dataset.go);
+  });
+  scrim.addEventListener('click', closeEv);
+  document.addEventListener('keydown', e => { if (e.key === 'Escape') closeEv(); });
+
+  let start = 'A';
+  try { const s = localStorage.getItem('wpw-tab'); if (s && WP[s]) start = s; } catch(e) {}
+  show(start);
+
+  // exposed for checking the numbers
+  window.__wpw = {AR, AJE, AJE_NET, CONF, CONF_BAL, T, AGING, colTot, bal};
+})();
+</script>
+
+</body>
+</html>
